@@ -10,6 +10,12 @@ import {
 import { ComponentService } from './services/component-service.js';
 import { DesignTokenService } from './services/design-token-service.js';
 import { ValidationService } from './services/validation-service.js';
+import { ColorContrastService } from './services/color-contrast-service.js';
+import { IconService } from './services/icon-service.js';
+import { LayoutService } from './services/layout-service.js';
+import { SuggestionService } from './services/suggestion-service.js';
+import { ComparisonService } from './services/comparison-service.js';
+import { CodeGeneratorService } from './services/code-generator-service.js';
 
 // Server configuration
 const USE_REACT_COMPONENTS = process.env.USE_REACT_COMPONENTS === 'true';
@@ -18,6 +24,12 @@ const USE_REACT_COMPONENTS = process.env.USE_REACT_COMPONENTS === 'true';
 const componentService = new ComponentService(USE_REACT_COMPONENTS);
 const designTokenService = new DesignTokenService();
 const validationService = new ValidationService();
+const colorContrastService = new ColorContrastService();
+const iconService = new IconService();
+const layoutService = new LayoutService(USE_REACT_COMPONENTS);
+const suggestionService = new SuggestionService(USE_REACT_COMPONENTS);
+const comparisonService = new ComparisonService(USE_REACT_COMPONENTS);
+const codeGeneratorService = new CodeGeneratorService(USE_REACT_COMPONENTS);
 
 // Create MCP server
 const server = new Server(
@@ -161,6 +173,127 @@ const tools: Tool[] = [
       required: ['template_name'],
     },
   },
+  {
+    name: 'check_color_contrast',
+    description: 'Check WCAG color contrast ratio between two colors for accessibility compliance',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        foreground: {
+          type: 'string',
+          description: 'Foreground color (hex, rgb, or named color)',
+        },
+        background: {
+          type: 'string',
+          description: 'Background color (hex, rgb, or named color)',
+        },
+        font_size: {
+          type: 'number',
+          description: 'Font size in pixels (optional, for text size category)',
+        },
+        font_weight: {
+          type: 'string',
+          description: 'Font weight (e.g., "normal", "bold", "700")',
+        },
+      },
+      required: ['foreground', 'background'],
+    },
+  },
+  {
+    name: 'get_icons',
+    description: 'Browse and search USWDS icons with usage examples',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        category: {
+          type: 'string',
+          description: 'Filter by category',
+          enum: ['all', 'alerts', 'navigation', 'actions', 'communication', 'content', 'user', 'location', 'datetime', 'display', 'status'],
+        },
+        search: {
+          type: 'string',
+          description: 'Search icons by name or keywords',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_layout_patterns',
+    description: 'Get common layout patterns and recipes using USWDS Grid system',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        layout_key: {
+          type: 'string',
+          description: 'Specific layout to retrieve (e.g., "sidebar-content", "card-grid", "dashboard")',
+        },
+      },
+    },
+  },
+  {
+    name: 'suggest_components',
+    description: 'Get AI-assisted component recommendations based on use case description',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        use_case: {
+          type: 'string',
+          description: 'Describe what you want to build (e.g., "show a success message", "collect user email")',
+        },
+      },
+      required: ['use_case'],
+    },
+  },
+  {
+    name: 'compare_components',
+    description: 'Compare two components side-by-side to understand their differences',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        component1: {
+          type: 'string',
+          description: 'First component name',
+        },
+        component2: {
+          type: 'string',
+          description: 'Second component name',
+        },
+      },
+      required: ['component1', 'component2'],
+    },
+  },
+  {
+    name: 'generate_component_code',
+    description: 'Generate working code for a component based on requirements',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        component_name: {
+          type: 'string',
+          description: 'Component to generate (e.g., "Button", "Alert")',
+        },
+        requirements: {
+          type: 'object',
+          description: 'Component requirements as key-value pairs (e.g., {"type": "submit", "disabled": true})',
+        },
+      },
+      required: ['component_name'],
+    },
+  },
+  {
+    name: 'generate_form',
+    description: 'Generate a complete form with validation based on field specifications',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        form_spec: {
+          type: 'object',
+          description: 'Form specification including formName, fields array, submitLabel',
+        },
+      },
+      required: ['form_spec'],
+    },
+  },
 ];
 
 // List tools handler
@@ -271,6 +404,105 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_page_template': {
         const templateName = args?.template_name as string;
         const result = await componentService.getPageTemplate(templateName);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'check_color_contrast': {
+        const foreground = args?.foreground as string;
+        const background = args?.background as string;
+        const fontSize = args?.font_size as number | undefined;
+        const fontWeight = args?.font_weight as string | undefined;
+        const result = await colorContrastService.checkContrast(foreground, background, fontSize, fontWeight);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_icons': {
+        const category = args?.category as string | undefined;
+        const search = args?.search as string | undefined;
+        const result = await iconService.getIcons(category, search);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_layout_patterns': {
+        const layoutKey = args?.layout_key as string | undefined;
+        const result = layoutKey
+          ? await layoutService.getLayout(layoutKey)
+          : await layoutService.getLayouts();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'suggest_components': {
+        const useCase = args?.use_case as string;
+        const result = await suggestionService.suggestComponents(useCase);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'compare_components': {
+        const component1 = args?.component1 as string;
+        const component2 = args?.component2 as string;
+        const result = await comparisonService.compareComponents(component1, component2);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'generate_component_code': {
+        const componentName = args?.component_name as string;
+        const requirements = (args?.requirements as any) || {};
+        const result = await codeGeneratorService.generateComponent(componentName, requirements);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'generate_form': {
+        const formSpec = args?.form_spec as any;
+        const result = await codeGeneratorService.generateForm(formSpec);
         return {
           content: [
             {

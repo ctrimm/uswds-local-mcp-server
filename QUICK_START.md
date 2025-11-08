@@ -101,34 +101,62 @@ You can run both vanilla and React modes simultaneously:
 
 ## Available Tools
 
-Once connected, Claude has access to these tools:
+Once connected, Claude has access to 15 powerful tools:
 
+### Component & Template Tools
 1. **list_components** - Browse USWDS components by category
 2. **get_component_info** - Get detailed component documentation
 3. **list_page_templates** - Browse React page templates (React mode only)
 4. **get_page_template** - Get full template code (React mode only)
-5. **get_design_tokens** - Access color, spacing, typography tokens
-6. **validate_uswds_code** - Check code for compliance and accessibility
-7. **search_docs** - Search USWDS documentation
-8. **get_accessibility_guidance** - Get WCAG compliance guidance
+
+### AI-Powered Tools
+5. **suggest_components** - Get component recommendations for your use case
+6. **compare_components** - Compare two components side-by-side
+7. **generate_component_code** - Generate working component code
+8. **generate_form** - Scaffold complete forms with validation
+
+### Design & Layout Tools
+9. **get_design_tokens** - Access color, spacing, typography tokens
+10. **check_color_contrast** - Validate WCAG color contrast ratios
+11. **get_icons** - Browse and search 90+ USWDS icons
+12. **get_layout_patterns** - Get common layout recipes
+
+### Validation & Documentation
+13. **validate_uswds_code** - Check code for compliance and accessibility
+14. **search_docs** - Search USWDS documentation
+15. **get_accessibility_guidance** - Get WCAG compliance guidance
 
 ## Example Prompts
 
 Try these with Claude:
 
-### For React-USWDS:
+### Component Discovery & Info:
 - "Show me all form components in React-USWDS"
-- "Create an accessible contact form with name, email, and message fields"
 - "What are the props for the Alert component?"
-- "Validate this code: [paste your JSX]"
+- "Compare Alert and SiteAlert components"
+- "What component should I use to show a success message?"
+
+### Code Generation:
+- "Create an accessible contact form with name, email, and message fields"
+- "Generate a Button component with type submit and large size"
+- "Build me a complete login form with email and password"
+- "Generate code for a disabled button"
+
+### Templates & Layouts:
 - "List all available page templates"
 - "Show me the Sign In page template code"
-- "Get the Landing Page template for prototyping"
+- "What layout should I use for documentation?"
+- "Get the sidebar-content layout pattern"
+
+### Design & Accessibility:
+- "Check if #005ea2 and #ffffff have good contrast"
+- "Show me all navigation icons"
+- "What color tokens should I use for primary colors?"
+- "Validate this code for accessibility: [paste your code]"
 
 ### For Vanilla USWDS:
 - "List all navigation components in USWDS"
 - "Show me the HTML for a primary button"
-- "What design tokens should I use for primary colors?"
 - "Check if this HTML follows USWDS patterns: [paste HTML]"
 
 ## Troubleshooting

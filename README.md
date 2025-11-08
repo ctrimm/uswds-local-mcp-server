@@ -4,12 +4,24 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 
 ## Features
 
+### Core Features
 - **Component Information**: Get detailed info about USWDS or React-USWDS components
 - **Page Templates**: Access full-page React templates for quick prototyping (React mode only)
 - **Design Tokens**: Access USWDS design tokens for colors, spacing, typography, and breakpoints
 - **Code Validation**: Validate HTML/JSX for USWDS patterns and accessibility
 - **React Support**: Toggle between vanilla USWDS and React-USWDS modes
 - **Accessibility Guidance**: Get WCAG compliance guidance for components
+
+### AI-Powered Tools
+- **Component Suggestions**: Get AI-assisted recommendations based on your use case
+- **Component Comparison**: Compare two components side-by-side to understand differences
+- **Code Generation**: Generate working component code from requirements
+- **Form Generation**: Scaffold complete forms with validation
+
+### Developer Tools
+- **Color Contrast Checker**: Validate WCAG color contrast ratios
+- **Icon Browser**: Search and browse 90+ USWDS icons
+- **Layout Patterns**: Access common layout recipes with USWDS Grid
 
 ## Installation
 
@@ -177,6 +189,128 @@ Get full code and details for a specific React-USWDS page template (React mode o
 ```json
 {
   "template_name": "Sign In"
+}
+```
+
+### 9. `check_color_contrast`
+
+Check WCAG color contrast ratio between two colors for accessibility compliance.
+
+**Parameters:**
+- `foreground` (required): Foreground color (hex, rgb, or named color)
+- `background` (required): Background color (hex, rgb, or named color)
+- `font_size` (optional): Font size in pixels
+- `font_weight` (optional): Font weight (e.g., "normal", "bold", "700")
+
+**Example:**
+```json
+{
+  "foreground": "#005ea2",
+  "background": "#ffffff",
+  "font_size": 16,
+  "font_weight": "normal"
+}
+```
+
+### 10. `get_icons`
+
+Browse and search USWDS icons with usage examples.
+
+**Parameters:**
+- `category` (optional): Filter by category - "all", "alerts", "navigation", "actions", etc.
+- `search` (optional): Search icons by name or keywords
+
+**Example:**
+```json
+{
+  "category": "navigation",
+  "search": "arrow"
+}
+```
+
+### 11. `get_layout_patterns`
+
+Get common layout patterns and recipes using USWDS Grid system.
+
+**Parameters:**
+- `layout_key` (optional): Specific layout to retrieve (e.g., "sidebar-content", "card-grid")
+
+**Example:**
+```json
+{
+  "layout_key": "sidebar-content"
+}
+```
+
+### 12. `suggest_components`
+
+Get AI-assisted component recommendations based on use case description.
+
+**Parameters:**
+- `use_case` (required): Describe what you want to build
+
+**Example:**
+```json
+{
+  "use_case": "I need to show a success message after form submission"
+}
+```
+
+### 13. `compare_components`
+
+Compare two components side-by-side to understand their differences.
+
+**Parameters:**
+- `component1` (required): First component name
+- `component2` (required): Second component name
+
+**Example:**
+```json
+{
+  "component1": "Alert",
+  "component2": "SiteAlert"
+}
+```
+
+### 14. `generate_component_code`
+
+Generate working code for a component based on requirements.
+
+**Parameters:**
+- `component_name` (required): Component to generate (e.g., "Button", "Alert")
+- `requirements` (optional): Component requirements as key-value pairs
+
+**Example:**
+```json
+{
+  "component_name": "Button",
+  "requirements": {
+    "type": "submit",
+    "disabled": false,
+    "size": "big"
+  }
+}
+```
+
+### 15. `generate_form`
+
+Generate a complete form with validation based on field specifications.
+
+**Parameters:**
+- `form_spec` (required): Form specification including formName, fields array, submitLabel
+
+**Example:**
+```json
+{
+  "form_spec": {
+    "formName": "ContactForm",
+    "fields": [
+      {"name": "name", "label": "Full Name", "type": "text", "required": true},
+      {"name": "email", "label": "Email", "type": "email", "required": true},
+      {"name": "message", "label": "Message", "type": "textarea", "required": false}
+    ],
+    "submitLabel": "Send Message"
+  }
 }
 ```
 
