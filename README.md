@@ -603,6 +603,30 @@ npm run watch
 npm start
 ```
 
+### Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# TypeScript type checking (lint)
+npm run lint
+```
+
+### Testing with MCP Inspector
+
+```bash
+npm run inspector
+```
+
+This opens a web interface for testing tools interactively.
+
 ## Resources
 
 - [USWDS Official Documentation](https://designsystem.digital.gov/)
@@ -634,4 +658,30 @@ MIT
 
 ## Contributing
 
-Contributions are welcome! Please see the documentation guides in this repository for more information about the USWDS ecosystem.
+Contributions are welcome! We appreciate bug fixes, new tools, documentation improvements, and more.
+
+**Please read [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:**
+- Setting up your development environment
+- Adding new tools
+- Writing tests
+- Code style and conventions
+- Pull request process
+
+**Quick Start for Contributors:**
+
+```bash
+# Fork and clone the repo
+git clone https://github.com/YOUR-USERNAME/uswds-local-mcp-server.git
+cd uswds-local-mcp-server
+
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Build
+npm run build
+```
+
+See [FUTURE_TOOLS.md](FUTURE_TOOLS.md) for a roadmap of planned features and tools.
