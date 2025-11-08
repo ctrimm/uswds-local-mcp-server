@@ -17,6 +17,10 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 - **Component Comparison**: Compare two components side-by-side to understand differences
 - **Code Generation**: Generate working component code from requirements
 - **Form Generation**: Scaffold complete forms with validation
+- **Multi-Step Forms**: Generate wizard forms with navigation and progress indicators
+- **Data Tables**: Generate tables with sorting, filtering, and pagination
+- **Modal Dialogs**: Generate accessible modals with focus management
+- **Project Scaffolding**: Generate complete Next.js/CRA/Vite project structure
 
 ### Developer Tools
 - **Color Contrast Checker**: Validate WCAG color contrast ratios
@@ -310,6 +314,105 @@ Generate a complete form with validation based on field specifications.
       {"name": "message", "label": "Message", "type": "textarea", "required": false}
     ],
     "submitLabel": "Send Message"
+  }
+}
+```
+
+### 16. `generate_multi_step_form`
+
+Generate a multi-step wizard form with navigation, progress indicator, and validation.
+
+**Parameters:**
+- `form_spec` (required): Multi-step form specification
+
+**Example:**
+```json
+{
+  "form_spec": {
+    "formName": "RegistrationWizard",
+    "steps": [
+      {
+        "title": "Personal Information",
+        "fields": [
+          {"name": "firstName", "label": "First Name", "type": "text", "required": true},
+          {"name": "lastName", "label": "Last Name", "type": "text", "required": true}
+        ]
+      },
+      {
+        "title": "Contact Information",
+        "fields": [
+          {"name": "email", "label": "Email", "type": "email", "required": true},
+          {"name": "phone", "label": "Phone", "type": "tel", "required": false}
+        ]
+      }
+    ],
+    "showProgress": true
+  }
+}
+```
+
+### 17. `generate_data_table`
+
+Generate a data table with sorting, filtering, and pagination functionality.
+
+**Parameters:**
+- `table_spec` (required): Table specification
+
+**Example:**
+```json
+{
+  "table_spec": {
+    "tableName": "UsersTable",
+    "columns": [
+      {"key": "name", "label": "Name", "sortable": true},
+      {"key": "email", "label": "Email", "sortable": true},
+      {"key": "role", "label": "Role", "sortable": false},
+      {"key": "status", "label": "Status", "sortable": true}
+    ],
+    "enableSorting": true,
+    "enableFiltering": true,
+    "enablePagination": true,
+    "pageSize": 10
+  }
+}
+```
+
+### 18. `generate_modal_dialog`
+
+Generate a modal dialog with focus management, ARIA labels, and keyboard accessibility.
+
+**Parameters:**
+- `modal_spec` (required): Modal specification
+
+**Example:**
+```json
+{
+  "modal_spec": {
+    "modalName": "ConfirmDialog",
+    "title": "Confirm Action",
+    "type": "warning",
+    "hasForm": false,
+    "actions": ["cancel", "confirm"]
+  }
+}
+```
+
+### 19. `scaffold_project`
+
+Generate a complete USWDS project structure with Next.js, Create React App, or Vite.
+
+**Parameters:**
+- `project_spec` (required): Project specification
+
+**Example:**
+```json
+{
+  "project_spec": {
+    "projectName": "my-gov-website",
+    "framework": "next",
+    "includeExamples": true,
+    "includeAuth": false,
+    "includeTesting": true
   }
 }
 ```

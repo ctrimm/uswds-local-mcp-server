@@ -294,6 +294,62 @@ const tools: Tool[] = [
       required: ['form_spec'],
     },
   },
+  {
+    name: 'generate_multi_step_form',
+    description: 'Generate a multi-step wizard form with navigation and validation',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        form_spec: {
+          type: 'object',
+          description: 'Multi-step form specification with formName, steps array, showProgress',
+        },
+      },
+      required: ['form_spec'],
+    },
+  },
+  {
+    name: 'generate_data_table',
+    description: 'Generate a data table with sorting, filtering, and pagination',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        table_spec: {
+          type: 'object',
+          description: 'Table specification with tableName, columns, enableSorting, enableFiltering, enablePagination',
+        },
+      },
+      required: ['table_spec'],
+    },
+  },
+  {
+    name: 'generate_modal_dialog',
+    description: 'Generate a modal dialog with focus management and accessibility',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        modal_spec: {
+          type: 'object',
+          description: 'Modal specification with modalName, title, type, hasForm, actions',
+        },
+      },
+      required: ['modal_spec'],
+    },
+  },
+  {
+    name: 'scaffold_project',
+    description: 'Generate a complete USWDS project structure (Next.js, CRA, or Vite)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        project_spec: {
+          type: 'object',
+          description: 'Project specification with projectName, framework, includeExamples, includeAuth, includeTesting',
+        },
+      },
+      required: ['project_spec'],
+    },
+  },
 ];
 
 // List tools handler
@@ -503,6 +559,58 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'generate_form': {
         const formSpec = args?.form_spec as any;
         const result = await codeGeneratorService.generateForm(formSpec);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'generate_multi_step_form': {
+        const formSpec = args?.form_spec as any;
+        const result = await codeGeneratorService.generateMultiStepForm(formSpec);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'generate_data_table': {
+        const tableSpec = args?.table_spec as any;
+        const result = await codeGeneratorService.generateDataTable(tableSpec);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'generate_modal_dialog': {
+        const modalSpec = args?.modal_spec as any;
+        const result = await codeGeneratorService.generateModalDialog(modalSpec);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'scaffold_project': {
+        const projectSpec = args?.project_spec as any;
+        const result = await codeGeneratorService.scaffoldProject(projectSpec);
         return {
           content: [
             {
