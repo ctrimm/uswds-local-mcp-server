@@ -4,6 +4,8 @@
  */
 
 import { REACT_COMPONENTS } from '../data/react-components.js';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 interface GenerateOptions {
   [key: string]: any;
@@ -1464,5 +1466,453 @@ export default function ComponentsExample() {
   )
 }
 `;
+  }
+
+  /**
+   * Convert vanilla USWDS HTML to React-USWDS components
+   * Supports both URL fetching and direct HTML input
+   */
+  async convertHtmlToReact(spec: any): Promise<any> {
+    const { url, html, componentName = 'ConvertedComponent' } = spec;
+
+    if (!url && !html) {
+      return {
+        error: 'Either url or html is required',
+        message: 'Provide either a URL to fetch or HTML string to convert',
+        example: {
+          url: 'https://example.com/page',
+          componentName: 'MyComponent'
+        }
+      };
+    }
+
+    try {
+      let htmlContent = html;
+
+      // Fetch from URL if provided
+      if (url) {
+        try {
+          const response = await axios.get(url, {
+            timeout: 10000,
+            headers: {
+              'User-Agent': 'USWDS-MCP-Server/1.0'
+            }
+          });
+          htmlContent = response.data;
+        } catch (fetchError: any) {
+          return {
+            error: 'Failed to fetch URL',
+            message: fetchError.message,
+            url
+          };
+        }
+      }
+
+      // Parse HTML with cheerio
+      const $ = cheerio.load(htmlContent);
+
+      // Track used components for imports
+      const usedComponents = new Set<string>();
+
+      // Convert the HTML structure
+      const jsxCode = this.parseHtmlToJsx($, $('body').children().length > 0 ? $('body') : $.root(), usedComponents);
+
+      // Generate imports
+      const imports = this.generateReactImports(usedComponents);
+
+      // Build the complete component
+      const componentCode = `${imports}
+
+export default function ${componentName}() {
+  return (
+${jsxCode}
+  )
+}
+`;
+
+      return {
+        success: true,
+        componentName,
+        code: componentCode,
+        usedComponents: Array.from(usedComponents).sort(),
+        source: url || 'provided HTML',
+        notes: [
+          'This is a generated conversion - review and adjust as needed',
+          'Add state management (useState) for interactive elements',
+          'Add event handlers for buttons and forms',
+          'Test accessibility with screen readers',
+          'Some HTML may be preserved as utility classes - customize as needed'
+        ]
+      };
+    } catch (error: any) {
+      return {
+        error: 'Conversion failed',
+        message: error.message,
+        stack: error.stack
+      };
+    }
+  }
+
+  /**
+   * Parse HTML element to JSX recursively
+   */
+  private parseHtmlToJsx($: cheerio.CheerioAPI, element: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number = 0): string {
+    const indent = '    '.repeat(depth + 1);
+    let result = '';
+
+    element.each((_, el) => {
+      const $el = $(el);
+      const tagName = el.tagName;
+
+      // Skip script and style tags
+      if (tagName === 'script' || tagName === 'style') {
+        return;
+      }
+
+      // Get classes
+      const classes = $el.attr('class') || '';
+      const classArray = classes.split(' ').filter(c => c.trim());
+
+      // Try to convert to React-USWDS component
+      const conversion = this.convertElementToReact($, $el, classArray, usedComponents, depth);
+
+      if (conversion) {
+        result += conversion;
+      } else {
+        // Fallback: preserve as HTML with proper JSX attributes
+        const jsxElement = this.convertToJsxElement($, $el, depth);
+        result += jsxElement;
+      }
+    });
+
+    return result;
+  }
+
+  /**
+   * Convert a single HTML element to React-USWDS component
+   */
+  private convertElementToReact($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, classes: string[], usedComponents: Set<string>, depth: number): string | null {
+    const indent = '    '.repeat(depth + 1);
+    const childIndent = '    '.repeat(depth + 2);
+
+    // Button conversion
+    if ($el.is('button') || classes.includes('usa-button')) {
+      usedComponents.add('Button');
+      const text = $el.text().trim();
+      const variant = this.getButtonVariant(classes);
+      const props = variant ? ` ${variant}` : '';
+
+      return `${indent}<Button${props}>${text}</Button>\n`;
+    }
+
+    // Alert conversion
+    if (classes.includes('usa-alert')) {
+      usedComponents.add('Alert');
+      const type = this.getAlertType(classes);
+      const heading = $el.find('.usa-alert__heading').text().trim();
+      const body = $el.find('.usa-alert__text').text().trim();
+
+      const headingProp = heading ? ` heading="${heading}"` : '';
+      return `${indent}<Alert type="${type}"${headingProp}>\n${childIndent}${body}\n${indent}</Alert>\n`;
+    }
+
+    // Accordion conversion
+    if (classes.includes('usa-accordion')) {
+      usedComponents.add('Accordion');
+      return this.convertAccordion($, $el, usedComponents, depth);
+    }
+
+    // Card conversion
+    if (classes.includes('usa-card')) {
+      return this.convertCard($, $el, usedComponents, depth);
+    }
+
+    // Form elements
+    if ($el.is('input') && !classes.includes('usa-checkbox') && !classes.includes('usa-radio')) {
+      return this.convertInput($, $el, usedComponents, depth);
+    }
+
+    // Textarea
+    if ($el.is('textarea')) {
+      usedComponents.add('Textarea');
+      const id = $el.attr('id') || '';
+      const name = $el.attr('name') || id;
+      return `${indent}<Textarea id="${id}" name="${name}" />\n`;
+    }
+
+    // Checkbox
+    if (classes.includes('usa-checkbox')) {
+      return this.convertCheckbox($, $el, usedComponents, depth);
+    }
+
+    // Radio
+    if (classes.includes('usa-radio')) {
+      return this.convertRadio($, $el, usedComponents, depth);
+    }
+
+    // Label
+    if ($el.is('label') && !$el.closest('.usa-checkbox, .usa-radio').length) {
+      usedComponents.add('Label');
+      const htmlFor = $el.attr('for') || '';
+      const text = $el.text().trim();
+      return `${indent}<Label htmlFor="${htmlFor}">${text}</Label>\n`;
+    }
+
+    // Grid Container
+    if (classes.includes('grid-container')) {
+      usedComponents.add('GridContainer');
+      const children = this.parseHtmlToJsx($, $el.children(), usedComponents, depth + 1);
+      return `${indent}<GridContainer>\n${children}${indent}</GridContainer>\n`;
+    }
+
+    // Grid Row
+    if (classes.includes('grid-row')) {
+      const children = this.parseHtmlToJsx($, $el.children(), usedComponents, depth);
+      const utilityClasses = this.getUtilityClasses(classes);
+      const className = utilityClasses ? ` className="${utilityClasses}"` : '';
+      return `${indent}<div${className}>\n${children}${indent}</div>\n`;
+    }
+
+    // Header
+    if (classes.includes('usa-header')) {
+      usedComponents.add('Header');
+      return `${indent}<Header basic />\n`;
+    }
+
+    // Footer
+    if (classes.includes('usa-footer')) {
+      usedComponents.add('Footer');
+      return `${indent}<Footer size="medium" />\n`;
+    }
+
+    // Banner
+    if (classes.includes('usa-banner')) {
+      usedComponents.add('Banner');
+      return `${indent}<Banner />\n`;
+    }
+
+    // Tag
+    if (classes.includes('usa-tag')) {
+      usedComponents.add('Tag');
+      const text = $el.text().trim();
+      return `${indent}<Tag>{text}</Tag>\n`;
+    }
+
+    // Table
+    if (classes.includes('usa-table')) {
+      usedComponents.add('Table');
+      return this.convertTable($, $el, usedComponents, depth);
+    }
+
+    return null;
+  }
+
+  /**
+   * Convert to standard JSX element (fallback)
+   */
+  private convertToJsxElement($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, depth: number): string {
+    const indent = '    '.repeat(depth + 1);
+    const tagName = $el.get(0)?.tagName || 'div';
+
+    // Get attributes and convert to JSX
+    const attrs = $el.get(0)?.attribs || {};
+    const jsxAttrs = Object.entries(attrs)
+      .filter(([key]) => key !== 'class') // handle separately
+      .map(([key, value]) => {
+        // Convert HTML attributes to JSX
+        const jsxKey = key === 'for' ? 'htmlFor' : key;
+        return `${jsxKey}="${value}"`;
+      })
+      .join(' ');
+
+    const className = $el.attr('class');
+    const classAttr = className ? `className="${className}"` : '';
+    const allAttrs = [jsxAttrs, classAttr].filter(a => a).join(' ');
+    const attrString = allAttrs ? ` ${allAttrs}` : '';
+
+    // Get children
+    const children = $el.contents();
+    if (children.length === 0) {
+      return `${indent}<${tagName}${attrString} />\n`;
+    }
+
+    // Text-only content
+    if (children.length === 1 && children.first().get(0)?.type === 'text') {
+      const text = $el.text().trim();
+      if (!text) return '';
+      return `${indent}<${tagName}${attrString}>${text}</${tagName}>\n`;
+    }
+
+    // Has child elements
+    const childContent = this.parseHtmlToJsx($, $el.children(), new Set(), depth + 1);
+    return `${indent}<${tagName}${attrString}>\n${childContent}${indent}</${tagName}>\n`;
+  }
+
+  /**
+   * Helper: Get button variant from classes
+   */
+  private getButtonVariant(classes: string[]): string {
+    if (classes.includes('usa-button--secondary')) return 'type="button" secondary';
+    if (classes.includes('usa-button--accent-cool')) return 'type="button" accentStyle="cool"';
+    if (classes.includes('usa-button--accent-warm')) return 'type="button" accentStyle="warm"';
+    if (classes.includes('usa-button--outline')) return 'type="button" outline';
+    if (classes.includes('usa-button--unstyled')) return 'type="button" unstyled';
+    if (classes.includes('usa-button--base')) return 'type="button" base';
+    return 'type="button"';
+  }
+
+  /**
+   * Helper: Get alert type from classes
+   */
+  private getAlertType(classes: string[]): string {
+    if (classes.includes('usa-alert--success')) return 'success';
+    if (classes.includes('usa-alert--warning')) return 'warning';
+    if (classes.includes('usa-alert--error')) return 'error';
+    if (classes.includes('usa-alert--info')) return 'info';
+    return 'info';
+  }
+
+  /**
+   * Helper: Get utility classes (non-USWDS-component classes)
+   */
+  private getUtilityClasses(classes: string[]): string {
+    const utilityClasses = classes.filter(c =>
+      c.startsWith('margin-') ||
+      c.startsWith('padding-') ||
+      c.startsWith('grid-col') ||
+      c.startsWith('tablet:') ||
+      c.startsWith('desktop:') ||
+      c.startsWith('mobile:') ||
+      c.startsWith('text-') ||
+      c.startsWith('bg-') ||
+      c.startsWith('border-') ||
+      c.startsWith('display-') ||
+      c.startsWith('flex-')
+    );
+    return utilityClasses.join(' ');
+  }
+
+  /**
+   * Convert input element
+   */
+  private convertInput($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number): string {
+    const indent = '    '.repeat(depth + 1);
+    const type = $el.attr('type') || 'text';
+    const id = $el.attr('id') || '';
+    const name = $el.attr('name') || id;
+
+    if (type === 'email' || type === 'number' || type === 'password' || type === 'search' || type === 'tel' || type === 'text' || type === 'url') {
+      usedComponents.add('TextInput');
+      return `${indent}<TextInput id="${id}" name="${name}" type="${type}" />\n`;
+    }
+
+    if (type === 'date') {
+      usedComponents.add('DateInput');
+      return `${indent}<DateInput id="${id}" name="${name}" />\n`;
+    }
+
+    return `${indent}<input type="${type}" id="${id}" name="${name}" />\n`;
+  }
+
+  /**
+   * Convert checkbox
+   */
+  private convertCheckbox($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number): string {
+    usedComponents.add('Checkbox');
+    const indent = '    '.repeat(depth + 1);
+    const $input = $el.find('input[type="checkbox"]');
+    const $label = $el.find('label');
+    const id = $input.attr('id') || '';
+    const name = $input.attr('name') || id;
+    const label = $label.text().trim();
+
+    return `${indent}<Checkbox id="${id}" name="${name}" label="${label}" />\n`;
+  }
+
+  /**
+   * Convert radio button
+   */
+  private convertRadio($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number): string {
+    usedComponents.add('Radio');
+    const indent = '    '.repeat(depth + 1);
+    const $input = $el.find('input[type="radio"]');
+    const $label = $el.find('label');
+    const id = $input.attr('id') || '';
+    const name = $input.attr('name') || id;
+    const value = $input.attr('value') || '';
+    const label = $label.text().trim();
+
+    return `${indent}<Radio id="${id}" name="${name}" value="${value}" label="${label}" />\n`;
+  }
+
+  /**
+   * Convert accordion
+   */
+  private convertAccordion($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number): string {
+    usedComponents.add('Accordion');
+    usedComponents.add('AccordionItem');
+    const indent = '    '.repeat(depth + 1);
+    const childIndent = '    '.repeat(depth + 2);
+
+    const items = $el.find('.usa-accordion__item');
+    let itemsCode = '';
+
+    items.each((_, item) => {
+      const $item = $(item);
+      const title = $item.find('.usa-accordion__button').text().trim();
+      const content = $item.find('.usa-accordion__content').text().trim();
+
+      itemsCode += `${childIndent}<AccordionItem title="${title}">\n`;
+      itemsCode += `${childIndent}  ${content}\n`;
+      itemsCode += `${childIndent}</AccordionItem>\n`;
+    });
+
+    return `${indent}<Accordion items={[]}>\n${itemsCode}${indent}</Accordion>\n`;
+  }
+
+  /**
+   * Convert card
+   */
+  private convertCard($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number): string {
+    usedComponents.add('Card');
+    usedComponents.add('CardHeader');
+    usedComponents.add('CardBody');
+    const indent = '    '.repeat(depth + 1);
+    const childIndent = '    '.repeat(depth + 2);
+
+    const header = $el.find('.usa-card__heading').text().trim();
+    const body = $el.find('.usa-card__body').text().trim();
+
+    let code = `${indent}<Card>\n`;
+    if (header) {
+      code += `${childIndent}<CardHeader>\n${childIndent}  <h3>${header}</h3>\n${childIndent}</CardHeader>\n`;
+    }
+    code += `${childIndent}<CardBody>\n${childIndent}  ${body}\n${childIndent}</CardBody>\n`;
+    code += `${indent}</Card>\n`;
+
+    return code;
+  }
+
+  /**
+   * Convert table
+   */
+  private convertTable($: cheerio.CheerioAPI, $el: cheerio.Cheerio<any>, usedComponents: Set<string>, depth: number): string {
+    usedComponents.add('Table');
+    const indent = '    '.repeat(depth + 1);
+
+    // This is a simplified conversion - tables are complex
+    return `${indent}<Table bordered={false} fullWidth>\n${indent}  {/* Add table content */}\n${indent}</Table>\n`;
+  }
+
+  /**
+   * Generate React imports based on used components
+   */
+  private generateReactImports(usedComponents: Set<string>): string {
+    if (usedComponents.size === 0) {
+      return "import React from 'react'";
+    }
+
+    const components = Array.from(usedComponents).sort();
+    return `import { ${components.join(', ')} } from '@trussworks/react-uswds'`;
   }
 }

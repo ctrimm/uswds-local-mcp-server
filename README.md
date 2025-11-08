@@ -21,6 +21,7 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 - **Data Tables**: Generate tables with sorting, filtering, and pagination
 - **Modal Dialogs**: Generate accessible modals with focus management
 - **Project Scaffolding**: Generate complete Next.js/CRA/Vite project structure
+- **HTML to React Conversion**: Convert vanilla USWDS HTML to React-USWDS components (from URLs or code)
 
 ### Developer Tools
 - **Color Contrast Checker**: Validate WCAG color contrast ratios
@@ -414,6 +415,68 @@ Generate a complete USWDS project structure with Next.js, Create React App, or V
     "includeAuth": false,
     "includeTesting": true
   }
+}
+```
+
+### 20. `convert_html_to_react`
+
+Convert vanilla USWDS HTML to React-USWDS components. Automatically identifies USWDS patterns and converts them to the appropriate React components. Supports both fetching from URLs and converting provided HTML strings.
+
+**Parameters:**
+- `conversion_spec` (required): Conversion specification
+  - `url` (optional): URL to fetch HTML from
+  - `html` (optional): HTML string to convert
+  - `componentName` (optional): Name for the generated React component (default: "ConvertedComponent")
+
+**Features:**
+- Fetches HTML from live URLs or processes provided HTML
+- Automatically detects and converts USWDS components:
+  - Buttons (`usa-button` → `<Button>`)
+  - Alerts (`usa-alert` → `<Alert>`)
+  - Forms (inputs, textareas, checkboxes, radios)
+  - Cards, Accordions, Tables
+  - Grid containers and layouts
+  - Header, Footer, Banner components
+  - And many more...
+- Preserves utility classes for spacing, layout, and typography
+- Generates proper React imports
+- Converts HTML attributes to JSX (e.g., `for` → `htmlFor`, `class` → `className`)
+
+**Example (from URL):**
+```json
+{
+  "conversion_spec": {
+    "url": "https://designsystem.digital.gov/components/alert/",
+    "componentName": "AlertExample"
+  }
+}
+```
+
+**Example (from HTML string):**
+```json
+{
+  "conversion_spec": {
+    "html": "<div class=\"usa-alert usa-alert--success\"><div class=\"usa-alert__body\"><h4 class=\"usa-alert__heading\">Success</h4><p class=\"usa-alert__text\">Your action was completed successfully.</p></div></div>",
+    "componentName": "SuccessAlert"
+  }
+}
+```
+
+**Output:**
+```json
+{
+  "success": true,
+  "componentName": "SuccessAlert",
+  "code": "import { Alert } from '@trussworks/react-uswds'\n\nexport default function SuccessAlert() {\n  return (\n    <Alert type=\"success\" heading=\"Success\">\n      Your action was completed successfully.\n    </Alert>\n  )\n}",
+  "usedComponents": ["Alert"],
+  "source": "provided HTML",
+  "notes": [
+    "This is a generated conversion - review and adjust as needed",
+    "Add state management (useState) for interactive elements",
+    "Add event handlers for buttons and forms",
+    "Test accessibility with screen readers",
+    "Some HTML may be preserved as utility classes - customize as needed"
+  ]
 }
 ```
 

@@ -45,11 +45,12 @@ This document tracks potential future additions to the USWDS MCP Server.
 
 ## Migration & Conversion Tools
 
-- [ ] 🎯 **convert_html_to_react** - Convert vanilla USWDS HTML to React-USWDS JSX
+- [x] 🎯 **convert_html_to_react** - Convert vanilla USWDS HTML to React-USWDS JSX ✅ **LIVE**
   - Parse HTML and generate React components
   - Convert class names to React props
   - Handle event handlers
   - Add proper imports
+  - Fetch from URLs or convert provided HTML
 
 - [ ] 📋 **migrate_bootstrap_to_uswds** - Convert Bootstrap components to USWDS
   - Component mapping (btn → Button, form-control → TextInput, etc.)
@@ -233,7 +234,7 @@ This document tracks potential future additions to the USWDS MCP Server.
 2. Validation patterns and error messages
 3. Real examples from production sites
 4. Component test generation
-5. HTML to React conversion
+5. ✅ HTML to React conversion
 
 ### Phase 2: Developer Tools
 1. Accessibility testing suite

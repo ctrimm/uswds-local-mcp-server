@@ -350,6 +350,34 @@ const tools: Tool[] = [
       required: ['project_spec'],
     },
   },
+  {
+    name: 'convert_html_to_react',
+    description: 'Convert vanilla USWDS HTML to React-USWDS components. Supports fetching from URLs or converting provided HTML.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        conversion_spec: {
+          type: 'object',
+          description: 'Conversion specification with url (optional), html (optional), and componentName (optional)',
+          properties: {
+            url: {
+              type: 'string',
+              description: 'URL to fetch HTML from'
+            },
+            html: {
+              type: 'string',
+              description: 'HTML string to convert'
+            },
+            componentName: {
+              type: 'string',
+              description: 'Name for the generated React component (default: ConvertedComponent)'
+            }
+          }
+        },
+      },
+      required: ['conversion_spec'],
+    },
+  },
 ];
 
 // List tools handler
@@ -611,6 +639,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'scaffold_project': {
         const projectSpec = args?.project_spec as any;
         const result = await codeGeneratorService.scaffoldProject(projectSpec);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'convert_html_to_react': {
+        const conversionSpec = args?.conversion_spec as any;
+        const result = await codeGeneratorService.convertHtmlToReact(conversionSpec);
         return {
           content: [
             {
