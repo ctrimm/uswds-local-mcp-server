@@ -25,4 +25,13 @@ export default {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   testTimeout: 10000,
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons'],
+  },
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
+  maxWorkers: 1,
 };
