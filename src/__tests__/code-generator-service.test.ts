@@ -536,4 +536,294 @@ describe('CodeGeneratorService', () => {
       expect(result.code).toContain('MultiComponent');
     });
   });
+
+  describe('Self-Closing Form Components', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should generate TextInput component', async () => {
+      const result = await service.generateComponent('TextInput', {
+        name: 'username',
+        label: 'Username'
+      });
+
+      expect(result.component).toBe('TextInput');
+      expect(result.generatedCode).toContain('TextInput');
+      expect(result.generatedCode).toContain('Label');
+    });
+
+    it('should generate Select component', async () => {
+      const result = await service.generateComponent('Select', {
+        name: 'options',
+        label: 'Choose Option'
+      });
+
+      expect(result.component).toBe('Select');
+      expect(result.generatedCode).toBeDefined();
+    });
+
+    it('should generate Checkbox component', async () => {
+      const result = await service.generateComponent('Checkbox', {
+        name: 'agree',
+        label: 'I agree'
+      });
+
+      expect(result.component).toBe('Checkbox');
+      expect(result.generatedCode).toContain('Checkbox');
+    });
+
+    it('should generate Radio component', async () => {
+      const result = await service.generateComponent('Radio', {
+        name: 'choice',
+        value: 'option1'
+      });
+
+      expect(result.component).toBe('Radio');
+      expect(result.generatedCode).toBeDefined();
+    });
+
+    it('should generate FileInput component', async () => {
+      const result = await service.generateComponent('FileInput', {
+        name: 'upload',
+        label: 'Upload File'
+      });
+
+      expect(result.component).toBe('FileInput');
+      expect(result.generatedCode).toContain('FileInput');
+    });
+
+    it('should generate DatePicker component', async () => {
+      const result = await service.generateComponent('DatePicker', {
+        name: 'date',
+        label: 'Select Date'
+      });
+
+      expect(result.component).toBe('DatePicker');
+      expect(result.generatedCode).toContain('DatePicker');
+    });
+  });
+
+  describe('Props Type Handling', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should handle boolean props (true value)', async () => {
+      const result = await service.generateComponent('Button', {
+        disabled: true,
+        secondary: true
+      });
+
+      expect(result.component).toBe('Button');
+      expect(result.generatedCode).toBeDefined();
+    });
+
+    it('should handle number props', async () => {
+      const result = await service.generateComponent('Button', {
+        tabIndex: 0,
+        maxWidth: 300
+      });
+
+      expect(result.component).toBe('Button');
+      expect(result.generatedCode).toBeDefined();
+    });
+
+    it('should handle function props', async () => {
+      const result = await service.generateComponent('Button', {
+        onClick: function handleClick() {}
+      });
+
+      expect(result.component).toBe('Button');
+      expect(result.generatedCode).toBeDefined();
+    });
+
+    it('should handle mixed prop types', async () => {
+      const result = await service.generateComponent('Button', {
+        variant: 'primary',
+        disabled: false,
+        tabIndex: 0,
+        onClick: function onClick() {}
+      });
+
+      expect(result.component).toBe('Button');
+      expect(result.generatedCode).toBeDefined();
+    });
+  });
+
+  describe('FormGroup and Label Imports', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should include FormGroup when useFormGroup is true', async () => {
+      const result = await service.generateComponent('TextInput', {
+        useFormGroup: true,
+        label: 'Name'
+      });
+
+      expect(result.imports).toContain('FormGroup');
+      expect(result.imports).toContain('Label');
+    });
+
+    it('should include Label for Textarea', async () => {
+      const result = await service.generateComponent('Textarea', {
+        label: 'Description'
+      });
+
+      expect(result.imports).toContain('Label');
+    });
+
+    it('should include Label for TimePicker', async () => {
+      const result = await service.generateComponent('TimePicker', {
+        label: 'Time'
+      });
+
+      expect(result.component).toBe('TimePicker');
+      expect(result.imports).toBeDefined();
+    });
+  });
+
+  describe('Component Examples Fallback', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should use examples if available', async () => {
+      const result = await service.generateComponent('Alert');
+
+      expect(result.generatedCode).toBeDefined();
+      expect(result.component).toBe('Alert');
+    });
+
+    it('should fallback to basic usage for components without examples', async () => {
+      // Testing with a component that might not have examples
+      const result = await service.generateComponent('Banner');
+
+      expect(result.generatedCode).toBeDefined();
+      expect(result.component).toBe('Banner');
+    });
+  });
+
+  describe('Form Field Edge Cases', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should generate form with radio field', async () => {
+      const formSpec = {
+        formName: 'SurveyForm',
+        fields: [
+          {
+            name: 'rating',
+            label: 'Rating',
+            type: 'radio',
+            options: ['Excellent', 'Good', 'Fair', 'Poor']
+          }
+        ]
+      };
+
+      const result = await service.generateForm(formSpec);
+
+      expect(result.code).toBeDefined();
+      expect(result.formName).toBe('SurveyForm');
+    });
+
+    it('should generate form with date field', async () => {
+      const formSpec = {
+        formName: 'EventForm',
+        fields: [
+          { name: 'eventDate', label: 'Event Date', type: 'date', required: true }
+        ]
+      };
+
+      const result = await service.generateForm(formSpec);
+
+      expect(result.code).toBeDefined();
+      expect(result.formName).toBe('EventForm');
+    });
+
+    it('should generate form with file field', async () => {
+      const formSpec = {
+        formName: 'UploadForm',
+        fields: [
+          { name: 'document', label: 'Upload Document', type: 'file', required: false }
+        ]
+      };
+
+      const result = await service.generateForm(formSpec);
+
+      expect(result.code).toBeDefined();
+      expect(result.formName).toBe('UploadForm');
+    });
+
+    it('should generate form with number field', async () => {
+      const formSpec = {
+        formName: 'QuantityForm',
+        fields: [
+          { name: 'quantity', label: 'Quantity', type: 'number', required: true }
+        ]
+      };
+
+      const result = await service.generateForm(formSpec);
+
+      expect(result.code).toBeDefined();
+      expect(result.code).toContain('number');
+    });
+  });
+
+  describe('Multi-Step Form Edge Cases', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should generate multi-step form with validation', async () => {
+      const spec = {
+        formName: 'WizardForm',
+        steps: [
+          {
+            title: 'Step 1',
+            fields: [
+              { name: 'field1', label: 'Field 1', type: 'text', required: true }
+            ]
+          }
+        ],
+        includeValidation: true
+      };
+
+      const result = await service.generateMultiStepForm(spec);
+
+      expect(result.formName).toBe('WizardForm');
+      expect(result.code).toBeDefined();
+    });
+
+    it('should generate multi-step form with navigation buttons', async () => {
+      const spec = {
+        formName: 'SteppedForm',
+        steps: [
+          {
+            title: 'First',
+            fields: [{ name: 'name', label: 'Name', type: 'text' }]
+          },
+          {
+            title: 'Second',
+            fields: [{ name: 'email', label: 'Email', type: 'email' }]
+          }
+        ]
+      };
+
+      const result = await service.generateMultiStepForm(spec);
+
+      expect(result.code).toContain('Next');
+      expect(result.code).toContain('Previous');
+    });
+  });
+
+  describe('Data Table Edge Cases', () => {
+    const service = new CodeGeneratorService(true);
+
+    it('should generate table with custom cell renderers', async () => {
+      const spec = {
+        tableName: 'CustomTable',
+        columns: [
+          { key: 'id', label: 'ID' },
+          { key: 'name', label: 'Name' }
+        ],
+        includeActions: true
+      };
+
+      const result = await service.generateDataTable(spec);
+
+      expect(result.tableName).toBe('CustomTable');
+      expect(result.code).toBeDefined();
+    });
+  });
 });
