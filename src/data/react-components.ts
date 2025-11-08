@@ -1134,6 +1134,1271 @@ export function Example() {
     },
     relatedComponents: ['Grid']
   },
+
+  // Additional missing components
+  Banner: {
+    name: 'Banner',
+    category: 'ui',
+    description: 'The banner identifies official U.S. government websites',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-banner--docs',
+    props: [
+      { name: 'aria-label', type: 'string', required: false, description: 'Accessible label for banner' },
+    ],
+    examples: [
+      {
+        title: 'Basic Banner',
+        code: `import { Banner, BannerContent, BannerGuidance, BannerButton } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Banner>
+      <BannerContent>
+        Official government website
+      </BannerContent>
+    </Banner>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Place banner at top of all government websites',
+        'Provide clear indication of official government status',
+        'Ensure expandable content is keyboard accessible'
+      ],
+      wcagCriteria: ['2.4.1', '4.1.2']
+    }
+  },
+
+  Footer: {
+    name: 'Footer',
+    category: 'navigation',
+    description: 'The footer provides consistent structure for footer content across government websites',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-footer--docs',
+    props: [
+      { name: 'size', type: "'big' | 'medium' | 'slim'", required: false, description: 'Footer size variant' },
+      { name: 'primary', type: 'React.ReactNode', required: false, description: 'Primary footer content section' },
+      { name: 'secondary', type: 'React.ReactNode', required: false, description: 'Secondary footer content section' },
+    ],
+    examples: [
+      {
+        title: 'Basic Footer',
+        code: `import { Footer, FooterNav, Logo } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Footer size="medium">
+      <Logo
+        image={<img src="/logo.png" alt="Logo" />}
+        heading={<h3>Agency Name</h3>}
+      />
+    </Footer>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use footer landmark',
+        'Include contact information',
+        'Ensure all links are keyboard accessible',
+        'Maintain consistent footer across site'
+      ],
+      wcagCriteria: ['1.3.1', '2.4.1']
+    },
+    relatedComponents: ['Header']
+  },
+
+  Pagination: {
+    name: 'Pagination',
+    category: 'navigation',
+    description: 'Pagination helps users navigate through pages of content',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-pagination--docs',
+    props: [
+      { name: 'pathname', type: 'string', required: true, description: 'Base path for pagination links' },
+      { name: 'totalPages', type: 'number', required: true, description: 'Total number of pages' },
+      { name: 'currentPage', type: 'number', required: true, description: 'Current active page (1-indexed)' },
+      { name: 'maxSlots', type: 'number', required: false, default: '7', description: 'Maximum page slots to show' },
+      { name: 'onClickPageNumber', type: 'function', required: false, description: 'Callback when page number clicked' },
+      { name: 'onClickNext', type: 'function', required: false, description: 'Callback when next clicked' },
+      { name: 'onClickPrevious', type: 'function', required: false, description: 'Callback when previous clicked' },
+    ],
+    examples: [
+      {
+        title: 'Basic Pagination',
+        code: `import { Pagination } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Pagination
+      pathname="/search"
+      totalPages={10}
+      currentPage={3}
+    />
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Indicate current page clearly',
+        'Provide keyboard navigation',
+        'Use nav landmark with aria-label',
+        'Announce page changes to screen readers'
+      ],
+      ariaAttributes: [
+        'aria-label="Pagination": Label the navigation',
+        'aria-current="page": Mark current page'
+      ],
+      wcagCriteria: ['2.4.1', '2.4.5', '4.1.2']
+    }
+  },
+
+  Search: {
+    name: 'Search',
+    category: 'forms',
+    description: 'Search allows users to search for specific content',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-search--docs',
+    props: [
+      { name: 'size', type: "'big' | 'small'", required: false, description: 'Search input size' },
+      { name: 'onSubmit', type: 'function', required: true, description: 'Form submit handler' },
+      { name: 'placeholder', type: 'string', required: false, description: 'Search input placeholder' },
+    ],
+    examples: [
+      {
+        title: 'Basic Search',
+        code: `import { Search } from '@trussworks/react-uswds'
+
+export function Example() {
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    // Handle search
+  }
+
+  return (
+    <Search onSubmit={handleSubmit} placeholder="Search" />
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Provide clear placeholder text',
+        'Use search landmark or role',
+        'Ensure submit button is labeled',
+        'Provide search results count'
+      ],
+      ariaAttributes: [
+        'role="search": Identify search region',
+        'aria-label: Label search input if no visible label'
+      ],
+      wcagCriteria: ['1.3.1', '2.4.6', '4.1.2']
+    }
+  },
+
+  Tooltip: {
+    name: 'Tooltip',
+    category: 'ui',
+    description: 'A tooltip provides additional information on hover or focus',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-tooltip--docs',
+    props: [
+      { name: 'label', type: 'string', required: true, description: 'Tooltip text content' },
+      { name: 'position', type: "'top' | 'bottom' | 'left' | 'right'", required: false, default: 'top', description: 'Tooltip position' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' },
+    ],
+    examples: [
+      {
+        title: 'Basic Tooltip',
+        code: `import { Tooltip, Button } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Tooltip label="Additional information" position="top">
+      <Button type="button">Hover me</Button>
+    </Tooltip>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Tooltip content must be accessible via keyboard',
+        'Do not put essential information only in tooltips',
+        'Ensure tooltip does not obscure important content',
+        'Provide sufficient time to read tooltip'
+      ],
+      ariaAttributes: [
+        'aria-describedby: Link trigger to tooltip',
+        'role="tooltip": Identify tooltip element'
+      ],
+      wcagCriteria: ['1.4.13', '2.1.1', '4.1.2']
+    }
+  },
+
+  ProcessList: {
+    name: 'ProcessList',
+    category: 'ui',
+    description: 'A process list displays the steps or stages in a process',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-process-list--docs',
+    props: [],
+    examples: [
+      {
+        title: 'Basic Process List',
+        code: `import { ProcessList, ProcessListItem, ProcessListHeading } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <ProcessList>
+      <ProcessListItem>
+        <ProcessListHeading type="h4">
+          Start a process
+        </ProcessListHeading>
+        <p>Description of the first step</p>
+      </ProcessListItem>
+      <ProcessListItem>
+        <ProcessListHeading type="h4">
+          Continue the process
+        </ProcessListHeading>
+        <p>Description of the second step</p>
+      </ProcessListItem>
+    </ProcessList>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use ordered list for sequential processes',
+        'Provide clear step descriptions',
+        'Use appropriate heading levels'
+      ],
+      wcagCriteria: ['1.3.1', '2.4.6']
+    }
+  },
+
+  SiteAlert: {
+    name: 'SiteAlert',
+    category: 'ui',
+    description: 'A site alert communicates urgent sitewide information',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-site-alert--docs',
+    props: [
+      { name: 'variant', type: "'emergency' | 'info'", required: true, description: 'Alert variant/severity' },
+      { name: 'heading', type: 'string', required: false, description: 'Alert heading' },
+      { name: 'showClose', type: 'boolean', required: false, description: 'Show close button' },
+    ],
+    examples: [
+      {
+        title: 'Emergency Site Alert',
+        code: `import { SiteAlert } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <SiteAlert variant="emergency" heading="Emergency alert">
+      This is an emergency notification message.
+    </SiteAlert>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Place at top of page before header',
+        'Use emergency variant sparingly',
+        'Ensure alert is announced to screen readers',
+        'Make dismissible alerts keyboard accessible'
+      ],
+      ariaAttributes: [
+        'role="region": Alert region',
+        'aria-live: For dynamic alerts'
+      ],
+      wcagCriteria: ['1.3.1', '4.1.2']
+    }
+  },
+
+  SummaryBox: {
+    name: 'SummaryBox',
+    category: 'ui',
+    description: 'A summary box highlights important information',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-summary-box--docs',
+    props: [
+      { name: 'heading', type: 'string', required: false, description: 'Summary box heading' },
+    ],
+    examples: [
+      {
+        title: 'Basic Summary Box',
+        code: `import { SummaryBox } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <SummaryBox heading="Key information">
+      <ul>
+        <li>Important point 1</li>
+        <li>Important point 2</li>
+        <li>Important point 3</li>
+      </ul>
+    </SummaryBox>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use semantic heading elements',
+        'Ensure content is concise',
+        'Maintain adequate color contrast'
+      ],
+      wcagCriteria: ['1.3.1', '1.4.3', '2.4.6']
+    }
+  },
+
+  Collection: {
+    name: 'Collection',
+    category: 'ui',
+    description: 'A collection displays a compact list of multiple related items',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-collection--docs',
+    props: [],
+    examples: [
+      {
+        title: 'Basic Collection',
+        code: `import { Collection, CollectionItem, CollectionHeading, CollectionDescription, CollectionMeta } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Collection>
+      <CollectionItem>
+        <CollectionHeading headingLevel="h3">
+          <a href="#" className="usa-link">Collection item heading</a>
+        </CollectionHeading>
+        <CollectionDescription>
+          Description of the collection item
+        </CollectionDescription>
+        <CollectionMeta>
+          <span>January 1, 2024</span>
+        </CollectionMeta>
+      </CollectionItem>
+    </Collection>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use semantic list structure',
+        'Provide clear link text',
+        'Use appropriate heading levels',
+        'Ensure meta information is accessible'
+      ],
+      wcagCriteria: ['1.3.1', '2.4.4', '2.4.6']
+    }
+  },
+
+  IconList: {
+    name: 'IconList',
+    category: 'ui',
+    description: 'An icon list pairs icons with list items for visual reinforcement',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-icon-list--docs',
+    props: [],
+    examples: [
+      {
+        title: 'Basic Icon List',
+        code: `import { IconList, IconListItem, IconListIcon, IconListContent } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <IconList>
+      <IconListItem>
+        <IconListIcon>
+          <svg className="usa-icon" aria-hidden="true" role="img">
+            {/* Icon SVG */}
+          </svg>
+        </IconListIcon>
+        <IconListContent>
+          List item with icon
+        </IconListContent>
+      </IconListItem>
+    </IconList>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Mark decorative icons as aria-hidden',
+        'Provide text alternatives for meaningful icons',
+        'Ensure list structure is semantic'
+      ],
+      wcagCriteria: ['1.1.1', '1.3.1']
+    }
+  },
+
+  Identifier: {
+    name: 'Identifier',
+    category: 'navigation',
+    description: 'The identifier provides agency branding and required links',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-identifier--docs',
+    props: [],
+    examples: [
+      {
+        title: 'Basic Identifier',
+        code: `import { Identifier, IdentifierMasthead, IdentifierLogos, IdentifierLogo, IdentifierLinks, IdentifierLink } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Identifier>
+      <IdentifierMasthead aria-label="Agency identifier">
+        <IdentifierLogos>
+          <IdentifierLogo href="#">
+            <img src="/logo.png" alt="Agency logo" />
+          </IdentifierLogo>
+        </IdentifierLogos>
+      </IdentifierMasthead>
+      <IdentifierLinks>
+        <IdentifierLink href="/about">About</IdentifierLink>
+        <IdentifierLink href="/accessibility">Accessibility</IdentifierLink>
+      </IdentifierLinks>
+    </Identifier>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Place in footer',
+        'Include required government links',
+        'Provide logo alt text',
+        'Ensure all links are accessible'
+      ],
+      wcagCriteria: ['1.1.1', '2.4.4', '4.1.2']
+    }
+  },
+
+  Link: {
+    name: 'Link',
+    category: 'navigation',
+    description: 'Links connect users to other pages or sections',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-link--docs',
+    props: [
+      { name: 'href', type: 'string', required: true, description: 'Link destination URL' },
+      { name: 'variant', type: "'external' | 'unstyled'", required: false, description: 'Link style variant' },
+      { name: 'asCustom', type: 'React.ComponentType', required: false, description: 'Custom component to render as' },
+    ],
+    examples: [
+      {
+        title: 'Basic Link',
+        code: `import { Link } from '@trussworks/react-uswds'
+
+export function Example() {
+  return <Link href="/page">Link text</Link>
+}`
+      },
+      {
+        title: 'External Link',
+        code: `import { Link } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <Link href="https://example.com" variant="external">
+      External link
+    </Link>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use descriptive link text',
+        'Indicate external links',
+        'Provide sufficient color contrast',
+        'Ensure links are keyboard accessible'
+      ],
+      ariaAttributes: [
+        'aria-label: Use for ambiguous link text',
+        'target="_blank": Add for external links with rel="noopener noreferrer"'
+      ],
+      wcagCriteria: ['1.4.3', '2.4.4', '2.4.9']
+    }
+  },
+
+  CharacterCount: {
+    name: 'CharacterCount',
+    category: 'forms',
+    description: 'Character count helps users know how much text they can enter',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-character-count--docs',
+    props: [
+      { name: 'id', type: 'string', required: true, description: 'Input ID' },
+      { name: 'name', type: 'string', required: true, description: 'Input name' },
+      { name: 'maxLength', type: 'number', required: true, description: 'Maximum character count' },
+      { name: 'defaultValue', type: 'string', required: false, description: 'Default input value' },
+      { name: 'isTextArea', type: 'boolean', required: false, description: 'Use textarea instead of input' },
+    ],
+    examples: [
+      {
+        title: 'Character Count Input',
+        code: `import { CharacterCount, Label } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <>
+      <Label htmlFor="message">Message (max 500 characters)</Label>
+      <CharacterCount
+        id="message"
+        name="message"
+        maxLength={500}
+        isTextArea
+      />
+    </>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Announce count changes to screen readers',
+        'Provide clear maximum length indication',
+        'Show remaining vs used characters',
+        'Update count in real-time'
+      ],
+      ariaAttributes: [
+        'aria-live="polite": Announce count updates',
+        'aria-describedby: Link to count message'
+      ],
+      wcagCriteria: ['3.3.1', '4.1.2']
+    }
+  },
+
+  DateInput: {
+    name: 'DateInput',
+    category: 'forms',
+    description: 'Date input allows users to enter a date using three text fields',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-input--docs',
+    props: [
+      { name: 'id', type: 'string', required: true, description: 'Date input group ID' },
+      { name: 'name', type: 'string', required: true, description: 'Date input group name' },
+      { name: 'disabled', type: 'boolean', required: false, description: 'Disable all date inputs' },
+    ],
+    examples: [
+      {
+        title: 'Basic Date Input',
+        code: `import { DateInput, Label } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <>
+      <Label htmlFor="birthdate">Date of birth</Label>
+      <DateInput
+        id="birthdate"
+        name="birthdate"
+      />
+    </>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Label each date field clearly',
+        'Use fieldset and legend for grouping',
+        'Provide expected format guidance',
+        'Support keyboard navigation between fields'
+      ],
+      wcagCriteria: ['1.3.1', '3.3.2', '4.1.2']
+    },
+    relatedComponents: ['DatePicker', 'DateRangePicker']
+  },
+
+  RangeInput: {
+    name: 'RangeInput',
+    category: 'forms',
+    description: 'Range input allows users to select from a range of values',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-range-input--docs',
+    props: [
+      { name: 'id', type: 'string', required: true, description: 'Range input ID' },
+      { name: 'name', type: 'string', required: true, description: 'Range input name' },
+      { name: 'min', type: 'number', required: true, description: 'Minimum value' },
+      { name: 'max', type: 'number', required: true, description: 'Maximum value' },
+      { name: 'step', type: 'number', required: false, description: 'Step increment' },
+      { name: 'defaultValue', type: 'number', required: false, description: 'Default value' },
+    ],
+    examples: [
+      {
+        title: 'Basic Range Input',
+        code: `import { RangeInput, Label } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <>
+      <Label htmlFor="range">Select a value</Label>
+      <RangeInput
+        id="range"
+        name="range"
+        min={0}
+        max={100}
+        step={10}
+      />
+    </>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Provide clear labels for min and max values',
+        'Show current value',
+        'Support keyboard adjustment (arrow keys)',
+        'Consider alternative input for precise values'
+      ],
+      ariaAttributes: [
+        'aria-valuemin: Minimum value',
+        'aria-valuemax: Maximum value',
+        'aria-valuenow: Current value',
+        'aria-valuetext: Text representation of value'
+      ],
+      wcagCriteria: ['1.3.1', '2.1.1', '4.1.2']
+    }
+  },
+
+  InputPrefix: {
+    name: 'InputPrefix',
+    category: 'forms',
+    description: 'Input prefix or suffix adds context to text inputs',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-input-prefix-suffix--docs',
+    props: [],
+    examples: [
+      {
+        title: 'Input with Prefix',
+        code: `import { Label, TextInput } from '@trussworks/react-uswds'
+
+export function Example() {
+  return (
+    <>
+      <Label htmlFor="price">Price</Label>
+      <div className="usa-input-group">
+        <div className="usa-input-prefix" aria-hidden="true">$</div>
+        <TextInput id="price" name="price" type="text" />
+      </div>
+    </>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Mark prefix/suffix as aria-hidden if decorative',
+        'Include prefix/suffix in accessible name if meaningful',
+        'Ensure input remains focusable'
+      ],
+      wcagCriteria: ['1.3.1', '4.1.2']
+    },
+    relatedComponents: ['TextInput']
+  },
+
+  LanguageSelector: {
+    name: 'LanguageSelector',
+    category: 'navigation',
+    description: 'Language selector allows users to change the site language',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-language-selector--docs',
+    props: [
+      { name: 'langs', type: 'LanguageDefinition[]', required: true, description: 'Available languages' },
+      { name: 'onLanguageChange', type: 'function', required: false, description: 'Language change callback' },
+    ],
+    examples: [
+      {
+        title: 'Language Selector',
+        code: `import { LanguageSelector } from '@trussworks/react-uswds'
+
+const langs = [
+  { attr: 'en', label: 'English', on_click: () => {} },
+  { attr: 'es', label: 'Español', on_click: () => {} },
+]
+
+export function Example() {
+  return <LanguageSelector langs={langs} />
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Label language selector clearly',
+        'Use lang attribute for each language option',
+        'Ensure keyboard accessibility',
+        'Persist language choice'
+      ],
+      ariaAttributes: [
+        'lang: Set for each language option'
+      ],
+      wcagCriteria: ['3.1.1', '3.1.2', '4.1.2']
+    }
+  },
+
+  InPageNavigation: {
+    name: 'InPageNavigation',
+    category: 'navigation',
+    description: 'In-page navigation helps users navigate within long pages',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-in-page-navigation--docs',
+    props: [
+      { name: 'items', type: 'InPageNavItem[]', required: true, description: 'Navigation items' },
+      { name: 'headingLevel', type: "'h2' | 'h3' | 'h4' | 'h5' | 'h6'", required: false, description: 'Heading level for title' },
+    ],
+    examples: [
+      {
+        title: 'In-Page Navigation',
+        code: `import { InPageNavigation } from '@trussworks/react-uswds'
+
+const items = [
+  { href: '#section-1', text: 'Section 1' },
+  { href: '#section-2', text: 'Section 2' },
+  { href: '#section-3', text: 'Section 3' },
+]
+
+export function Example() {
+  return (
+    <InPageNavigation
+      items={items}
+      headingLevel="h4"
+    />
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use nav landmark with descriptive label',
+        'Ensure all anchors have valid targets',
+        'Highlight current section',
+        'Support keyboard navigation'
+      ],
+      ariaAttributes: [
+        'aria-label="On this page": Label navigation'
+      ],
+      wcagCriteria: ['1.3.1', '2.4.1', '2.4.5']
+    },
+    relatedComponents: ['SideNav']
+  },
+
+  DateRangePicker: {
+    name: 'DateRangePicker',
+    category: 'forms',
+    description: 'Date range picker for selecting a start and end date',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-range-picker--docs',
+    props: [
+      { name: 'startDateLabel', type: 'string', required: false, description: 'Label for start date input' },
+      { name: 'startDateHint', type: 'string', required: false, description: 'Hint text for start date' },
+      { name: 'startDatePickerProps', type: 'DatePickerProps', required: false, description: 'Props for start date picker' },
+      { name: 'endDateLabel', type: 'string', required: false, description: 'Label for end date input' },
+      { name: 'endDateHint', type: 'string', required: false, description: 'Hint text for end date' },
+      { name: 'endDatePickerProps', type: 'DatePickerProps', required: false, description: 'Props for end date picker' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' }
+    ],
+    examples: [
+      {
+        title: 'Basic date range picker',
+        code: `import { DateRangePicker } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <DateRangePicker
+      startDateLabel="Start date"
+      startDateHint="mm/dd/yyyy"
+      endDateLabel="End date"
+      endDateHint="mm/dd/yyyy"
+    />
+  )
+}`
+      },
+      {
+        title: 'With validation',
+        code: `import { DateRangePicker } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <DateRangePicker
+      startDateLabel="Event start"
+      endDateLabel="Event end"
+      startDatePickerProps={{
+        required: true,
+        minDate: '2024-01-01'
+      }}
+      endDatePickerProps={{
+        required: true,
+        minDate: '2024-01-01'
+      }}
+    />
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Provide clear labels for both date inputs',
+        'Include hint text for expected format',
+        'Validate end date is after start date',
+        'Support keyboard navigation'
+      ],
+      ariaAttributes: [
+        'Labels automatically associated with inputs'
+      ],
+      wcagCriteria: ['1.3.1', '3.3.1', '3.3.2', '4.1.2']
+    },
+    relatedComponents: ['DatePicker', 'DateInput']
+  },
+
+  FileInput: {
+    name: 'FileInput',
+    category: 'forms',
+    description: 'File input component for uploading files',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-file-input--docs',
+    props: [
+      { name: 'id', type: 'string', required: true, description: 'Unique identifier for the input' },
+      { name: 'name', type: 'string', required: true, description: 'Name attribute for the input' },
+      { name: 'accept', type: 'string', required: false, description: 'Accepted file types (e.g., ".pdf,.doc")' },
+      { name: 'multiple', type: 'boolean', required: false, default: 'false', description: 'Allow multiple file selection' },
+      { name: 'onChange', type: 'function', required: false, description: 'Callback when files are selected' },
+      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the input' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' }
+    ],
+    examples: [
+      {
+        title: 'Basic file input',
+        code: `import { FileInput, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="file-input">Select a file</Label>
+      <FileInput
+        id="file-input"
+        name="file-input"
+      />
+    </div>
+  )
+}`
+      },
+      {
+        title: 'Multiple files with restrictions',
+        code: `import { FileInput, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  const handleChange = (e) => {
+    console.log('Files selected:', e.target.files)
+  }
+
+  return (
+    <div>
+      <Label htmlFor="documents">Upload documents</Label>
+      <FileInput
+        id="documents"
+        name="documents"
+        accept=".pdf,.doc,.docx"
+        multiple
+        onChange={handleChange}
+      />
+    </div>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Always pair with a descriptive Label',
+        'Specify accepted file types when applicable',
+        'Provide clear feedback when files are selected',
+        'Include file size and type restrictions in instructions'
+      ],
+      wcagCriteria: ['1.3.1', '3.3.2', '4.1.2']
+    },
+    relatedComponents: ['Label', 'FormGroup']
+  },
+
+  TimePicker: {
+    name: 'TimePicker',
+    category: 'forms',
+    description: 'Time picker component for selecting times',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-time-picker--docs',
+    props: [
+      { name: 'id', type: 'string', required: true, description: 'Unique identifier for the input' },
+      { name: 'name', type: 'string', required: true, description: 'Name attribute for the input' },
+      { name: 'defaultValue', type: 'string', required: false, description: 'Default time value (HH:MM format)' },
+      { name: 'minTime', type: 'string', required: false, description: 'Minimum selectable time' },
+      { name: 'maxTime', type: 'string', required: false, description: 'Maximum selectable time' },
+      { name: 'step', type: 'number', required: false, default: '30', description: 'Minute interval steps' },
+      { name: 'onChange', type: 'function', required: false, description: 'Callback when time changes' },
+      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the picker' }
+    ],
+    examples: [
+      {
+        title: 'Basic time picker',
+        code: `import { TimePicker, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="appointment-time">Appointment time</Label>
+      <TimePicker
+        id="appointment-time"
+        name="appointment-time"
+      />
+    </div>
+  )
+}`
+      },
+      {
+        title: 'With restrictions',
+        code: `import { TimePicker, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="meeting-time">Meeting time</Label>
+      <TimePicker
+        id="meeting-time"
+        name="meeting-time"
+        minTime="09:00"
+        maxTime="17:00"
+        step={15}
+        defaultValue="14:00"
+      />
+    </div>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Provide a clear label',
+        'Support keyboard input for manual entry',
+        'Display time format clearly',
+        'Validate time is within allowed range'
+      ],
+      wcagCriteria: ['1.3.1', '3.3.1', '3.3.2', '4.1.2']
+    },
+    relatedComponents: ['DatePicker', 'DateRangePicker']
+  },
+
+  Label: {
+    name: 'Label',
+    category: 'forms',
+    description: 'Label component for form inputs',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-form-elements--docs',
+    props: [
+      { name: 'htmlFor', type: 'string', required: true, description: 'ID of the associated input element' },
+      { name: 'children', type: 'ReactNode', required: true, description: 'Label text or content' },
+      { name: 'error', type: 'boolean', required: false, default: 'false', description: 'Style label as error state' },
+      { name: 'hint', type: 'ReactNode', required: false, description: 'Optional hint text below label' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' }
+    ],
+    examples: [
+      {
+        title: 'Basic label',
+        code: `import { Label, TextInput } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="email">Email address</Label>
+      <TextInput id="email" name="email" type="email" />
+    </div>
+  )
+}`
+      },
+      {
+        title: 'Label with hint',
+        code: `import { Label, TextInput } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="username" hint="Use only letters and numbers">
+        Username
+      </Label>
+      <TextInput id="username" name="username" />
+    </div>
+  )
+}`
+      },
+      {
+        title: 'Error state label',
+        code: `import { Label, TextInput, ErrorMessage } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="password" error>
+        Password
+      </Label>
+      <ErrorMessage>Password is required</ErrorMessage>
+      <TextInput id="password" name="password" type="password" validationStatus="error" />
+    </div>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Always use htmlFor to associate with input',
+        'Keep label text clear and concise',
+        'Place label before the input it describes',
+        'Use hint text for additional context'
+      ],
+      ariaAttributes: [
+        'htmlFor automatically creates association'
+      ],
+      wcagCriteria: ['1.3.1', '2.4.6', '3.3.2']
+    },
+    relatedComponents: ['TextInput', 'FormGroup', 'ErrorMessage']
+  },
+
+  FormGroup: {
+    name: 'FormGroup',
+    category: 'forms',
+    description: 'Container component that groups form elements with proper spacing and structure',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-form-elements--docs',
+    props: [
+      { name: 'children', type: 'ReactNode', required: true, description: 'Form elements to group' },
+      { name: 'error', type: 'boolean', required: false, default: 'false', description: 'Apply error styling to group' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' }
+    ],
+    examples: [
+      {
+        title: 'Basic form group',
+        code: `import { FormGroup, Label, TextInput } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <FormGroup>
+      <Label htmlFor="name">Full name</Label>
+      <TextInput id="name" name="name" type="text" />
+    </FormGroup>
+  )
+}`
+      },
+      {
+        title: 'Form group with error',
+        code: `import { FormGroup, Label, TextInput, ErrorMessage } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <FormGroup error>
+      <Label htmlFor="email" error>Email address</Label>
+      <ErrorMessage>Enter a valid email address</ErrorMessage>
+      <TextInput
+        id="email"
+        name="email"
+        type="email"
+        validationStatus="error"
+      />
+    </FormGroup>
+  )
+}`
+      },
+      {
+        title: 'Multiple form groups',
+        code: `import { FormGroup, Label, TextInput, Textarea, Button } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <form>
+      <FormGroup>
+        <Label htmlFor="subject">Subject</Label>
+        <TextInput id="subject" name="subject" />
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="message">Message</Label>
+        <Textarea id="message" name="message" />
+      </FormGroup>
+
+      <Button type="submit">Submit</Button>
+    </form>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Use to group related form elements',
+        'Maintains proper spacing and visual hierarchy',
+        'Supports error state styling',
+        'Ensures consistent form layout'
+      ],
+      wcagCriteria: ['1.3.1']
+    },
+    relatedComponents: ['Label', 'TextInput', 'Textarea', 'Select']
+  },
+
+  Icon: {
+    name: 'Icon',
+    category: 'ui',
+    description: 'Component for rendering USWDS icons from the icon sprite',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-icon--docs',
+    props: [
+      { name: 'children', type: 'ReactNode', required: true, description: 'Icon name (e.g., "check", "close", "menu")' },
+      { name: 'size', type: "'3' | '4' | '5' | '6' | '7' | '8' | '9'", required: false, description: 'Icon size (3-9, maps to CSS units)' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' },
+      { name: 'role', type: 'string', required: false, default: 'img', description: 'ARIA role' },
+      { name: 'aria-label', type: 'string', required: false, description: 'Accessible label for the icon' }
+    ],
+    examples: [
+      {
+        title: 'Basic icon',
+        code: `import { Icon } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return <Icon>check</Icon>
+}`
+      },
+      {
+        title: 'Icon with size',
+        code: `import { Icon } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Icon size="3">close</Icon>
+      <Icon size="5">menu</Icon>
+      <Icon size="9">search</Icon>
+    </div>
+  )
+}`
+      },
+      {
+        title: 'Icon with accessible label',
+        code: `import { Icon, Button } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <Button>
+      <Icon aria-label="Close dialog">close</Icon>
+    </Button>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Provide aria-label for meaningful icons',
+        'Use role="img" for decorative icons',
+        'Set aria-hidden="true" for purely decorative icons',
+        'Ensure sufficient color contrast'
+      ],
+      ariaAttributes: [
+        'aria-label: Describe icon purpose',
+        'aria-hidden: Hide decorative icons from screen readers'
+      ],
+      wcagCriteria: ['1.1.1', '1.4.3', '1.4.11']
+    },
+    relatedComponents: ['Button', 'IconList']
+  },
+
+  TextInputMask: {
+    name: 'TextInputMask',
+    category: 'forms',
+    description: 'Masked text input for formatted data entry (phone numbers, SSN, etc.)',
+    importPath: '@trussworks/react-uswds',
+    url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-text-input-mask--docs',
+    props: [
+      { name: 'id', type: 'string', required: true, description: 'Unique identifier for the input' },
+      { name: 'name', type: 'string', required: true, description: 'Name attribute for the input' },
+      { name: 'mask', type: 'string', required: true, description: 'Input mask pattern (e.g., "(___) ___-____" for phone)' },
+      { name: 'pattern', type: 'string', required: false, description: 'RegEx pattern for validation' },
+      { name: 'placeholder', type: 'string', required: false, description: 'Placeholder text' },
+      { name: 'value', type: 'string', required: false, description: 'Controlled input value' },
+      { name: 'onChange', type: 'function', required: false, description: 'Callback when value changes' },
+      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the input' }
+    ],
+    examples: [
+      {
+        title: 'Phone number mask',
+        code: `import { TextInputMask, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="phone">Phone number</Label>
+      <TextInputMask
+        id="phone"
+        name="phone"
+        mask="(___) ___-____"
+        pattern="\\(\\d{3}\\) \\d{3}-\\d{4}"
+        placeholder="(555) 555-5555"
+      />
+    </div>
+  )
+}`
+      },
+      {
+        title: 'SSN mask',
+        code: `import { TextInputMask, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="ssn">Social Security Number</Label>
+      <TextInputMask
+        id="ssn"
+        name="ssn"
+        mask="___-__-____"
+        pattern="\\d{3}-\\d{2}-\\d{4}"
+        placeholder="555-55-5555"
+      />
+    </div>
+  )
+}`
+      },
+      {
+        title: 'ZIP code mask',
+        code: `import { TextInputMask, Label } from '@trussworks/react-uswds'
+
+export default function Example() {
+  return (
+    <div>
+      <Label htmlFor="zip">ZIP Code</Label>
+      <TextInputMask
+        id="zip"
+        name="zip"
+        mask="_____"
+        pattern="\\d{5}"
+        placeholder="12345"
+      />
+    </div>
+  )
+}`
+      }
+    ],
+    accessibility: {
+      guidelines: [
+        'Always pair with a descriptive Label',
+        'Show mask format in placeholder or hint text',
+        'Provide clear error messages for invalid formats',
+        'Ensure keyboard input works smoothly with mask'
+      ],
+      wcagCriteria: ['1.3.1', '3.3.1', '3.3.2', '3.3.3']
+    },
+    relatedComponents: ['TextInput', 'Label', 'FormGroup']
+  },
 };
 
 export const COMPONENT_CATEGORIES = {
