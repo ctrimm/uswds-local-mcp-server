@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { REACT_COMPONENTS, COMPONENT_CATEGORIES } from '../data/react-components.js';
 
 interface ComponentInfo {
   name: string;
@@ -7,8 +8,15 @@ interface ComponentInfo {
   category: string;
   props?: any[];
   examples?: any[];
-  accessibility?: string;
+  accessibility?: any;
   url: string;
+}
+
+interface DocumentationCache {
+  [url: string]: {
+    data: any;
+    timestamp: number;
+  };
 }
 
 export class ComponentService {
@@ -16,6 +24,8 @@ export class ComponentService {
   private baseUrl: string;
   private reactBaseUrl = 'https://trussworks.github.io/react-uswds';
   private uswdsBaseUrl = 'https://designsystem.digital.gov';
+  private cache: DocumentationCache = {};
+  private cacheTimeout = 3600000; // 1 hour in milliseconds
 
   constructor(useReact: boolean = false) {
     this.useReact = useReact;
@@ -31,67 +41,33 @@ export class ComponentService {
   }
 
   private async listReactComponents(category: string): Promise<any> {
-    // React-USWDS components (from their Storybook and documentation)
-    const components: ComponentInfo[] = [
-      // Forms
-      { name: 'Button', category: 'forms', description: 'Clickable button element with various styles', url: `${this.reactBaseUrl}/?path=/docs/components-button--docs` },
-      { name: 'TextInput', category: 'forms', description: 'Single-line text input field', url: `${this.reactBaseUrl}/?path=/docs/components-text-input--docs` },
-      { name: 'Checkbox', category: 'forms', description: 'Checkbox input for multiple selections', url: `${this.reactBaseUrl}/?path=/docs/components-checkbox--docs` },
-      { name: 'Radio', category: 'forms', description: 'Radio button for single selection', url: `${this.reactBaseUrl}/?path=/docs/components-radio--docs` },
-      { name: 'Select', category: 'forms', description: 'Dropdown selection list', url: `${this.reactBaseUrl}/?path=/docs/components-select--docs` },
-      { name: 'Textarea', category: 'forms', description: 'Multi-line text input field', url: `${this.reactBaseUrl}/?path=/docs/components-textarea--docs` },
-      { name: 'DatePicker', category: 'forms', description: 'Date selection input', url: `${this.reactBaseUrl}/?path=/docs/components-date-picker--docs` },
-      { name: 'DateRangePicker', category: 'forms', description: 'Date range selection input', url: `${this.reactBaseUrl}/?path=/docs/components-date-range-picker--docs` },
-      { name: 'TimePicker', category: 'forms', description: 'Time selection input', url: `${this.reactBaseUrl}/?path=/docs/components-time-picker--docs` },
-      { name: 'ComboBox', category: 'forms', description: 'Combination of text input and dropdown', url: `${this.reactBaseUrl}/?path=/docs/components-combo-box--docs` },
-      { name: 'FileInput', category: 'forms', description: 'File upload input', url: `${this.reactBaseUrl}/?path=/docs/components-file-input--docs` },
-      { name: 'Label', category: 'forms', description: 'Form field label', url: `${this.reactBaseUrl}/?path=/docs/components-label--docs` },
-      { name: 'FormGroup', category: 'forms', description: 'Group related form fields', url: `${this.reactBaseUrl}/?path=/docs/components-form-group--docs` },
-
-      // Navigation
-      { name: 'Header', category: 'navigation', description: 'Site header with branding and navigation', url: `${this.reactBaseUrl}/?path=/docs/components-header--docs` },
-      { name: 'Footer', category: 'navigation', description: 'Site footer with links and information', url: `${this.reactBaseUrl}/?path=/docs/components-footer--docs` },
-      { name: 'Navigation', category: 'navigation', description: 'Primary navigation menu', url: `${this.reactBaseUrl}/?path=/docs/components-navigation--docs` },
-      { name: 'SideNav', category: 'navigation', description: 'Sidebar navigation menu', url: `${this.reactBaseUrl}/?path=/docs/components-side-navigation--docs` },
-      { name: 'Breadcrumb', category: 'navigation', description: 'Hierarchical navigation trail', url: `${this.reactBaseUrl}/?path=/docs/components-breadcrumb--docs` },
-      { name: 'StepIndicator', category: 'navigation', description: 'Multi-step process indicator', url: `${this.reactBaseUrl}/?path=/docs/components-step-indicator--docs` },
-      { name: 'Link', category: 'navigation', description: 'Styled anchor link', url: `${this.reactBaseUrl}/?path=/docs/components-link--docs` },
-
-      // UI Components
-      { name: 'Alert', category: 'ui', description: 'Informational alert message', url: `${this.reactBaseUrl}/?path=/docs/components-alert--docs` },
-      { name: 'Modal', category: 'ui', description: 'Dialog overlay window', url: `${this.reactBaseUrl}/?path=/docs/components-modal--docs` },
-      { name: 'Accordion', category: 'ui', description: 'Expandable/collapsible content sections', url: `${this.reactBaseUrl}/?path=/docs/components-accordion--docs` },
-      { name: 'Banner', category: 'ui', description: 'Official government website banner', url: `${this.reactBaseUrl}/?path=/docs/components-banner--docs` },
-      { name: 'Card', category: 'ui', description: 'Content container card', url: `${this.reactBaseUrl}/?path=/docs/components-card--docs` },
-      { name: 'Tag', category: 'ui', description: 'Label or tag element', url: `${this.reactBaseUrl}/?path=/docs/components-tag--docs` },
-      { name: 'Tooltip', category: 'ui', description: 'Hover information popup', url: `${this.reactBaseUrl}/?path=/docs/components-tooltip--docs` },
-      { name: 'Table', category: 'ui', description: 'Data table', url: `${this.reactBaseUrl}/?path=/docs/components-table--docs` },
-      { name: 'Pagination', category: 'ui', description: 'Page navigation controls', url: `${this.reactBaseUrl}/?path=/docs/components-pagination--docs` },
-      { name: 'ProcessList', category: 'ui', description: 'Ordered process steps list', url: `${this.reactBaseUrl}/?path=/docs/components-process-list--docs` },
-
-      // Layout
-      { name: 'Grid', category: 'layout', description: 'Responsive grid system', url: `${this.reactBaseUrl}/?path=/docs/components-grid--docs` },
-      { name: 'GridContainer', category: 'layout', description: 'Grid container wrapper', url: `${this.reactBaseUrl}/?path=/docs/components-grid-container--docs` },
-    ];
+    const allComponents = Object.values(REACT_COMPONENTS);
 
     if (category === 'all') {
+      const groupedByCategory: any = {};
+      Object.entries(COMPONENT_CATEGORIES).forEach(([key, label]) => {
+        groupedByCategory[key] = allComponents
+          .filter(c => c.category === key)
+          .map(c => ({
+            name: c.name,
+            description: c.description,
+            url: c.url
+          }));
+      });
+
       return {
         mode: 'react-uswds',
-        total: components.length,
-        categories: ['forms', 'navigation', 'ui', 'layout'],
-        components: components.map(c => ({
-          name: c.name,
-          category: c.category,
-          description: c.description,
-          url: c.url
-        }))
+        total: allComponents.length,
+        categories: COMPONENT_CATEGORIES,
+        components: groupedByCategory
       };
     }
 
-    const filtered = components.filter(c => c.category === category);
+    const filtered = allComponents.filter(c => c.category === category);
     return {
       mode: 'react-uswds',
       category,
+      categoryLabel: COMPONENT_CATEGORIES[category as keyof typeof COMPONENT_CATEGORIES],
       total: filtered.length,
       components: filtered.map(c => ({
         name: c.name,
@@ -102,13 +78,84 @@ export class ComponentService {
   }
 
   private async listUSWDSComponents(category: string): Promise<any> {
-    // Vanilla USWDS components
+    // Try to fetch live component list from USWDS docs
+    try {
+      const componentsUrl = `${this.uswdsBaseUrl}/components/`;
+      const html = await this.fetchWithCache(componentsUrl);
+      const $ = cheerio.load(html);
+
+      const components: ComponentInfo[] = [];
+
+      // Parse component list from USWDS documentation sidebar
+      $('.usa-sidenav a, .sidenav a, nav a').each((i, elem) => {
+        const $elem = $(elem);
+        const href = $elem.attr('href');
+        const text = $elem.text().trim();
+
+        if (href && href.startsWith('/components/') && text && !href.includes('#')) {
+          const name = text;
+          const slug = href.replace('/components/', '').replace('/', '');
+
+          // Categorize based on common patterns
+          let cat = 'ui';
+          if (['button', 'input', 'text-input', 'checkbox', 'radio', 'select', 'textarea', 'date-picker', 'time-picker', 'combo-box', 'file-input'].some(f => slug.includes(f))) {
+            cat = 'forms';
+          } else if (['header', 'footer', 'navigation', 'breadcrumb', 'step-indicator', 'side-navigation'].some(n => slug.includes(n))) {
+            cat = 'navigation';
+          }
+
+          components.push({
+            name,
+            description: '',
+            category: cat,
+            url: `${this.uswdsBaseUrl}${href}`,
+          });
+        }
+      });
+
+      // If scraping returns few results, use fallback
+      if (components.length < 10) {
+        return this.getFallbackUSWDSComponents(category);
+      }
+
+      if (category === 'all') {
+        return {
+          mode: 'vanilla-uswds',
+          total: components.length,
+          source: 'live',
+          components: components.map(c => ({
+            name: c.name,
+            category: c.category,
+            url: c.url
+          }))
+        };
+      }
+
+      const filtered = components.filter(c => c.category === category);
+      return {
+        mode: 'vanilla-uswds',
+        category,
+        total: filtered.length,
+        source: 'live',
+        components: filtered.map(c => ({
+          name: c.name,
+          url: c.url
+        }))
+      };
+    } catch (error) {
+      console.error('Error fetching USWDS components:', error);
+      return this.getFallbackUSWDSComponents(category);
+    }
+  }
+
+  private getFallbackUSWDSComponents(category: string): any {
+    // Fallback static list of USWDS components
     const components: ComponentInfo[] = [
       // Forms
       { name: 'Button', category: 'forms', description: 'Clickable button element', url: `${this.uswdsBaseUrl}/components/button/` },
       { name: 'Text input', category: 'forms', description: 'Single-line text input', url: `${this.uswdsBaseUrl}/components/text-input/` },
       { name: 'Checkbox', category: 'forms', description: 'Checkbox selection', url: `${this.uswdsBaseUrl}/components/checkbox/` },
-      { name: 'Radio button', category: 'forms', description: 'Radio button selection', url: `${this.uswdsBaseUrl}/components/radio-buttons/` },
+      { name: 'Radio buttons', category: 'forms', description: 'Radio button selection', url: `${this.uswdsBaseUrl}/components/radio-buttons/` },
       { name: 'Select', category: 'forms', description: 'Dropdown menu', url: `${this.uswdsBaseUrl}/components/select/` },
       { name: 'Textarea', category: 'forms', description: 'Multi-line text input', url: `${this.uswdsBaseUrl}/components/textarea/` },
       { name: 'Date picker', category: 'forms', description: 'Date selection input', url: `${this.uswdsBaseUrl}/components/date-picker/` },
@@ -132,7 +179,6 @@ export class ComponentService {
       { name: 'Banner', category: 'ui', description: 'Government banner', url: `${this.uswdsBaseUrl}/components/banner/` },
       { name: 'Card', category: 'ui', description: 'Content card', url: `${this.uswdsBaseUrl}/components/card/` },
       { name: 'Tag', category: 'ui', description: 'Tag label', url: `${this.uswdsBaseUrl}/components/tag/` },
-      { name: 'Tooltip', category: 'ui', description: 'Tooltip popup', url: `${this.uswdsBaseUrl}/components/tooltip/` },
       { name: 'Table', category: 'ui', description: 'Data table', url: `${this.uswdsBaseUrl}/components/table/` },
     ];
 
@@ -140,6 +186,7 @@ export class ComponentService {
       return {
         mode: 'vanilla-uswds',
         total: components.length,
+        source: 'fallback',
         categories: ['forms', 'navigation', 'ui'],
         components: components.map(c => ({
           name: c.name,
@@ -155,6 +202,7 @@ export class ComponentService {
       mode: 'vanilla-uswds',
       category,
       total: filtered.length,
+      source: 'fallback',
       components: filtered.map(c => ({
         name: c.name,
         description: c.description,
@@ -172,253 +220,298 @@ export class ComponentService {
   }
 
   private async getReactComponentInfo(componentName: string, includeExamples: boolean): Promise<any> {
-    // For React-USWDS, provide component information
-    const reactComponents: Record<string, any> = {
-      'Button': {
-        name: 'Button',
-        description: 'The Button component renders a clickable button element with USWDS styling',
-        category: 'forms',
-        importPath: '@trussworks/react-uswds',
-        props: [
-          { name: 'type', type: "'button' | 'submit' | 'reset'", required: false, default: 'button', description: 'Button type attribute' },
-          { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the button' },
-          { name: 'size', type: "'big' | 'small'", required: false, description: 'Button size variant' },
-          { name: 'variant', type: "'default' | 'outline' | 'unstyled' | 'base'", required: false, description: 'Button style variant' },
-          { name: 'secondary', type: 'boolean', required: false, description: 'Apply secondary styling' },
-          { name: 'accent', type: 'boolean', required: false, description: 'Apply accent styling' },
-          { name: 'fullWidth', type: 'boolean', required: false, description: 'Make button full width' },
-        ],
-        examples: includeExamples ? [
-          {
-            title: 'Primary Button',
-            code: `import { Button } from '@trussworks/react-uswds'
+    // Use comprehensive component database
+    const component = REACT_COMPONENTS[componentName];
 
-export function Example() {
-  return <Button type="button">Click me</Button>
-}`
-          },
-          {
-            title: 'Secondary Button',
-            code: `import { Button } from '@trussworks/react-uswds'
-
-export function Example() {
-  return <Button type="button" secondary>Secondary action</Button>
-}`
-          },
-          {
-            title: 'Outline Button',
-            code: `import { Button } from '@trussworks/react-uswds'
-
-export function Example() {
-  return <Button type="button" variant="outline">Outline button</Button>
-}`
-          }
-        ] : [],
-        accessibility: {
-          guidelines: [
-            'Use semantic button type (button, submit, or reset)',
-            'Ensure button text is descriptive and meaningful',
-            'Provide sufficient color contrast (4.5:1 minimum)',
-            'Make clickable area at least 44x44 pixels',
-            'Support keyboard navigation (Enter and Space keys)'
-          ],
-          ariaAttributes: [
-            'aria-label: Use when button text is not descriptive enough',
-            'aria-pressed: For toggle buttons to indicate state',
-            'aria-expanded: For buttons that control expandable regions'
-          ]
-        },
-        relatedComponents: ['ButtonGroup', 'Link'],
-        url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-button--docs'
-      },
-      'Alert': {
-        name: 'Alert',
-        description: 'Alerts keep users informed of important and sometimes time-sensitive changes',
-        category: 'ui',
-        importPath: '@trussworks/react-uswds',
-        props: [
-          { name: 'type', type: "'success' | 'warning' | 'error' | 'info'", required: true, description: 'Alert type/severity' },
-          { name: 'heading', type: 'string | React.ReactNode', required: false, description: 'Alert heading text' },
-          { name: 'headingLevel', type: "'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'", required: false, default: 'h4', description: 'Heading level for accessibility' },
-          { name: 'slim', type: 'boolean', required: false, description: 'Use slim variant' },
-          { name: 'noIcon', type: 'boolean', required: false, description: 'Hide alert icon' },
-          { name: 'validation', type: 'boolean', required: false, description: 'Use for form validation' },
-        ],
-        examples: includeExamples ? [
-          {
-            title: 'Success Alert',
-            code: `import { Alert } from '@trussworks/react-uswds'
-
-export function Example() {
-  return (
-    <Alert type="success" heading="Success">
-      Your action was completed successfully.
-    </Alert>
-  )
-}`
-          },
-          {
-            title: 'Error Alert',
-            code: `import { Alert } from '@trussworks/react-uswds'
-
-export function Example() {
-  return (
-    <Alert type="error" heading="Error" headingLevel="h3">
-      There was an error processing your request.
-    </Alert>
-  )
-}`
-          }
-        ] : [],
-        accessibility: {
-          guidelines: [
-            'Use appropriate alert type for the message severity',
-            'Include descriptive heading',
-            'Use headingLevel prop to maintain heading hierarchy',
-            'For validation errors, set validation={true} and link to form fields'
-          ],
-          ariaAttributes: [
-            'role="region": Automatically applied for accessibility',
-            'aria-label: Auto-generated from alert type',
-            'aria-describedby: Link to detailed error messages in form validation'
-          ]
-        },
-        url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-alert--docs'
-      },
-      'TextInput': {
-        name: 'TextInput',
-        description: 'A text input allows users to enter any combination of letters, numbers, or symbols',
-        category: 'forms',
-        importPath: '@trussworks/react-uswds',
-        props: [
-          { name: 'id', type: 'string', required: true, description: 'Input ID for label association' },
-          { name: 'name', type: 'string', required: true, description: 'Input name attribute' },
-          { name: 'type', type: "'text' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'url'", required: false, default: 'text', description: 'Input type' },
-          { name: 'value', type: 'string', required: false, description: 'Controlled input value' },
-          { name: 'defaultValue', type: 'string', required: false, description: 'Uncontrolled input default value' },
-          { name: 'disabled', type: 'boolean', required: false, description: 'Disable the input' },
-          { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state' },
-          { name: 'inputSize', type: "'small' | 'medium'", required: false, description: 'Input size variant' },
-        ],
-        examples: includeExamples ? [
-          {
-            title: 'Basic Text Input',
-            code: `import { Label, TextInput } from '@trussworks/react-uswds'
-
-export function Example() {
-  return (
-    <>
-      <Label htmlFor="input-id">Input label</Label>
-      <TextInput id="input-id" name="input-name" type="text" />
-    </>
-  )
-}`
-          },
-          {
-            title: 'Text Input with Error',
-            code: `import { Label, TextInput, ErrorMessage } from '@trussworks/react-uswds'
-
-export function Example() {
-  return (
-    <>
-      <Label htmlFor="email-input" error>Email address</Label>
-      <TextInput
-        id="email-input"
-        name="email"
-        type="email"
-        validationStatus="error"
-        aria-describedby="email-error"
-      />
-      <ErrorMessage id="email-error">
-        Enter a valid email address
-      </ErrorMessage>
-    </>
-  )
-}`
-          }
-        ] : [],
-        accessibility: {
-          guidelines: [
-            'Always pair with a Label component',
-            'Use unique ID that matches label htmlFor',
-            'For validation errors, use aria-describedby to link to ErrorMessage',
-            'Use appropriate input type for better mobile keyboards',
-            'Mark required fields with required attribute'
-          ]
-        },
-        url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-text-input--docs'
-      }
-    };
-
-    const component = reactComponents[componentName];
     if (!component) {
       return {
         error: `Component "${componentName}" not found`,
         mode: 'react-uswds',
-        suggestion: `Available components: ${Object.keys(reactComponents).join(', ')}`,
-        message: 'Check component name spelling and capitalization'
+        suggestion: `Available components: ${Object.keys(REACT_COMPONENTS).slice(0, 10).join(', ')}...`,
+        message: 'Check component name spelling and capitalization',
+        searchUrl: `${this.reactBaseUrl}/?path=/docs/`
       };
     }
 
     return {
       mode: 'react-uswds',
-      ...component
-    };
-  }
-
-  private async getUSWDSComponentInfo(componentName: string, includeExamples: boolean): Promise<any> {
-    // For vanilla USWDS, provide basic info and link to docs
-    return {
-      mode: 'vanilla-uswds',
-      name: componentName,
-      message: 'For detailed vanilla USWDS documentation, visit the official docs',
-      url: `${this.uswdsBaseUrl}/components/${componentName.toLowerCase().replace(/\s+/g, '-')}/`,
-      guidance: {
-        classes: `Use "usa-${componentName.toLowerCase().replace(/\s+/g, '-')}" as the base class`,
-        accessibility: 'Refer to USWDS documentation for specific accessibility requirements',
-        examples: includeExamples ? 'Visit the URL above for complete HTML examples' : 'Not included'
+      name: component.name,
+      description: component.description,
+      category: component.category,
+      importPath: component.importPath,
+      props: component.props,
+      examples: includeExamples ? component.examples : [],
+      accessibility: component.accessibility,
+      relatedComponents: component.relatedComponents || [],
+      url: component.url,
+      documentation: {
+        officialDocs: component.url,
+        repository: 'https://github.com/trussworks/react-uswds',
+        storybook: this.reactBaseUrl
       }
     };
   }
 
+  private async getUSWDSComponentInfo(componentName: string, includeExamples: boolean): Promise<any> {
+    // Fetch live documentation from USWDS
+    try {
+      const slug = componentName.toLowerCase().replace(/\s+/g, '-');
+      const url = `${this.uswdsBaseUrl}/components/${slug}/`;
+      const html = await this.fetchWithCache(url);
+      const $ = cheerio.load(html);
+
+      // Extract component information from the page
+      const heading = $('h1.usa-prose-h1, h1').first().text().trim();
+      const description = $('.usa-intro').first().text().trim() ||
+                         $('p').first().text().trim();
+
+      // Extract code examples
+      const examples: any[] = [];
+      if (includeExamples) {
+        $('.site-component-section, .usa-accordion__content').each((i, section) => {
+          const $section = $(section);
+          const codeBlock = $section.find('pre code, .highlight code').first();
+          if (codeBlock.length) {
+            const code = codeBlock.text().trim();
+            const title = $section.find('h2, h3, h4').first().text().trim() || `Example ${i + 1}`;
+
+            if (code) {
+              examples.push({
+                title,
+                code,
+                description: $section.find('p').first().text().trim()
+              });
+            }
+          }
+        });
+      }
+
+      // Extract guidance/when to use
+      const guidance: string[] = [];
+      $('.usa-content ul li, .site-guidance li').each((i, li) => {
+        const text = $(li).text().trim();
+        if (text && text.length < 200) {
+          guidance.push(text);
+        }
+      });
+
+      return {
+        mode: 'vanilla-uswds',
+        name: heading || componentName,
+        description: description || `USWDS ${componentName} component`,
+        url,
+        source: 'live',
+        examples: examples.slice(0, 3), // Limit to first 3 examples
+        guidance: guidance.length > 0 ? guidance : undefined,
+        accessibility: {
+          message: 'See component documentation for specific accessibility requirements',
+          wcagCompliant: true,
+          documentation: `${url}#accessibility`
+        },
+        documentation: {
+          fullDocs: url,
+          codeExamples: examples.length > 0,
+          repository: 'https://github.com/uswds/uswds'
+        }
+      };
+    } catch (error) {
+      // Fallback if fetching fails
+      return {
+        mode: 'vanilla-uswds',
+        name: componentName,
+        message: 'Unable to fetch live documentation. Please visit the URL for details.',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        url: `${this.uswdsBaseUrl}/components/${componentName.toLowerCase().replace(/\s+/g, '-')}/`,
+        source: 'fallback',
+        guidance: {
+          classes: `Use "usa-${componentName.toLowerCase().replace(/\s+/g, '-')}" as the base class`,
+          accessibility: 'Refer to USWDS documentation for specific accessibility requirements',
+          examples: 'Visit the URL above for complete HTML examples'
+        },
+        documentation: {
+          repository: 'https://github.com/uswds/uswds',
+          designSystem: this.uswdsBaseUrl
+        }
+      };
+    }
+  }
+
   async searchDocs(query: string, docType: string = 'all'): Promise<any> {
-    // Simple keyword-based search for now
+    if (this.useReact) {
+      return this.searchReactDocs(query, docType);
+    } else {
+      return this.searchUSWDSDocs(query, docType);
+    }
+  }
+
+  private async searchReactDocs(query: string, docType: string): Promise<any> {
+    // Search through React components database
     const lowerQuery = query.toLowerCase();
+    const results: any[] = [];
+
+    Object.values(REACT_COMPONENTS).forEach(component => {
+      const nameMatch = component.name.toLowerCase().includes(lowerQuery);
+      const descMatch = component.description.toLowerCase().includes(lowerQuery);
+      const categoryMatch = component.category.toLowerCase().includes(lowerQuery);
+
+      if (nameMatch || descMatch || categoryMatch) {
+        results.push({
+          type: 'component',
+          name: component.name,
+          description: component.description,
+          category: component.category,
+          url: component.url,
+          relevance: nameMatch ? 'high' : descMatch ? 'medium' : 'low'
+        });
+      }
+    });
+
+    // Sort by relevance
+    results.sort((a, b) => {
+      const order = { high: 3, medium: 2, low: 1 };
+      return order[b.relevance as keyof typeof order] - order[a.relevance as keyof typeof order];
+    });
 
     return {
       query,
       docType,
-      mode: this.useReact ? 'react-uswds' : 'vanilla-uswds',
-      results: [
-        {
-          title: 'Official Documentation',
-          url: this.useReact
-            ? `${this.reactBaseUrl}/?path=/docs/`
-            : `${this.uswdsBaseUrl}/search/?query=${encodeURIComponent(query)}`,
-          description: 'Search the official documentation for detailed information'
-        }
-      ],
-      message: 'For comprehensive search results, visit the documentation URLs provided'
+      mode: 'react-uswds',
+      totalResults: results.length,
+      results: results.slice(0, 10), // Top 10 results
+      searchUrl: `${this.reactBaseUrl}/?path=/docs/`,
+      message: results.length === 0 ? 'No results found. Try different keywords.' : undefined
     };
   }
 
+  private async searchUSWDSDocs(query: string, docType: string): Promise<any> {
+    // Use USWDS search functionality
+    const searchUrl = `${this.uswdsBaseUrl}/search/?query=${encodeURIComponent(query)}`;
+
+    try {
+      const html = await this.fetchWithCache(searchUrl);
+      const $ = cheerio.load(html);
+
+      const results: any[] = [];
+      $('.search-result, .usa-search__results li, article').each((i, elem) => {
+        const $elem = $(elem);
+        const titleElem = $elem.find('h2, h3, .usa-search__title a, a').first();
+        const title = titleElem.text().trim();
+        const url = titleElem.attr('href');
+        const description = $elem.find('p, .usa-search__description').first().text().trim();
+
+        if (title && url) {
+          results.push({
+            title,
+            url: url.startsWith('http') ? url : `${this.uswdsBaseUrl}${url}`,
+            description,
+            type: url.includes('/components/') ? 'component' :
+                  url.includes('/utilities/') ? 'utility' :
+                  url.includes('/design-tokens/') ? 'design-token' : 'documentation'
+          });
+        }
+      });
+
+      return {
+        query,
+        docType,
+        mode: 'vanilla-uswds',
+        source: 'live',
+        totalResults: results.length,
+        results: results.slice(0, 10),
+        searchUrl
+      };
+    } catch (error) {
+      return {
+        query,
+        docType,
+        mode: 'vanilla-uswds',
+        source: 'fallback',
+        message: 'Unable to perform live search. Use the search URL below.',
+        searchUrl,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
   async getAccessibilityGuidance(componentOrPattern: string): Promise<any> {
+    if (this.useReact) {
+      // Check if component exists in database
+      const component = REACT_COMPONENTS[componentOrPattern];
+      if (component && component.accessibility) {
+        return {
+          component: componentOrPattern,
+          mode: 'react-uswds',
+          ...component.accessibility,
+          wcagLevel: 'AA',
+          resources: [
+            { title: 'WCAG 2.1 Guidelines', url: 'https://www.w3.org/WAI/WCAG21/quickref/' },
+            { title: 'Component Documentation', url: component.url },
+            { title: 'React-USWDS Accessibility', url: 'https://github.com/trussworks/react-uswds#accessibility' }
+          ]
+        };
+      }
+    }
+
+    // Generic accessibility guidance
     return {
       component: componentOrPattern,
       mode: this.useReact ? 'react-uswds' : 'vanilla-uswds',
       wcagLevel: 'AA',
       guidelines: [
         'All interactive elements must be keyboard accessible',
-        'Maintain 4.5:1 color contrast ratio for text',
-        'Provide clear focus indicators',
-        'Use semantic HTML elements',
-        'Include appropriate ARIA labels and roles',
-        'Ensure components work with screen readers'
+        'Maintain 4.5:1 color contrast ratio for normal text, 3:1 for large text',
+        'Provide clear focus indicators for all interactive elements',
+        'Use semantic HTML elements appropriate for content',
+        'Include appropriate ARIA labels and roles where needed',
+        'Ensure components work with screen readers',
+        'Support zoom up to 200% without loss of functionality',
+        'Provide text alternatives for non-text content'
       ],
       resources: [
         { title: 'WCAG 2.1 Guidelines', url: 'https://www.w3.org/WAI/WCAG21/quickref/' },
         { title: 'USWDS Accessibility', url: `${this.uswdsBaseUrl}/documentation/accessibility/` },
-      ]
+        { title: 'WebAIM Resources', url: 'https://webaim.org/resources/' }
+      ],
+      testing: {
+        automated: ['axe DevTools', 'WAVE', 'Lighthouse'],
+        manual: ['Keyboard navigation', 'Screen reader testing', 'Color contrast verification'],
+        wcag: 'Test against WCAG 2.1 Level AA success criteria'
+      }
     };
+  }
+
+  /**
+   * Fetch URL with caching to avoid repeated requests
+   */
+  private async fetchWithCache(url: string): Promise<string> {
+    const now = Date.now();
+    const cached = this.cache[url];
+
+    if (cached && (now - cached.timestamp) < this.cacheTimeout) {
+      return cached.data;
+    }
+
+    try {
+      const response = await axios.get(url, {
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'USWDS-MCP-Server/0.1.0'
+        }
+      });
+
+      this.cache[url] = {
+        data: response.data,
+        timestamp: now
+      };
+
+      return response.data;
+    } catch (error) {
+      if (cached) {
+        // Return stale cache if fetch fails
+        console.error(`Fetch failed for ${url}, using stale cache`);
+        return cached.data;
+      }
+      throw error;
+    }
   }
 }
