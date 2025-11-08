@@ -5,6 +5,7 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 ## Features
 
 - **Component Information**: Get detailed info about USWDS or React-USWDS components
+- **Page Templates**: Access full-page React templates for quick prototyping (React mode only)
 - **Design Tokens**: Access USWDS design tokens for colors, spacing, typography, and breakpoints
 - **Code Validation**: Validate HTML/JSX for USWDS patterns and accessibility
 - **React Support**: Toggle between vanilla USWDS and React-USWDS modes
@@ -148,6 +149,34 @@ Get accessibility guidance for a specific component or pattern.
 ```json
 {
   "component_or_pattern": "Button"
+}
+```
+
+### 7. `list_page_templates`
+
+List available React-USWDS page templates for quick prototyping (React mode only).
+
+**Parameters:**
+- `category` (optional): Filter by category - "all", "authentication", "marketing", "content", "forms", "error"
+
+**Example:**
+```json
+{
+  "category": "authentication"
+}
+```
+
+### 8. `get_page_template`
+
+Get full code and details for a specific React-USWDS page template (React mode only).
+
+**Parameters:**
+- `template_name` (required): Name or slug of the template (e.g., "Sign In", "Landing Page")
+
+**Example:**
+```json
+{
+  "template_name": "Sign In"
 }
 ```
 

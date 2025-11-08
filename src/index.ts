@@ -133,6 +133,34 @@ const tools: Tool[] = [
       required: ['component_or_pattern'],
     },
   },
+  {
+    name: 'list_page_templates',
+    description: `List available React-USWDS page templates for quick prototyping (only available in React mode)`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        category: {
+          type: 'string',
+          description: 'Filter by category (e.g., "authentication", "forms", "all")',
+          enum: ['all', 'authentication', 'marketing', 'content', 'forms', 'error'],
+        },
+      },
+    },
+  },
+  {
+    name: 'get_page_template',
+    description: `Get full code and details for a specific React-USWDS page template (only available in React mode)`,
+    inputSchema: {
+      type: 'object',
+      properties: {
+        template_name: {
+          type: 'string',
+          description: 'Name or slug of the template (e.g., "Sign In", "sign-in", "Landing Page")',
+        },
+      },
+      required: ['template_name'],
+    },
+  },
 ];
 
 // List tools handler
@@ -217,6 +245,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_accessibility_guidance': {
         const componentOrPattern = args?.component_or_pattern as string;
         const result = await componentService.getAccessibilityGuidance(componentOrPattern);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'list_page_templates': {
+        const category = (args?.category as string) || 'all';
+        const result = await componentService.listPageTemplates(category);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_page_template': {
+        const templateName = args?.template_name as string;
+        const result = await componentService.getPageTemplate(templateName);
         return {
           content: [
             {

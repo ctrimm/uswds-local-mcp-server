@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { REACT_COMPONENTS, COMPONENT_CATEGORIES } from '../data/react-components.js';
+import { PAGE_TEMPLATES, TEMPLATE_CATEGORIES } from '../data/page-templates.js';
 
 interface ComponentInfo {
   name: string;
@@ -476,6 +477,103 @@ export class ComponentService {
         automated: ['axe DevTools', 'WAVE', 'Lighthouse'],
         manual: ['Keyboard navigation', 'Screen reader testing', 'Color contrast verification'],
         wcag: 'Test against WCAG 2.1 Level AA success criteria'
+      }
+    };
+  }
+
+  async listPageTemplates(category: string = 'all'): Promise<any> {
+    // Page templates are only available for React-USWDS
+    if (!this.useReact) {
+      return {
+        error: 'Page templates are only available in React mode',
+        mode: 'vanilla-uswds',
+        message: 'Set USE_REACT_COMPONENTS=true to access page templates',
+        availableInReactMode: true
+      };
+    }
+
+    const allTemplates = Object.values(PAGE_TEMPLATES);
+
+    if (category === 'all') {
+      const groupedByCategory: any = {};
+      Object.entries(TEMPLATE_CATEGORIES).forEach(([key, label]) => {
+        groupedByCategory[key] = allTemplates
+          .filter(t => t.category === key)
+          .map(t => ({
+            name: t.name,
+            slug: t.slug,
+            description: t.description,
+            url: t.url,
+            componentsUsed: t.componentsUsed
+          }));
+      });
+
+      return {
+        mode: 'react-uswds',
+        total: allTemplates.length,
+        categories: TEMPLATE_CATEGORIES,
+        templates: groupedByCategory
+      };
+    }
+
+    const filtered = allTemplates.filter(t => t.category === category);
+    return {
+      mode: 'react-uswds',
+      category,
+      categoryLabel: TEMPLATE_CATEGORIES[category as keyof typeof TEMPLATE_CATEGORIES],
+      total: filtered.length,
+      templates: filtered.map(t => ({
+        name: t.name,
+        slug: t.slug,
+        description: t.description,
+        url: t.url,
+        componentsUsed: t.componentsUsed
+      }))
+    };
+  }
+
+  async getPageTemplate(templateName: string): Promise<any> {
+    // Page templates are only available for React-USWDS
+    if (!this.useReact) {
+      return {
+        error: 'Page templates are only available in React mode',
+        mode: 'vanilla-uswds',
+        message: 'Set USE_REACT_COMPONENTS=true to access page templates',
+        availableInReactMode: true
+      };
+    }
+
+    // Find template by name or slug
+    const template = Object.values(PAGE_TEMPLATES).find(
+      t => t.name.toLowerCase() === templateName.toLowerCase() ||
+           t.slug.toLowerCase() === templateName.toLowerCase()
+    );
+
+    if (!template) {
+      return {
+        error: `Page template "${templateName}" not found`,
+        mode: 'react-uswds',
+        suggestion: `Available templates: ${Object.keys(PAGE_TEMPLATES).join(', ')}`,
+        message: 'Check template name spelling',
+        searchUrl: `${this.reactBaseUrl}/?path=/docs/page-templates-`
+      };
+    }
+
+    return {
+      mode: 'react-uswds',
+      name: template.name,
+      slug: template.slug,
+      description: template.description,
+      category: template.category,
+      categoryLabel: TEMPLATE_CATEGORIES[template.category as keyof typeof TEMPLATE_CATEGORIES],
+      componentsUsed: template.componentsUsed,
+      useCase: template.useCase,
+      code: template.code,
+      url: template.url,
+      documentation: {
+        officialDocs: template.url,
+        repository: 'https://github.com/trussworks/react-uswds',
+        storybook: this.reactBaseUrl
       }
     };
   }

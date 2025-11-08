@@ -105,10 +105,12 @@ Once connected, Claude has access to these tools:
 
 1. **list_components** - Browse USWDS components by category
 2. **get_component_info** - Get detailed component documentation
-3. **get_design_tokens** - Access color, spacing, typography tokens
-4. **validate_uswds_code** - Check code for compliance and accessibility
-5. **search_docs** - Search USWDS documentation
-6. **get_accessibility_guidance** - Get WCAG compliance guidance
+3. **list_page_templates** - Browse React page templates (React mode only)
+4. **get_page_template** - Get full template code (React mode only)
+5. **get_design_tokens** - Access color, spacing, typography tokens
+6. **validate_uswds_code** - Check code for compliance and accessibility
+7. **search_docs** - Search USWDS documentation
+8. **get_accessibility_guidance** - Get WCAG compliance guidance
 
 ## Example Prompts
 
@@ -119,6 +121,9 @@ Try these with Claude:
 - "Create an accessible contact form with name, email, and message fields"
 - "What are the props for the Alert component?"
 - "Validate this code: [paste your JSX]"
+- "List all available page templates"
+- "Show me the Sign In page template code"
+- "Get the Landing Page template for prototyping"
 
 ### For Vanilla USWDS:
 - "List all navigation components in USWDS"
