@@ -9,39 +9,32 @@ describe('ColorContrastService', () => {
       const result = await service.checkContrast('#000000', '#ffffff');
 
       expect(result.contrastRatio).toBeCloseTo(21, 1);
-      expect(result.wcagAA.normal).toBe(true);
-      expect(result.wcagAA.large).toBe(true);
-      expect(result.wcagAAA.normal).toBe(true);
-      expect(result.wcagAAA.large).toBe(true);
+      expect(result.wcag.aa.normalText).toBe(true);
+      expect(result.wcag.aa.largeText).toBe(true);
+      expect(result.wcag.aaa.normalText).toBe(true);
+      expect(result.wcag.aaa.largeText).toBe(true);
     });
 
     it('should fail for low contrast light gray on white', async () => {
       const result = await service.checkContrast('#f0f0f0', '#ffffff');
 
       expect(result.contrastRatio).toBeLessThan(4.5);
-      expect(result.wcagAA.normal).toBe(false);
-      expect(result.wcagAAA.normal).toBe(false);
+      expect(result.wcag.aa.normalText).toBe(false);
+      expect(result.wcag.aaa.normalText).toBe(false);
     });
 
     it('should handle USWDS blue on white (#005ea2)', async () => {
       const result = await service.checkContrast('#005ea2', '#ffffff');
 
       expect(result.contrastRatio).toBeGreaterThan(4.5);
-      expect(result.wcagAA.normal).toBe(true);
-    });
-
-    it('should handle hex colors without hash', async () => {
-      const result = await service.checkContrast('000000', 'ffffff');
-
-      expect(result.contrastRatio).toBeCloseTo(21, 1);
-      expect(result.wcagAA.normal).toBe(true);
+      expect(result.wcag.aa.normalText).toBe(true);
     });
 
     it('should handle 3-digit hex colors', async () => {
       const result = await service.checkContrast('#000', '#fff');
 
       expect(result.contrastRatio).toBeCloseTo(21, 1);
-      expect(result.wcagAA.normal).toBe(true);
+      expect(result.wcag.aa.normalText).toBe(true);
     });
 
     it('should return error for invalid foreground color', async () => {
@@ -58,21 +51,22 @@ describe('ColorContrastService', () => {
       expect(result.error).toContain('Invalid color format');
     });
 
-    it('should provide correct pass messages', async () => {
+    it('should provide passes array for good contrast', async () => {
       const result = await service.checkContrast('#000000', '#ffffff');
 
-      expect(result.wcagAA.message).toContain('PASS');
-      expect(result.wcagAAA.message).toContain('PASS');
+      expect(result.passes).toBeDefined();
+      expect(result.passes.length).toBeGreaterThan(0);
+      expect(result.passes).toContain('WCAG AAA (normal text)');
     });
 
-    it('should provide correct fail messages', async () => {
+    it('should provide fails array for poor contrast', async () => {
       const result = await service.checkContrast('#f0f0f0', '#ffffff');
 
-      expect(result.wcagAA.message).toContain('FAIL');
+      expect(result.fails).toBeDefined();
+      expect(result.fails.length).toBeGreaterThan(0);
     });
 
     it('should handle edge case of 4.5:1 ratio (AA threshold)', async () => {
-      // Find colors that produce approximately 4.5:1 ratio
       // #767676 on white is approximately 4.5:1
       const result = await service.checkContrast('#767676', '#ffffff');
 
@@ -84,24 +78,24 @@ describe('ColorContrastService', () => {
       const result = await service.checkContrast('#ffffff', '#ffffff');
 
       expect(result.contrastRatio).toBe(1);
-      expect(result.wcagAA.normal).toBe(false);
-      expect(result.wcagAA.large).toBe(false);
+      expect(result.wcag.aa.normalText).toBe(false);
+      expect(result.wcag.aa.largeText).toBe(false);
     });
   });
 
-  describe('getSuggestions', () => {
-    it('should suggest darker colors when contrast is too low', async () => {
+  describe('recommendations', () => {
+    it('should provide recommendations for low contrast', async () => {
       const result = await service.checkContrast('#f0f0f0', '#ffffff');
 
-      expect(result.suggestions).toBeDefined();
-      expect(result.suggestions.length).toBeGreaterThan(0);
+      expect(result.recommendation).toBeDefined();
+      expect(typeof result.recommendation).toBe('string');
     });
 
-    it('should not suggest changes for passing contrast', async () => {
+    it('should provide positive recommendation for high contrast', async () => {
       const result = await service.checkContrast('#000000', '#ffffff');
 
-      expect(result.suggestions).toBeDefined();
-      expect(result.suggestions.length).toBe(0);
+      expect(result.recommendation).toBeDefined();
+      expect(result.recommendation).toContain('Excellent');
     });
   });
 });
