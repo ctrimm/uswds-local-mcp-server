@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Released]
 
 ### Added
 - Jest testing framework with 37 unit tests for core services
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated tsconfig.json to include `isolatedModules: true` for better compatibility
 - Excluded test files from TypeScript build output
 
-## [0.1.0] - 2025-01-08
+## [1.0.0] - 20205-11-08
 
 ### Added
 - **20 MCP Tools** for USWDS development:
@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-### Version 0.1.0 - Initial Release
+### Version 1.0.0 - Initial Release
 - First public release of USWDS MCP Server
 - Core functionality for USWDS and React-USWDS development
 - 20 MCP tools covering components, generation, validation, and accessibility
