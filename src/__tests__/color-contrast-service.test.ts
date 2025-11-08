@@ -97,5 +97,172 @@ describe('ColorContrastService', () => {
       expect(result.recommendation).toBeDefined();
       expect(result.recommendation).toContain('Excellent');
     });
+
+    it('should recommend for ratio between 3.0 and 4.5', async () => {
+      // #949494 on white is approximately 3.5:1
+      const result = await service.checkContrast('#949494', '#ffffff');
+
+      expect(result.contrastRatio).toBeGreaterThan(3.0);
+      expect(result.contrastRatio).toBeLessThan(4.5);
+      expect(result.recommendation).toBeDefined();
+    });
+  });
+
+  describe('Color Format Support', () => {
+    it('should support RGB format', async () => {
+      const result = await service.checkContrast('rgb(0, 0, 0)', 'rgb(255, 255, 255)');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should support RGB with spaces', async () => {
+      const result = await service.checkContrast('rgb( 0 , 0 , 0 )', 'rgb( 255 , 255 , 255 )');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should support named color "white"', async () => {
+      const result = await service.checkContrast('#000000', 'white');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should support named color "black"', async () => {
+      const result = await service.checkContrast('black', 'white');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should support named color "red"', async () => {
+      const result = await service.checkContrast('red', 'white');
+
+      expect(result.contrastRatio).toBeGreaterThan(1);
+      expect(result.wcag).toBeDefined();
+    });
+
+    it('should support mixed color formats', async () => {
+      const result = await service.checkContrast('rgb(0, 0, 0)', '#ffffff');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should handle RGB values at upper bounds', async () => {
+      const result = await service.checkContrast('rgb(255, 255, 255)', '#000000');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+  });
+
+  describe('WCAG Pass/Fail Edge Cases', () => {
+    it('should pass AAA large text but fail AAA normal text', async () => {
+      // #6a6a6a on white is approximately 5.5:1 (passes AA all, AAA large, fails AAA normal)
+      const result = await service.checkContrast('#6a6a6a', '#ffffff');
+
+      expect(result.contrastRatio).toBeGreaterThan(4.5);
+      expect(result.contrastRatio).toBeLessThan(7);
+      expect(result.wcag.aa.normalText).toBe(true);
+      expect(result.wcag.aa.largeText).toBe(true);
+      expect(result.wcag.aaa.normalText).toBe(false);
+      expect(result.wcag.aaa.largeText).toBe(true);
+    });
+
+    it('should pass AA large text but fail AA normal text', async () => {
+      // #8f8f8f on white is approximately 3.5:1 (passes AA large, fails AA normal)
+      const result = await service.checkContrast('#8f8f8f', '#ffffff');
+
+      expect(result.contrastRatio).toBeGreaterThan(3.0);
+      expect(result.contrastRatio).toBeLessThan(4.5);
+      expect(result.wcag.aa.normalText).toBe(false);
+      expect(result.wcag.aa.largeText).toBe(true);
+      expect(result.wcag.aaa.normalText).toBe(false);
+      expect(result.wcag.aaa.largeText).toBe(false);
+    });
+
+    it('should fail all WCAG levels', async () => {
+      const result = await service.checkContrast('#fefefe', '#ffffff');
+
+      expect(result.wcag.aa.normalText).toBe(false);
+      expect(result.wcag.aa.largeText).toBe(false);
+      expect(result.wcag.aaa.normalText).toBe(false);
+      expect(result.wcag.aaa.largeText).toBe(false);
+      expect(result.fails.length).toBeGreaterThan(0);
+    });
+
+    it('should handle exact 7:1 ratio (AAA threshold)', async () => {
+      // Testing boundary condition for AAA normal text
+      const result = await service.checkContrast('#595959', '#ffffff');
+
+      expect(result.wcag).toBeDefined();
+      expect(result.passes).toBeDefined();
+    });
+
+    it('should handle near 3:1 ratio (AA large text threshold)', async () => {
+      // #949494 on white is approximately 3.5:1
+      const result = await service.checkContrast('#949494', '#ffffff');
+
+      expect(result.contrastRatio).toBeGreaterThan(3.0);
+      expect(result.contrastRatio).toBeLessThan(4.0);
+      expect(result.wcag.aa.largeText).toBe(true);
+    });
+  });
+
+  describe('Additional Edge Cases', () => {
+    it('should handle uppercase hex colors', async () => {
+      const result = await service.checkContrast('#FFFFFF', '#000000');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should handle mixed case hex colors', async () => {
+      const result = await service.checkContrast('#FfFfFf', '#000000');
+
+      expect(result.contrastRatio).toBeCloseTo(21, 1);
+      expect(result.wcag.aa.normalText).toBe(true);
+    });
+
+    it('should handle colors without # prefix gracefully', async () => {
+      const result = await service.checkContrast('000000', 'ffffff');
+
+      // Should either parse correctly or return error
+      expect(result).toBeDefined();
+    });
+
+    it('should handle very similar colors', async () => {
+      const result = await service.checkContrast('#000000', '#000001');
+
+      expect(result.contrastRatio).toBeCloseTo(1, 1);
+      expect(result.wcag.aa.normalText).toBe(false);
+    });
+
+    it('should handle mid-range gray tones', async () => {
+      const result = await service.checkContrast('#777777', '#ffffff');
+
+      expect(result.contrastRatio).toBeGreaterThan(3.5);
+      expect(result.contrastRatio).toBeLessThan(5);
+    });
+
+    it('should provide detailed passes array when multiple criteria pass', async () => {
+      const result = await service.checkContrast('#000000', '#ffffff');
+
+      expect(result.passes).toContain('WCAG AA (normal text)');
+      expect(result.passes).toContain('WCAG AA (large text)');
+      expect(result.passes).toContain('WCAG AAA (normal text)');
+      expect(result.passes).toContain('WCAG AAA (large text)');
+      expect(result.passes.length).toBe(4);
+    });
+
+    it('should provide detailed fails array when multiple criteria fail', async () => {
+      const result = await service.checkContrast('#e0e0e0', '#ffffff');
+
+      expect(result.fails.length).toBeGreaterThan(0);
+      expect(result.wcag.aa.normalText).toBe(false);
+    });
   });
 });
