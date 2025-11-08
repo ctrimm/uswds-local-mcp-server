@@ -325,5 +325,60 @@ describe('SuggestionService', () => {
       expect(result.suggestions).toBeDefined();
       expect(result.suggestions.some((s: any) => s.component === 'DatePicker')).toBe(true);
     });
+
+    it('should handle success message queries with Alert', async () => {
+      const result = await service.suggestComponents('show success notification');
+
+      expect(result.suggestions).toBeDefined();
+      expect(result.suggestions.some((s: any) => s.component === 'Alert')).toBe(true);
+    });
+
+    it('should handle password input queries', async () => {
+      const result = await service.suggestComponents('password field for login');
+
+      expect(result.suggestions).toBeDefined();
+      expect(result.suggestions.some((s: any) => s.component === 'TextInput')).toBe(true);
+    });
+
+    it('should handle file upload queries', async () => {
+      const result = await service.suggestComponents('file upload form');
+
+      expect(result.suggestions).toBeDefined();
+      expect(result.suggestions.some((s: any) => s.component === 'FileInput')).toBe(true);
+    });
+
+    it('should handle dropdown selection queries', async () => {
+      const result = await service.suggestComponents('dropdown menu to choose option');
+
+      expect(result.suggestions).toBeDefined();
+      expect(result.suggestions.some((s: any) =>
+        s.component === 'Select' || s.component === 'ComboBox'
+      )).toBe(true);
+    });
+  });
+
+  describe('Vanilla Mode General Guidance', () => {
+    const service = new SuggestionService(false);
+
+    it('should provide alert guidance for message queries', async () => {
+      const result = await service.suggestComponents('show message to user');
+
+      expect(result.generalGuidance).toBeDefined();
+      expect(result.generalGuidance).toContain('Alert');
+    });
+
+    it('should provide navigation guidance for menu queries', async () => {
+      const result = await service.suggestComponents('navigation menu');
+
+      expect(result.generalGuidance).toBeDefined();
+      expect(result.generalGuidance).toContain('navigation');
+    });
+
+    it('should provide default guidance for unrecognized queries', async () => {
+      const result = await service.suggestComponents('xyz123 unrecognized');
+
+      expect(result.generalGuidance).toBeDefined();
+      expect(result.generalGuidance).toContain('Browse USWDS components');
+    });
   });
 });
