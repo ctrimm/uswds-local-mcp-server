@@ -35,7 +35,23 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 
 ## Installation
 
+### Option 1: NPM Install (Recommended for Users)
+
+Once published to NPM, users can install globally:
+
 ```bash
+# Global installation
+npm install -g uswds-mcp-server
+
+# Or use npx (no installation required)
+npx uswds-mcp-server
+```
+
+### Option 2: From Source (For Development)
+
+```bash
+git clone https://github.com/ctrimm/uswds-local-mcp-server.git
+cd uswds-local-mcp-server
 npm install
 npm run build
 ```
@@ -44,7 +60,43 @@ npm run build
 
 ### Using with Claude Desktop
 
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add to your Claude Desktop configuration file:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+#### If Installed via NPM (Recommended):
+
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "false"
+      }
+    }
+  }
+}
+```
+
+#### If Using npx (No installation):
+
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "npx",
+      "args": ["uswds-mcp-server"],
+      "env": {
+        "USE_REACT_COMPONENTS": "false"
+      }
+    }
+  }
+}
+```
+
+#### If Installed from Source:
 
 ```json
 {
@@ -60,14 +112,15 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 }
 ```
 
-### For React-USWDS mode:
+### For React-USWDS Mode:
+
+Simply change `USE_REACT_COMPONENTS` to `"true"` in any of the above configurations:
 
 ```json
 {
   "mcpServers": {
     "uswds-react": {
-      "command": "node",
-      "args": ["/path/to/uswds-local-mcp-server/dist/index.js"],
+      "command": "uswds-mcp",
       "env": {
         "USE_REACT_COMPONENTS": "true"
       }

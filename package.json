@@ -7,6 +7,11 @@
   "bin": {
     "uswds-mcp": "./dist/index.js"
   },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
@@ -16,15 +21,31 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run lint && npm test && npm run build",
+    "prepare": "npm run build"
   },
   "keywords": [
     "mcp",
+    "mcp-server",
+    "model-context-protocol",
     "uswds",
+    "us-web-design-system",
     "design-system",
     "accessibility",
-    "react-uswds"
+    "react-uswds",
+    "trussworks",
+    "government",
+    "federal",
+    "wcag",
+    "a11y",
+    "component-library",
+    "claude",
+    "ai-assistant"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "author": "Cory Trimm",
   "license": "AGPL-3.0",
   "repository": {
