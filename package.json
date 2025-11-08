@@ -1,0 +1,36 @@
+{
+  "name": "uswds-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for USWDS development with React component support",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "uswds-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "tsc && node dist/index.js",
+    "start": "node dist/index.js",
+    "inspector": "npx @modelcontextprotocol/inspector dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "uswds",
+    "design-system",
+    "accessibility",
+    "react-uswds"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "axios": "^1.7.0",
+    "cheerio": "^1.0.0",
+    "node-fetch": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  }
+}
