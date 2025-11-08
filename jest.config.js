@@ -1,6 +1,7 @@
 export default {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
@@ -10,6 +11,7 @@ export default {
       'ts-jest',
       {
         useESM: true,
+        isolatedModules: true,
       },
     ],
   },
@@ -27,11 +29,6 @@ export default {
   testTimeout: 10000,
   testEnvironmentOptions: {
     customExportConditions: ['node', 'node-addons'],
-  },
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
   },
   maxWorkers: 1,
 };
