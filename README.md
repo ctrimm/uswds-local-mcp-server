@@ -49,6 +49,9 @@ npx uswds-mcp-server
 
 ### Option 2: From Source (For Development)
 
+**Prerequisites:**
+- Node.js >=18.0.0 (check with `node --version`)
+
 ```bash
 git clone https://github.com/ctrimm/uswds-local-mcp-server.git
 cd uswds-local-mcp-server
@@ -98,14 +101,54 @@ Add to your Claude Desktop configuration file:
 
 #### If Installed from Source:
 
+**⚠️ Important**: Replace `/ABSOLUTE/PATH/TO` with your actual project path!
+
+**To find your path:**
+```bash
+cd uswds-local-mcp-server
+pwd
+# Copy the output and use it below
+```
+
+**Configuration:**
 ```json
 {
   "mcpServers": {
     "uswds": {
       "command": "node",
-      "args": ["/path/to/uswds-local-mcp-server/dist/index.js"],
+      "args": ["/ABSOLUTE/PATH/TO/uswds-local-mcp-server/dist/index.js"],
       "env": {
         "USE_REACT_COMPONENTS": "false"
+      }
+    }
+  }
+}
+```
+
+**Example (macOS/Linux):**
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "node",
+      "args": ["/Users/yourusername/projects/uswds-local-mcp-server/dist/index.js"],
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
+```
+
+**Example (Windows):**
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "node",
+      "args": ["C:\\Users\\YourUsername\\projects\\uswds-local-mcp-server\\dist\\index.js"],
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
       }
     }
   }
@@ -134,6 +177,116 @@ Simply change `USE_REACT_COMPONENTS` to `"true"` in any of the above configurati
 ```bash
 npm run inspector
 ```
+
+## Troubleshooting
+
+### "Cannot find module" Error
+
+**Error Message:**
+```
+Error: Cannot find module '/path/to/dist/index.js'
+```
+
+**Solution:** You're using the placeholder path. Replace it with your actual absolute path:
+
+1. Find your actual path:
+```bash
+cd uswds-local-mcp-server
+pwd
+```
+
+2. Copy the output and update your Claude Desktop config with the full path:
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "node",
+      "args": ["/Users/yourusername/actual/path/uswds-local-mcp-server/dist/index.js"],
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
+```
+
+### Node Version Error
+
+**Error Message:**
+```
+SyntaxError: Unexpected token ...
+```
+or errors about ES modules
+
+**Solution:** Upgrade to Node.js >=18.0.0
+
+If using nvm:
+```bash
+nvm install 22
+nvm use 22
+nvm alias default 22
+
+# Rebuild the project
+cd uswds-local-mcp-server
+npm run build
+```
+
+If not using nvm, download Node.js 22 from [nodejs.org](https://nodejs.org/)
+
+### Server Crashes on Startup
+
+**Check Node version:**
+```bash
+node --version
+# Should show v18.x.x or higher
+```
+
+**Rebuild the project:**
+```bash
+cd uswds-local-mcp-server
+rm -rf dist/
+npm run build
+```
+
+**Check for build errors:**
+```bash
+npm run lint
+```
+
+### MCP Server Not Appearing in Claude Desktop
+
+1. **Check config file location:**
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+   - Linux: `~/.config/Claude/claude_desktop_config.json`
+
+2. **Validate JSON syntax:** Use a JSON validator to check your config file
+
+3. **Restart Claude Desktop completely:** Quit and relaunch (not just close the window)
+
+4. **Check logs:**
+   - macOS: `~/Library/Logs/Claude/`
+   - Windows: `%APPDATA%\Claude\logs\`
+   - Linux: `~/.config/Claude/logs/`
+
+### Permission Denied
+
+**On macOS/Linux, if you get permission errors:**
+
+```bash
+chmod +x dist/index.js
+```
+
+### Still Having Issues?
+
+1. Check that `dist/` folder exists: `ls dist/`
+2. Run tests to verify build: `npm test`
+3. Try the MCP Inspector: `npm run inspector`
+4. [Open an issue](https://github.com/ctrimm/uswds-local-mcp-server/issues) with:
+   - Node version (`node --version`)
+   - Operating system
+   - Error logs from Claude Desktop
+   - Your config (with paths redacted)
 
 ## Available Tools
 
