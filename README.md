@@ -155,6 +155,34 @@ pwd
 }
 ```
 
+#### If Running in Docker (Optional):
+
+**⚠️ Note**: Docker is optional. Plain Node.js (above) is simpler and faster for this server.
+
+For consistency with other Docker-based MCP servers, see [DOCKER_SETUP.md](DOCKER_SETUP.md).
+
+**Persistent container (like your other Docker MCP servers):**
+
+```bash
+# First build
+npm run build
+docker-compose up -d
+```
+
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "docker",
+      "args": ["exec", "-i", "uswds-mcp-persistent", "node", "dist/index.js"],
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
+```
+
 ### For React-USWDS Mode:
 
 Simply change `USE_REACT_COMPONENTS` to `"true"` in any of the above configurations:
