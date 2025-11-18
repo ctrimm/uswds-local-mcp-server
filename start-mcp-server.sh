@@ -77,6 +77,17 @@ fi
 echo "Using Node.js $(node --version)" >&2
 echo "MCP Server starting..." >&2
 
-# Start the MCP server
-# Replace 'index.js' with your actual entry point
-exec node index.js "$@"
+# Check if dist/index.js exists (TypeScript build output)
+if [ -f "$SCRIPT_DIR/dist/index.js" ]; then
+    # Use compiled TypeScript output
+    exec node dist/index.js "$@"
+elif [ -f "$SCRIPT_DIR/index.js" ]; then
+    # Fall back to source if no build exists
+    echo "Warning: dist/index.js not found, using index.js directly" >&2
+    echo "Run 'npm run build' to compile TypeScript" >&2
+    exec node index.js "$@"
+else
+    echo "Error: No entry point found (dist/index.js or index.js)" >&2
+    echo "Run 'npm run build' to compile TypeScript" >&2
+    exit 1
+fi
