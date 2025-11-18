@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  uswds-mcp:
+    build: .
+    image: uswds-mcp-server:latest
+    container_name: uswds-mcp-persistent
+    stdin_open: true
+    tty: true
+    environment:
+      - USE_REACT_COMPONENTS=true
+    restart: unless-stopped
+    # Keep container running
+    command: tail -f /dev/null
