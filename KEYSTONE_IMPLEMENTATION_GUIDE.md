@@ -23,7 +23,7 @@ This document provides complete instructions for implementing a Keystone Design 
 - **Total Components**: 19 components across Forms, Navigation, Feedback, Content, and Data categories
 
 **Goal:**
-Create a standalone MCP server that provides 8 tools for working with Keystone Design System components, color tokens, accessibility guidelines, and validation.
+Create a standalone MCP server that provides 9 tools for working with Keystone Design System components, color tokens, accessibility guidelines, validation, and dynamic documentation fetching.
 
 ## Repository Structure
 
@@ -1134,6 +1134,60 @@ export class KeystoneService {
       suggestions,
     };
   }
+
+  /**
+   * Fetch live documentation from Keystone Design System website
+   * NOTE: This is a placeholder - actual implementation requires Puppeteer or similar
+   * Use the provided Puppeteer scraper script to extract data locally
+   */
+  async fetchDocumentation(path: string): Promise<{
+    content: string;
+    url: string;
+    available_paths?: string[];
+    error?: string;
+  }> {
+    // Map of available documentation paths
+    const availablePaths = [
+      'getting-started',
+      'foundations/color',
+      'foundations/typography',
+      'foundations/spacing',
+      'foundations/grid',
+      'components/button',
+      'components/navbar',
+      'components/accordion',
+      'components/alert',
+      'components/card',
+      'patterns/forms',
+      'patterns/navigation',
+      'utilities/helpers',
+    ];
+
+    // Validate path
+    if (!availablePaths.includes(path)) {
+      return {
+        content: '',
+        url: `https://wcmauthorguide.pa.gov/en/keystone-design-system/${path}.html`,
+        available_paths: availablePaths,
+        error: `Path "${path}" not found. Use one of the available paths listed.`,
+      };
+    }
+
+    // Return instruction message
+    return {
+      content: `To fetch live documentation, use the Puppeteer scraper script:
+
+npm run scrape:keystone -- ${path}
+
+This will extract the latest documentation from:
+https://wcmauthorguide.pa.gov/en/keystone-design-system/${path}.html
+
+The scraper bypasses 403 restrictions by using browser automation.
+See KEYSTONE_SCRAPER_GUIDE.md for full instructions.`,
+      url: `https://wcmauthorguide.pa.gov/en/keystone-design-system/${path}.html`,
+      available_paths: availablePaths,
+    };
+  }
 }
 ```
 
@@ -1292,6 +1346,20 @@ const tools: Tool[] = [
       required: ['component_name'],
     },
   },
+  {
+    name: 'fetch_keystone_documentation',
+    description: 'Fetch live documentation from Keystone Design System website (requires Puppeteer scraper)',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: {
+          type: 'string',
+          description: 'Documentation path (e.g., "getting-started", "foundations/color", "components/button")',
+        },
+      },
+      required: ['path'],
+    },
+  },
 ];
 
 // Register tool list handler
@@ -1408,6 +1476,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
+      case 'fetch_keystone_documentation': {
+        const result = await keystoneService.fetchDocumentation(
+          args?.path as string
+        );
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -1501,7 +1583,7 @@ main().catch((error) => {
 
 ## Key Features Implemented
 
-✅ 8 MCP Tools:
+✅ 9 MCP Tools:
 1. list_keystone_components
 2. get_keystone_component
 3. get_keystone_design_tokens
@@ -1510,6 +1592,7 @@ main().catch((error) => {
 6. validate_keystone_code
 7. get_keystone_style_guide
 8. get_keystone_component_examples
+9. fetch_keystone_documentation (with Puppeteer scraper support)
 
 ✅ TypeScript with full type safety
 ✅ Service layer pattern

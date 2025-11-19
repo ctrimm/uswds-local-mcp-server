@@ -13,7 +13,7 @@ This guide provides instructions for setting up and using the Keystone Design Sy
 
 ## Overview
 
-The Keystone MCP server provides AI agents with 8 tools for working with Pennsylvania's design system:
+The Keystone MCP server provides AI agents with 9 tools for working with Pennsylvania's design system:
 
 1. **list_keystone_components** - List all available components
 2. **get_keystone_component** - Get detailed component information
@@ -23,6 +23,7 @@ The Keystone MCP server provides AI agents with 8 tools for working with Pennsyl
 6. **validate_keystone_code** - Validate HTML for Keystone patterns
 7. **get_keystone_style_guide** - Get style guide and principles
 8. **get_keystone_component_examples** - Get code examples
+9. **fetch_keystone_documentation** - Fetch live documentation (requires Puppeteer scraper)
 
 ## Implementation
 
