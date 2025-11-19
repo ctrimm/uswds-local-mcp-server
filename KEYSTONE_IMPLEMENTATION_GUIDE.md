@@ -585,14 +585,110 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Link',
     category: 'navigation',
-    description: 'Hyperlink component for navigation and actions',
+    description: 'Hyperlink component that takes users to another page, website, or part of the same page. Available in two variants: Inline links (appear within running text) and Standalone links (appear on their own, may include icons). Link text should be short, clear, and specific about the destination.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-link--docs',
-    accessibility: {
-      keyboardSupport: 'Enter to activate',
-      ariaLabels: ['Link text must be descriptive', 'Avoid "click here" or "read more" without context'],
+    usage: {
+      whenToUse: [
+        'Navigate to another PA.gov page',
+        'Link to an external website',
+        'Jump to a specific section on the same page',
+        'Link to a PDF file (include [PDF] at the end of link text)',
+        'Draft an email (mailto: link)',
+        'Call a phone number (tel: link)',
+        'Use inline links within sentences or running text',
+        'Use standalone links after descriptive sentences or in lists',
+      ],
+      whenNotToUse: [
+        'Links are for navigation, not for triggering actions',
+        "If user needs to do something (sign up, save, submit), use a button instead",
+        "Don't use icons in inline links (icons only for standalone links)",
+      ],
+      bestPractices: [
+        'Link text should clearly explain where the link goes',
+        'Keep link text specific, brief, and clear',
+        'Avoid vague labels like "Click here", "Read more", "This link"',
+        'Use descriptive labels like "Your account", "View election results", "Register for the event"',
+        'Screen reader users navigate pages using link text - make it understandable without surrounding context',
+        'For PDFs, include [PDF] at the end of link text',
+        'Standalone links can include icons (typically right arrow)',
+        'Inline links should not include icons',
+      ],
     },
-    relatedComponents: ['Button', 'Navbar'],
+    props: [
+      {
+        name: 'size',
+        type: "'small' | 'medium' | 'large'",
+        description: 'Link size variant',
+        defaultValue: 'medium',
+      },
+      {
+        name: 'variant',
+        type: "'inline' | 'standalone'",
+        description: 'Link variant - inline for within text, standalone for on its own',
+        defaultValue: 'inline',
+      },
+      {
+        name: 'linkText',
+        type: 'string',
+        description: 'Text to display in the link',
+        required: true,
+      },
+      {
+        name: 'href',
+        type: 'string',
+        description: 'Destination URL',
+        required: true,
+      },
+    ],
+    examples: [
+      {
+        title: 'Inline Link',
+        code: `<a href="#" class="kds-link kds-link-inline kds-link-md" role="link" aria-label="Link">
+  Link
+</a>`,
+        description: 'Inline link appears within running text, such as within a sentence. Use kds-link-inline variant. Do not use icons.',
+      },
+      {
+        title: 'Standalone Link with Icon',
+        code: `<a href="#" class="kds-link kds-link-standalone kds-link-md" role="link" aria-label="Link">
+  <span>Link</span>
+  <i class="ri-arrow-right-line"></i>
+</a>`,
+        description: 'Standalone link appears on its own, may be used after a descriptive sentence or as part of a list. Can include an icon (typically right arrow).',
+      },
+      {
+        title: 'Link Sizes',
+        code: `<!-- Small link -->
+<a href="#" class="kds-link kds-link-inline kds-link-sm" role="link" aria-label="Small link">
+  Small link
+</a>
+
+<!-- Medium link (default) -->
+<a href="#" class="kds-link kds-link-inline kds-link-md" role="link" aria-label="Medium link">
+  Medium link
+</a>
+
+<!-- Large link -->
+<a href="#" class="kds-link kds-link-inline kds-link-lg" role="link" aria-label="Large link">
+  Large link
+</a>`,
+        description: 'Links are available in three sizes: small (kds-link-sm), medium (kds-link-md), and large (kds-link-lg).',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Tab to focus on links, Enter to activate and navigate to destination',
+      ariaLabels: [
+        'Link text must clearly explain where the link goes',
+        'All links should include role="link" attribute',
+        'All links must include descriptive aria-label that matches or enhances link text',
+        'Screen reader users often navigate pages by link text - make it understandable without surrounding context',
+        'Avoid vague link labels: "Click here", "Read more", "This link"',
+        'Use specific labels: "Your account", "View election results", "Register for the event"',
+      ],
+      screenReaderNotes: 'Screen reader users can navigate a page using link text alone. Link text must be descriptive enough to understand destination without reading surrounding content.',
+    },
+    relatedComponents: ['Breadcrumb', 'Button'],
   },
 
   // FEEDBACK & UI
@@ -2387,6 +2483,79 @@ export class KeystoneService {
       // Check for official website text
       if (code.includes('kds-header') && !code.includes('Official Website')) {
         warnings.push('Header should include "Official Website of the Commonwealth of Pennsylvania" text');
+      }
+    }
+
+    // Check for link component structure
+    if (code.includes('kds-link')) {
+      // Check for variant class
+      const hasVariant = code.includes('kds-link-inline') || code.includes('kds-link-standalone');
+      if (!hasVariant) {
+        warnings.push('Link should specify a variant: kds-link-inline or kds-link-standalone');
+      }
+
+      // Check for size class
+      const hasSize = code.includes('kds-link-sm') || code.includes('kds-link-md') || code.includes('kds-link-lg');
+      if (!hasSize) {
+        warnings.push('Link should specify a size: kds-link-sm, kds-link-md, or kds-link-lg');
+      }
+
+      // Check for role attribute
+      if (!code.includes('role="link"')) {
+        errors.push('Links must include role="link" attribute');
+      }
+
+      // Check for aria-label
+      if (!code.includes('aria-label')) {
+        errors.push('Links must include descriptive aria-label');
+      }
+
+      // Check for href attribute
+      if (!code.includes('href=')) {
+        errors.push('Links must include href attribute with destination URL');
+      }
+
+      // Check for vague link text (case-insensitive)
+      const linkText = code.toLowerCase();
+      const vagueLabels = ['click here', 'read more', 'this link', 'click this', 'here'];
+      for (const vague of vagueLabels) {
+        if (linkText.includes(vague)) {
+          errors.push(`Avoid vague link text like "${vague}". Use specific, descriptive labels that explain the destination.`);
+        }
+      }
+
+      // Check that inline links don't have icons
+      if (code.includes('kds-link-inline') && code.includes('class="ri-')) {
+        errors.push('Inline links should not include icons. Icons are only for standalone links.');
+      }
+
+      // Check standalone links with icons have proper structure
+      if (code.includes('kds-link-standalone') && code.includes('class="ri-')) {
+        // Check that link text is wrapped in <span>
+        if (!code.includes('<span>')) {
+          warnings.push('Standalone links with icons should wrap link text in <span> element');
+        }
+
+        // Suggest right arrow icon for standalone links
+        if (!code.includes('ri-arrow-right-line') && !code.includes('ri-external-link-line')) {
+          suggestions.push('Standalone links typically use ri-arrow-right-line icon (or ri-external-link-line for external links)');
+        }
+      }
+
+      // Check for PDF links
+      if (code.includes('.pdf') || linkText.includes('pdf')) {
+        if (!linkText.includes('[pdf]')) {
+          warnings.push('Links to PDF files should include [PDF] in the link text');
+        }
+      }
+
+      // Suggest specific use cases
+      if (code.includes('href="mailto:')) {
+        suggestions.push('Email links (mailto:) should have descriptive text like "Email support" rather than showing the email address');
+      }
+
+      if (code.includes('href="tel:')) {
+        suggestions.push('Phone links (tel:) should display formatted phone number like "(555) 123-4567"');
       }
     }
 
