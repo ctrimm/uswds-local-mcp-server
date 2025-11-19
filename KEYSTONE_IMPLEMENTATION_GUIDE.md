@@ -526,15 +526,39 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Alert',
     category: 'feedback',
-    description: 'Alert messages for info, warning, and error states. Two types: Global (page-level) and Local (contextual with dismiss)',
+    description: 'Alert messages for info, warning, and error states. Two types: Global alerts (used across every page for critical/emergency information) and In-page alerts (used on single page for contextual information to help complete tasks).',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-alert--docs',
+    usage: {
+      whenToUse: [
+        'Global alerts: for critical information or emergency notifications across entire site',
+        'Global alerts: for events that affect all users site-wide',
+        'In-page alerts: to notify users of errors, missing required fields, form submission issues',
+        'In-page alerts: to provide important (but not critical) information to readers',
+        'In-page alerts: to communicate changes in a process, missing information, required attachments',
+      ],
+      whenNotToUse: [
+        "Don't use global alerts for information that only applies to single page/process (use in-page alerts)",
+        "Don't use in-page alerts for critical information or emergencies (use global alerts)",
+        "Don't overuse global alerts - limit usage and remove as soon as event ends",
+      ],
+      bestPractices: [
+        'Choose variant that matches severity of alert (info, warning, error)',
+        'Use clear and brief alert title',
+        'Provide short, plain-language summary (two sentences or less)',
+        'Include end date for alert if applicable',
+        'Conclude with link using descriptive link text',
+        'Global alerts: Keep brief so quickly readable, link to page with more info',
+        'In-page alerts: Provide context to help users complete their task',
+        'Global alerts: Remove as soon as event has ended',
+      ],
+    },
     props: [
       {
         name: 'type',
         type: '"global" | "local"',
         required: true,
-        description: 'Alert type: global (page-level, no icons/dismiss) or local (contextual, with icons/dismiss)',
+        description: 'Alert type: global (across all pages, critical/emergency) or local/in-page (single page, contextual)',
       },
       {
         name: 'variant',
@@ -564,7 +588,7 @@ export const keystoneComponents: KeystoneComponent[] = [
     <p class="kds-alert-global-message">A simple primary alert—check it out <a href="#">here</a>!</p>
   </div>
 </div>`,
-        description: 'Global info alert for page-level messages',
+        description: 'Global alert for critical site-wide information - appears across all pages',
       },
       {
         title: 'Global Alert - Warning',
@@ -574,7 +598,7 @@ export const keystoneComponents: KeystoneComponent[] = [
     <p class="kds-alert-global-message">A simple primary alert—check it out <a href="#">here</a>!</p>
   </div>
 </div>`,
-        description: 'Global warning alert',
+        description: 'Global warning alert for site-wide emergency notifications',
       },
       {
         title: 'Global Alert - Error',
@@ -584,10 +608,10 @@ export const keystoneComponents: KeystoneComponent[] = [
     <p class="kds-alert-global-message">A simple primary alert—check it out <a href="#">here</a>!</p>
   </div>
 </div>`,
-        description: 'Global error alert',
+        description: 'Global error alert for critical system-wide issues',
       },
       {
-        title: 'Local Alert - Info',
+        title: 'In-Page Alert - Info',
         code: `<div class="kds-alert kds-alert-local kds-alert-local-info" role="alert" data-controller="presentation">
   <i class="ri-information-2-line" aria-hidden="true"></i>
   <div class="kds-alert-content">
@@ -598,10 +622,10 @@ export const keystoneComponents: KeystoneComponent[] = [
     <i class="ri-close-line" aria-hidden="true"></i>
   </button>
 </div>`,
-        description: 'Local info alert with Remix icon and dismiss button',
+        description: 'In-page alert for contextual information on single page - includes icon and dismiss button',
       },
       {
-        title: 'Local Alert - Warning',
+        title: 'In-Page Alert - Warning',
         code: `<div class="kds-alert kds-alert-local kds-alert-local-warning" role="alert" data-controller="presentation">
   <i class="ri-alert-line" aria-hidden="true"></i>
   <div class="kds-alert-content">
@@ -612,10 +636,10 @@ export const keystoneComponents: KeystoneComponent[] = [
     <i class="ri-close-line" aria-hidden="true"></i>
   </button>
 </div>`,
-        description: 'Local warning alert with alert icon',
+        description: 'In-page warning for missing fields or validation issues on current page',
       },
       {
-        title: 'Local Alert - Error',
+        title: 'In-Page Alert - Error',
         code: `<div class="kds-alert kds-alert-local kds-alert-local-error" role="alert" data-controller="presentation">
   <i class="ri-error-warning-line" aria-hidden="true"></i>
   <div class="kds-alert-content">
@@ -626,18 +650,21 @@ export const keystoneComponents: KeystoneComponent[] = [
     <i class="ri-close-line" aria-hidden="true"></i>
   </button>
 </div>`,
-        description: 'Local error alert with error icon',
+        description: 'In-page error for form submission issues or task-blocking problems',
       },
     ],
     accessibility: {
-      keyboardSupport: 'Tab to dismiss button on local alerts, Enter/Space to dismiss',
+      keyboardSupport: 'Tab to dismiss button on in-page alerts, Enter/Space to dismiss',
       ariaLabels: [
         'Use role="alert" on container for screen reader announcement',
         'Use aria-hidden="true" on decorative icons',
         'Use aria-label="Close" on dismiss button',
         'Include descriptive title and message',
+        'Choose variant (info/warning/error) that matches severity',
+        'Keep message brief (two sentences or less)',
+        'Provide descriptive link text when including links',
       ],
-      screenReaderNotes: 'role="alert" causes immediate announcement. Icons are decorative and hidden from screen readers. Dismiss button is keyboard accessible.',
+      screenReaderNotes: 'role="alert" causes immediate announcement. Icons are decorative and hidden from screen readers. Dismiss button is keyboard accessible. Global alerts persist across pages, in-page alerts are contextual to current page.',
     },
     relatedComponents: ['Icon object', 'Button'],
   },
@@ -1940,7 +1967,7 @@ export class KeystoneService {
     }
 
     if (code.includes('kds-alert-local') && !code.includes('kds-alert-dismiss-button')) {
-      suggestions.push('Local alerts typically include a dismiss button with aria-label="Close"');
+      suggestions.push('In-page alerts (kds-alert-local) typically include a dismiss button with aria-label="Close"');
     }
 
     if (code.includes('class="ri-') && !code.includes('aria-hidden="true"')) {
