@@ -88,23 +88,16 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Button',
     category: 'forms',
-    description: 'Interactive button component with multiple variants and states',
+    description: 'Interactive button component with filled, outlined, and text variants',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-button--docs',
     props: [
       {
         name: 'variant',
-        type: "'primary' | 'secondary' | 'tertiary' | 'outline'",
+        type: "'filled' | 'outlined' | 'text'",
         required: false,
         description: 'Button style variant',
-        defaultValue: 'primary',
-      },
-      {
-        name: 'size',
-        type: "'sm' | 'md' | 'lg'",
-        required: false,
-        description: 'Button size',
-        defaultValue: 'md',
+        defaultValue: 'filled',
       },
       {
         name: 'disabled',
@@ -113,20 +106,74 @@ export const keystoneComponents: KeystoneComponent[] = [
         description: 'Whether button is disabled',
         defaultValue: 'false',
       },
+      {
+        name: 'link',
+        type: 'boolean',
+        required: false,
+        description: 'Whether button should behave as a link',
+        defaultValue: 'false',
+      },
+      {
+        name: 'icon',
+        type: 'boolean',
+        required: false,
+        description: 'Whether button includes an icon',
+        defaultValue: 'false',
+      },
+      {
+        name: 'type',
+        type: "'button' | 'submit' | 'reset'",
+        required: false,
+        description: 'HTML button type attribute',
+        defaultValue: 'button',
+      },
+      {
+        name: 'tabindex',
+        type: 'number',
+        required: false,
+        description: 'Tab index for keyboard navigation',
+        defaultValue: '0',
+      },
     ],
     examples: [
       {
-        title: 'Primary Button',
-        code: `<button class="btn btn-primary">
-  Click me
+        title: 'Filled Button (Default)',
+        code: `<button type="button" class="kds-button kds-button-filled" tabindex="0">
+  Submit
 </button>`,
-        description: 'Standard primary button using Bootstrap classes',
+        description: 'Solid filled button with primary color',
+      },
+      {
+        title: 'Outlined Button',
+        code: `<button type="button" class="kds-button kds-button-outlined" tabindex="0">
+  Submit
+</button>`,
+        description: 'Button with border and transparent background',
+      },
+      {
+        title: 'Text Button',
+        code: `<button type="button" class="kds-button kds-button-text" tabindex="0">
+  Submit
+</button>`,
+        description: 'Minimal button with text only, no background or border',
+      },
+      {
+        title: 'Button with Icon',
+        code: `<button type="button" class="kds-button kds-button-text" tabindex="0">
+  <span>Submit</span>
+  <i class="ri-arrow-right-line"></i>
+</button>`,
+        description: 'Button with text and Remix Icon (arrow)',
       },
     ],
     accessibility: {
-      keyboardSupport: 'Activates with Enter or Space keys',
-      ariaLabels: ['Use descriptive button text or aria-label'],
-      screenReaderNotes: 'Button purpose should be clear from text alone',
+      keyboardSupport: 'Activates with Enter or Space keys, navigable with Tab',
+      ariaLabels: [
+        'Use descriptive button text that explains action',
+        'If button only contains icon, use aria-label to describe action',
+        'Avoid generic labels like "click here" or "submit"',
+      ],
+      screenReaderNotes: 'Button purpose should be clear from text content. Icons should be supplementary, not the sole indicator of purpose.',
     },
     relatedComponents: ['Link', 'Icon object'],
   },
@@ -254,14 +301,51 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Breadcrumb',
     category: 'navigation',
-    description: 'Hierarchical navigation showing current page location',
+    description: 'Hierarchical navigation showing current page location. Desktop shows full trail, mobile shows back link.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-breadcrumb--docs',
+    examples: [
+      {
+        title: 'Desktop Breadcrumb',
+        code: `<nav class="kds-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li class="kds-breadcrumb-item">
+      <a href="/">Home</a>
+    </li>
+    <li class="kds-breadcrumb-item">
+      <a href="/products">Products</a>
+    </li>
+    <li class="kds-breadcrumb-item kds-breadcrumb-current">
+      <span aria-current="page">Current Page</span>
+    </li>
+  </ol>
+</nav>`,
+        description: 'Full breadcrumb trail for desktop with Home > Products > Current Page',
+      },
+      {
+        title: 'Mobile Breadcrumb',
+        code: `<nav class="kds-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li class="kds-breadcrumb-item">
+      <i class="ri-arrow-left-line"></i>
+      <a href="#" aria-current="page">Breadcrumb</a>
+    </li>
+  </ol>
+</nav>`,
+        description: 'Simplified mobile breadcrumb with back arrow icon',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Tab through breadcrumb links',
-      ariaLabels: ['Use nav with aria-label="Breadcrumb"', 'Use aria-current="page" on last item'],
+      keyboardSupport: 'Tab through breadcrumb links, Enter to navigate',
+      ariaLabels: [
+        'Wrap in <nav> with aria-label="Breadcrumb"',
+        'Use <ol> for ordered list structure',
+        'Use aria-current="page" on current page span',
+        'Apply kds-breadcrumb-current class to current item',
+      ],
+      screenReaderNotes: 'Screen readers announce "Breadcrumb navigation" and list structure. Current page identified via aria-current.',
     },
-    relatedComponents: ['Link', 'Navbar'],
+    relatedComponents: ['Link', 'Navbar', 'Icon object'],
   },
   {
     name: 'Link',
@@ -1363,6 +1447,44 @@ export class KeystoneService {
 
     if (code.includes('kds-alert-dismiss-button') && !code.includes('aria-label')) {
       errors.push('Alert dismiss buttons require aria-label for screen reader users');
+    }
+
+    // Check for proper breadcrumb structure
+    if (code.includes('kds-breadcrumb')) {
+      if (!code.includes('aria-label="Breadcrumb"')) {
+        errors.push('Breadcrumb nav must include aria-label="Breadcrumb"');
+      }
+
+      if (!code.includes('<ol>')) {
+        errors.push('Breadcrumb must use <ol> for ordered list structure');
+      }
+
+      if (code.includes('kds-breadcrumb-current') && !code.includes('aria-current="page"')) {
+        errors.push('Current breadcrumb item must include aria-current="page"');
+      }
+
+      if (!code.includes('kds-breadcrumb-item')) {
+        warnings.push('Breadcrumb items should use kds-breadcrumb-item class');
+      }
+    }
+
+    // Check for button best practices
+    if (code.includes('kds-button')) {
+      const hasVariantClass = /kds-button-(filled|outlined|text)/.test(code);
+      if (!hasVariantClass) {
+        warnings.push('Button should specify a variant: kds-button-filled, kds-button-outlined, or kds-button-text');
+      }
+
+      // Check for icon-only buttons
+      const hasOnlyIcon = code.includes('class="ri-') && !code.includes('<span>');
+      if (hasOnlyIcon && !code.includes('aria-label')) {
+        errors.push('Icon-only buttons must include aria-label to describe the action');
+      }
+
+      // Check button type
+      if (code.includes('<button') && !code.includes('type=')) {
+        suggestions.push('Specify button type attribute (button, submit, or reset)');
+      }
     }
 
     const valid = errors.length === 0;
