@@ -280,15 +280,120 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Alert',
     category: 'feedback',
-    description: 'Alert messages for success, error, warning, and info states',
+    description: 'Alert messages for info, warning, and error states. Two types: Global (page-level) and Local (contextual with dismiss)',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-alert--docs',
+    props: [
+      {
+        name: 'type',
+        type: '"global" | "local"',
+        required: true,
+        description: 'Alert type: global (page-level, no icons/dismiss) or local (contextual, with icons/dismiss)',
+      },
+      {
+        name: 'variant',
+        type: '"info" | "warning" | "error"',
+        required: true,
+        description: 'Alert variant: info (blue), warning (yellow), error (red)',
+      },
+      {
+        name: 'role',
+        type: '"alert"',
+        required: true,
+        description: 'ARIA role for accessibility',
+      },
+      {
+        name: 'data-controller',
+        type: '"presentation"',
+        required: true,
+        description: 'Stimulus controller for alert presentation and dismissal',
+      },
+    ],
+    examples: [
+      {
+        title: 'Global Alert - Info',
+        code: `<div class="kds-alert kds-alert-global kds-alert-global-info" role="alert" data-controller="presentation">
+  <div class="kds-alert-content">
+    <p class="kds-alert-global-title">Alert Title</p>
+    <p class="kds-alert-global-message">A simple primary alert—check it out <a href="#">here</a>!</p>
+  </div>
+</div>`,
+        description: 'Global info alert for page-level messages',
+      },
+      {
+        title: 'Global Alert - Warning',
+        code: `<div class="kds-alert kds-alert-global kds-alert-global-warning" role="alert" data-controller="presentation">
+  <div class="kds-alert-content">
+    <p class="kds-alert-global-title">Alert Title</p>
+    <p class="kds-alert-global-message">A simple primary alert—check it out <a href="#">here</a>!</p>
+  </div>
+</div>`,
+        description: 'Global warning alert',
+      },
+      {
+        title: 'Global Alert - Error',
+        code: `<div class="kds-alert kds-alert-global kds-alert-global-error" role="alert" data-controller="presentation">
+  <div class="kds-alert-content">
+    <p class="kds-alert-global-title">Alert Title</p>
+    <p class="kds-alert-global-message">A simple primary alert—check it out <a href="#">here</a>!</p>
+  </div>
+</div>`,
+        description: 'Global error alert',
+      },
+      {
+        title: 'Local Alert - Info',
+        code: `<div class="kds-alert kds-alert-local kds-alert-local-info" role="alert" data-controller="presentation">
+  <i class="ri-information-2-line" aria-hidden="true"></i>
+  <div class="kds-alert-content">
+    <p class="kds-alert-local-title">Alert Title</p>
+    <p class="kds-alert-local-message">A simple primary alert—check it out <a href="#">here</a>!</p>
+  </div>
+  <button class="kds-alert-dismiss-button" aria-label="Close" title="Close" data-action="click->presentation#dismiss">
+    <i class="ri-close-line" aria-hidden="true"></i>
+  </button>
+</div>`,
+        description: 'Local info alert with Remix icon and dismiss button',
+      },
+      {
+        title: 'Local Alert - Warning',
+        code: `<div class="kds-alert kds-alert-local kds-alert-local-warning" role="alert" data-controller="presentation">
+  <i class="ri-alert-line" aria-hidden="true"></i>
+  <div class="kds-alert-content">
+    <p class="kds-alert-local-title">Alert Title</p>
+    <p class="kds-alert-local-message">A simple primary alert—check it out <a href="#">here</a>!</p>
+  </div>
+  <button class="kds-alert-dismiss-button" aria-label="Close" title="Close" data-action="click->presentation#dismiss">
+    <i class="ri-close-line" aria-hidden="true"></i>
+  </button>
+</div>`,
+        description: 'Local warning alert with alert icon',
+      },
+      {
+        title: 'Local Alert - Error',
+        code: `<div class="kds-alert kds-alert-local kds-alert-local-error" role="alert" data-controller="presentation">
+  <i class="ri-error-warning-line" aria-hidden="true"></i>
+  <div class="kds-alert-content">
+    <p class="kds-alert-local-title">Alert Title</p>
+    <p class="kds-alert-local-message">A simple primary alert—check it out <a href="#">here</a>!</p>
+  </div>
+  <button class="kds-alert-dismiss-button" aria-label="Close" title="Close" data-action="click->presentation#dismiss">
+    <i class="ri-close-line" aria-hidden="true"></i>
+  </button>
+</div>`,
+        description: 'Local error alert with error icon',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Focusable close button if dismissible',
-      ariaLabels: ['Use role="alert" for important messages', 'Include clear, concise message text'],
-      screenReaderNotes: 'role="alert" announces message immediately',
+      keyboardSupport: 'Tab to dismiss button on local alerts, Enter/Space to dismiss',
+      ariaLabels: [
+        'Use role="alert" on container for screen reader announcement',
+        'Use aria-hidden="true" on decorative icons',
+        'Use aria-label="Close" on dismiss button',
+        'Include descriptive title and message',
+      ],
+      screenReaderNotes: 'role="alert" causes immediate announcement. Icons are decorative and hidden from screen readers. Dismiss button is keyboard accessible.',
     },
-    relatedComponents: ['Icon object'],
+    relatedComponents: ['Icon object', 'Button'],
   },
   {
     name: 'Tag',
@@ -1237,6 +1342,27 @@ export class KeystoneService {
 
     if (code.includes('kds-accordion-collapse') && !code.includes('aria-labelledby')) {
       warnings.push('Accordion panels should use aria-labelledby to reference their heading');
+    }
+
+    // Check for proper ARIA on alert elements
+    if (code.includes('kds-alert') && !code.includes('role="alert"')) {
+      errors.push('Alert components require role="alert" for accessibility');
+    }
+
+    if (code.includes('kds-alert') && !code.includes('data-controller="presentation"')) {
+      warnings.push('Alert components should use data-controller="presentation" for Stimulus functionality');
+    }
+
+    if (code.includes('kds-alert-local') && !code.includes('kds-alert-dismiss-button')) {
+      suggestions.push('Local alerts typically include a dismiss button with aria-label="Close"');
+    }
+
+    if (code.includes('class="ri-') && !code.includes('aria-hidden="true"')) {
+      warnings.push('Remix Icons should include aria-hidden="true" as they are decorative');
+    }
+
+    if (code.includes('kds-alert-dismiss-button') && !code.includes('aria-label')) {
+      errors.push('Alert dismiss buttons require aria-label for screen reader users');
     }
 
     const valid = errors.length === 0;
