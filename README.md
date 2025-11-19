@@ -35,6 +35,22 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 - **Icon Browser**: Search and browse 90+ USWDS icons
 - **Layout Patterns**: Access common layout recipes with USWDS Grid
 
+### Tailwind CSS + USWDS Integration
+- **Tailwind USWDS Components**: Access USWDS components built with Tailwind CSS from [v2.uswds-tailwind.com](https://v2.uswds-tailwind.com/)
+- **Getting Started Guide**: Get installation and setup instructions for using USWDS with Tailwind
+- **Component Documentation**: Fetch detailed documentation for Tailwind USWDS components with usage examples
+- **Tailwind Utilities**: Access documentation for colors, icons, typography, and JavaScript integration
+- **Search**: Search across all Tailwind USWDS documentation
+
+#### Available Tailwind USWDS Tools:
+- `get_tailwind_uswds_getting_started` - Get setup and installation guide
+- `get_tailwind_uswds_component` - Get component documentation (or list all components)
+- `get_tailwind_uswds_javascript` - Get JavaScript integration documentation
+- `get_tailwind_uswds_colors` - Get Tailwind color palette and utilities
+- `get_tailwind_uswds_icons` - Get icon documentation
+- `get_tailwind_uswds_typography` - Get typography utilities and styles
+- `search_tailwind_uswds_docs` - Search all Tailwind USWDS documentation
+
 ## Installation
 
 ### Prerequisites

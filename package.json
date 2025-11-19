@@ -45,7 +45,10 @@
     "a11y",
     "component-library",
     "claude",
-    "ai-assistant"
+    "ai-assistant",
+    "tailwind",
+    "tailwindcss",
+    "uswds-tailwind"
   ],
   "author": "Cory Trimm",
   "license": "AGPL-3.0",
