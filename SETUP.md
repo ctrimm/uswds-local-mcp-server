@@ -6,7 +6,7 @@ Complete setup instructions for the USWDS MCP Server & Agent Toolkit.
 
 ### Minimum Requirements
 - **OS**: Ubuntu 20.04+, macOS 11+, or Windows 10+ with WSL2
-- **Node.js**: 18.0.0 or higher
+- **Node.js**: 20.0.0 or higher (required for File API)
 - **Python**: 3.10 or higher
 - **RAM**: 8GB minimum, 16GB recommended
 - **Disk Space**: 5GB free space
@@ -25,8 +25,8 @@ Complete setup instructions for the USWDS MCP Server & Agent Toolkit.
 # Update package list
 sudo apt update
 
-# Install Node.js 18
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Install Python 3.10
@@ -45,8 +45,10 @@ sudo apt install -y build-essential git
 # Install Homebrew if not present
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Install Node.js
-brew install node@18
+# Install Node.js 20 or later
+brew install node@20
+# OR install the latest LTS version
+# brew install node
 
 # Install Python
 brew install python@3.10
@@ -88,7 +90,7 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 
 # Verify installations
-node --version  # Should be 18+
+node --version  # Should be 20+
 npm --version
 python3 --version  # Should be 3.10+
 ```
@@ -352,7 +354,7 @@ node scripts/health-check.js
 
 Expected output:
 ```
-✓ Node.js: v18.17.0
+✓ Node.js: v20.x.x (or higher)
 ✓ Python: 3.10.12
 ✓ Chrome: 119.0.6045.105
 ✓ USWDS Repository: Found (packages: 47)
@@ -454,6 +456,19 @@ npm run test:integration
 
 ## Troubleshooting
 
+For comprehensive troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+### Issue: Node.js Version (File is not defined)
+
+**Error in Claude Desktop logs:**
+```
+ReferenceError: File is not defined
+```
+
+**Cause:** You are running Node.js 18 or earlier. The MCP server requires Node.js 20+.
+
+**Solution:** Upgrade to Node.js 20 or later. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detailed upgrade instructions.
+
 ### Issue: Port Already in Use
 
 ```bash
@@ -525,7 +540,7 @@ cat logs/mcp-servers.log
 node servers/filesystem/index.js
 
 # Check Node version
-node --version  # Must be 18+
+node --version  # Must be 20+
 ```
 
 ### Issue: Agent Can't Connect to OLLAMA

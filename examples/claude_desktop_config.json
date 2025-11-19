@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "uswds-vanilla": {
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/TO/uswds-local-mcp-server/dist/index.js"],
+      "env": {
+        "USE_REACT_COMPONENTS": "false"
+      }
+    },
+    "uswds-react": {
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/TO/uswds-local-mcp-server/dist/index.js"],
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
