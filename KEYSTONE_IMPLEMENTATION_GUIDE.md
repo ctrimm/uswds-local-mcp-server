@@ -541,14 +541,188 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Card',
     category: 'content',
-    description: 'Container component for grouping related content',
+    description: 'Card component using style and formatting to draw attention to content. Each card is part of a card group; a card should never be displayed alone. Cards can be customized with images, icons, dates, and tags.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-card--docs',
-    accessibility: {
-      keyboardSupport: 'Tab to interactive elements within card',
-      ariaLabels: ['Use heading to identify card content', 'Ensure proper heading hierarchy'],
+    usage: {
+      whenToUse: [
+        'Present a group of similar links while differentiating them from one another',
+        'Share featured locations with distinctive features or descriptions',
+        'Use with tags for large collections that fit into categories, topics, or audiences',
+        'Add date field for timely links (blog posts, events)',
+        'Organize frequently used resources or documentation',
+      ],
+      whenNotToUse: [
+        "When you don't have a compelling image or useful icon for each item (use List group instead)",
+        "When you want to feature content but don't have a link destination (use image/icon object with text)",
+        'When you only have one card (cards are designed for groups)',
+      ],
+      bestPractices: [
+        'Every card must include: title, description, and link (required)',
+        'Optional elements: image, icon, date, tags',
+        'Cards must always be displayed in groups, never alone',
+        'Provide meaningful link text',
+        'If using images, include alt text',
+      ],
     },
-    relatedComponents: ['Button', 'Link', 'Typography'],
+    props: [
+      {
+        name: 'withImage',
+        type: 'boolean',
+        required: false,
+        description: 'Show image in the card (kds-card-img-top)',
+        defaultValue: 'false',
+      },
+      {
+        name: 'imageUrl',
+        type: 'string',
+        required: false,
+        description: 'URL for the card media image',
+      },
+      {
+        name: 'withIcon',
+        type: 'boolean',
+        required: false,
+        description: 'Show icon in the card (kds-icon-object)',
+        defaultValue: 'false',
+      },
+      {
+        name: 'cardTitle',
+        type: 'string',
+        required: true,
+        description: 'Title text for the card (h3.kds-card-title)',
+      },
+      {
+        name: 'cardText',
+        type: 'string',
+        required: true,
+        description: 'Body text for the card (p.kds-card-text)',
+      },
+      {
+        name: 'linkType',
+        type: "'no-link' | 'link-with-label-icon' | 'link-with-icon-only'",
+        required: false,
+        description: 'Type of link to display',
+        defaultValue: 'link-with-label-icon',
+      },
+      {
+        name: 'linkLabel',
+        type: 'string',
+        required: false,
+        description: 'Label text for the card link',
+        defaultValue: 'See More',
+      },
+      {
+        name: 'withDate',
+        type: 'boolean',
+        required: false,
+        description: 'Show date in the card header',
+        defaultValue: 'false',
+      },
+      {
+        name: 'date',
+        type: 'string',
+        required: false,
+        description: 'Date to display in header (kds-label)',
+      },
+      {
+        name: 'tagText',
+        type: 'string',
+        required: false,
+        description: 'Text for the tag in header',
+      },
+      {
+        name: 'tagColor',
+        type: 'string',
+        required: false,
+        description: 'Color of the tag (e.g., primary)',
+        defaultValue: 'primary',
+      },
+    ],
+    examples: [
+      {
+        title: 'Full Card with Image, Tag, and Date',
+        code: `<div class="kds-card">
+  <img class="kds-card-img-top"
+       src="https://example.com/image.jpg"
+       alt="Cool gradient" />
+
+  <div class="kds-card-body">
+    <div class="kds-card-header">
+      <span class="kds-tag kds-tag-primary">Fact of the Day</span>
+      <span class="kds-label kds-label-md kds-text-normal">2025-05-20</span>
+    </div>
+    <h3 class="kds-card-title">
+      Did You Know There is a Tunnel Under Ocean Blvd?!
+    </h3>
+
+    <p class="kds-card-text">
+      The Jergins Tunnel located beneath Ocean Boulevard in Long Beach, California is a pedestrian tunnel that was built in 1927 to provide safe access from the Jergins Trust Building to the beach and the Pike amusement zone, passing under the busy thoroughfare. It was known for its ornate tile work and shops. The Jergins Tunnel was closed to the public in 1967.
+    </p>
+
+    <a href="#" class="kds-card-labeled-link" role="link" aria-label="See More">
+      <span>See More</span>
+      <i class="ri-arrow-right-line"></i>
+    </a>
+  </div>
+</div>`,
+        description: 'Complete card with all optional elements: image, tag, date, and labeled link',
+      },
+      {
+        title: 'Icon Card',
+        code: `<div class="kds-card">
+  <div class="kds-card-body">
+    <div class="kds-icon-object kds-icon-object-lg" aria-label="Hand with heart icon">
+      <i class="ri-hand-heart-line"></i>
+    </div>
+    <h3 class="kds-card-title">
+      Did You Know There is a Tunnel Under Ocean Blvd?
+    </h3>
+
+    <p class="kds-card-text">
+      The Jergins Tunnel located beneath Ocean Boulevard in Long Beach, California is a pedestrian tunnel that was built in 1927 to provide safe access from the Jergins Trust Building to the beach and the Pike amusement zone, passing under the busy thoroughfare. It was known for its ornate tile work and shops. The Jergins Tunnel was closed to the public in 1967.
+    </p>
+
+    <a href="#" class="kds-card-labeled-link" role="link" aria-label="See More">
+      <span>See More</span>
+      <i class="ri-arrow-right-line"></i>
+    </a>
+  </div>
+</div>`,
+        description: 'Card with icon instead of image, using kds-icon-object component',
+      },
+      {
+        title: 'Plain Card',
+        code: `<div class="kds-card">
+  <div class="kds-card-body">
+    <h3 class="kds-card-title">
+      Did You Know There is a Tunnel Under Ocean Blvd?
+    </h3>
+
+    <p class="kds-card-text">
+      The Jergins Tunnel located beneath Ocean Boulevard in Long Beach, California is a pedestrian tunnel that was built in 1927 to provide safe access from the Jergins Trust Building to the beach and the Pike amusement zone, passing under the busy thoroughfare. It was known for its ornate tile work and shops. The Jergins Tunnel was closed to the public in 1967.
+    </p>
+
+    <a href="#" class="kds-card-labeled-link" role="link" aria-label="See More">
+      <span>See More</span>
+      <i class="ri-arrow-right-line"></i>
+    </a>
+  </div>
+</div>`,
+        description: 'Minimal card with only required elements: title, text, and link',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Tab to interactive elements within card (links), Enter to activate',
+      ariaLabels: [
+        'Use h3.kds-card-title for proper heading hierarchy',
+        'Links must have role="link" and descriptive aria-label',
+        'Images must have meaningful alt text',
+        'Icon objects must have aria-label to describe purpose',
+      ],
+      screenReaderNotes: 'Card structure announced through heading hierarchy. Links provide context via aria-label. Icons are labeled for screen readers.',
+    },
+    relatedComponents: ['Link', 'Tag', 'Icon object', 'List group'],
   },
   {
     name: 'Accordion',
@@ -1551,6 +1725,53 @@ export class KeystoneService {
       // Check button type
       if (code.includes('<button') && !code.includes('type=')) {
         suggestions.push('Specify button type attribute (button, submit, or reset)');
+      }
+    }
+
+    // Check for card component structure
+    if (code.includes('kds-card')) {
+      // Check for required elements
+      if (!code.includes('kds-card-title')) {
+        errors.push('Card must include kds-card-title (h3 element)');
+      }
+
+      if (!code.includes('kds-card-text')) {
+        errors.push('Card must include kds-card-text (p element)');
+      }
+
+      if (!code.includes('kds-card-labeled-link') && !code.includes('<a')) {
+        warnings.push('Card should include a link (kds-card-labeled-link)');
+      }
+
+      // Check for proper structure
+      if (!code.includes('kds-card-body')) {
+        errors.push('Card must include kds-card-body wrapper');
+      }
+
+      // Check for link accessibility
+      if (code.includes('kds-card-labeled-link')) {
+        if (!code.includes('role="link"')) {
+          errors.push('Card links should include role="link"');
+        }
+
+        if (!code.includes('aria-label')) {
+          errors.push('Card links must include descriptive aria-label');
+        }
+      }
+
+      // Check for image alt text
+      if (code.includes('kds-card-img-top') && !code.includes('alt=')) {
+        errors.push('Card images must include meaningful alt text');
+      }
+
+      // Check for icon object accessibility
+      if (code.includes('kds-icon-object') && !code.includes('aria-label')) {
+        errors.push('Icon objects in cards must include aria-label');
+      }
+
+      // Suggest proper heading usage
+      if (code.includes('kds-card-title') && !code.includes('<h3')) {
+        suggestions.push('Card titles should use h3 element for proper heading hierarchy');
       }
     }
 
