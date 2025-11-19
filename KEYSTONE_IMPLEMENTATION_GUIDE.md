@@ -318,29 +318,129 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Accordion',
     category: 'content',
-    description: 'Expandable/collapsible content sections using Revealable controller',
+    description: 'Expandable/collapsible content sections using Bootstrap collapse',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-accordion--docs',
+    props: [
+      {
+        name: 'id',
+        type: 'string',
+        required: true,
+        description: 'Unique identifier for the accordion container',
+      },
+      {
+        name: 'data-bs-toggle',
+        type: '"collapse"',
+        required: true,
+        description: 'Bootstrap collapse toggle attribute on button',
+      },
+      {
+        name: 'aria-expanded',
+        type: 'boolean',
+        required: true,
+        description: 'Indicates whether accordion panel is expanded',
+      },
+      {
+        name: 'aria-controls',
+        type: 'string',
+        required: true,
+        description: 'ID of the controlled collapse element',
+      },
+    ],
     examples: [
       {
-        title: 'Accordion with Revealable',
-        code: `<div data-controller="revealable">
-  <button data-action="click->revealable#toggle" aria-expanded="false">
-    Section Title
-  </button>
-  <div data-revealable-target="content" class="kds-revealable-content">
-    Content that will be shown or hidden.
+        title: 'Multi-Panel Accordion',
+        code: `<div class="kds-accordion" id="accordionPanelsStayOpenExample">
+  <div class="kds-accordion-item">
+    <h2 class="kds-accordion-header" id="panelsStayOpen-headingOne">
+      <button class="kds-accordion-button" type="button" data-bs-toggle="collapse"
+              data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+              aria-controls="panelsStayOpen-collapseOne">
+        Different Sizes of Infinity
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseOne" class="kds-accordion-collapse collapse show"
+         aria-labelledby="panelsStayOpen-headingOne">
+      <div class="kds-accordion-body">
+        Mathematics has shown that the concept of 'infinity' isn't monolithic; there are actually different,
+        distinct sizes of infinity. It's been proven that the infinity of all points on a continuous line (the
+        real numbers) is fundamentally 'larger' than the infinity of all whole numbers (1, 2, 3...), even though
+        both sets go on forever without end.
+      </div>
+    </div>
+  </div>
+  <div class="kds-accordion-item">
+    <h2 class="kds-accordion-header" id="panelsStayOpen-headingTwo">
+      <button class="kds-accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false"
+              aria-controls="panelsStayOpen-collapseTwo">
+        Looking Back in Time
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseTwo" class="kds-accordion-collapse collapse"
+         aria-labelledby="panelsStayOpen-headingTwo">
+      <div class="kds-accordion-body">
+        Because light travels at a vast but finite speed, we never see the universe as it exists right now. When
+        we observe distant stars or galaxies, we are actually seeing them as they were when the light began its
+        journey. Looking at the Andromeda Galaxy, 2.5 million light-years away, means we see it as it appeared
+        2.5 million years in the past. Essentially, telescopes act as time machines, allowing us to witness
+        cosmic history.
+      </div>
+    </div>
+  </div>
+  <div class="kds-accordion-item">
+    <h2 class="kds-accordion-header" id="panelsStayOpen-headingThree">
+      <button class="kds-accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false"
+              aria-controls="panelsStayOpen-collapseThree">
+        Earth's Protective Shield
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapseThree" class="kds-accordion-collapse collapse"
+         aria-labelledby="panelsStayOpen-headingThree">
+      <div class="kds-accordion-body">
+        Deep beneath our feet, the churning motion of molten iron in Earth's liquid outer core acts like a giant
+        dynamo, generating our planet's magnetic field. This invisible field extends far into space, forming a
+        protective shield (the magnetosphere) that deflects the majority of harmful charged particles streaming
+        from the sun (the solar wind). Without this geologically generated shield, solar radiation would strip
+        away our atmosphere and make surface life impossible.
+      </div>
+    </div>
   </div>
 </div>`,
-        description: 'Accordion using Stimulus Revealable controller',
+        description: 'Full accordion with three panels using Bootstrap collapse, kds-accordion classes',
+      },
+      {
+        title: 'Single Accordion Item',
+        code: `<div class="kds-accordion-item">
+  <h2 class="kds-accordion-header" id="heading-example">
+    <button class="kds-accordion-button" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapse-example" aria-expanded="true"
+            aria-controls="collapse-example">
+      Panel Title
+    </button>
+  </h2>
+  <div id="collapse-example" class="kds-accordion-collapse collapse show"
+       aria-labelledby="heading-example">
+    <div class="kds-accordion-body">
+      Panel content goes here.
+    </div>
+  </div>
+</div>`,
+        description: 'Single accordion panel structure',
       },
     ],
     accessibility: {
-      keyboardSupport: 'Enter/Space to toggle sections',
-      ariaLabels: ['Use aria-expanded on toggle buttons', 'Associate button with content using aria-controls'],
-      screenReaderNotes: 'Expanded/collapsed state announced via aria-expanded',
+      keyboardSupport: 'Enter/Space to toggle accordion panels, Tab to navigate between buttons',
+      ariaLabels: [
+        'Use aria-expanded on accordion buttons (true when open, false when closed)',
+        'Use aria-controls to associate button with collapse content',
+        'Use aria-labelledby to associate collapse with heading',
+        'Wrap button in h2/h3 for proper heading hierarchy',
+      ],
+      screenReaderNotes: 'Expanded/collapsed state announced via aria-expanded. Use semantic heading elements for panel titles.',
     },
-    relatedComponents: ['Button'],
+    relatedComponents: ['Button', 'Card'],
   },
   {
     name: 'List group',
@@ -1095,6 +1195,7 @@ export class KeystoneService {
     const hasKDSClasses = code.includes('kds-');
     const hasBootstrapClasses = /class="[^"]*\b(btn|card|nav|alert|table|form|badge|list-group|accordion|breadcrumb)\b/.test(code);
     const hasStimulusControllers = code.includes('data-controller=');
+    const hasBootstrapData = code.includes('data-bs-');
 
     if (!hasKDSClasses && !hasBootstrapClasses) {
       warnings.push(
@@ -1102,9 +1203,14 @@ export class KeystoneService {
       );
     }
 
-    // Check for Stimulus.js controllers on interactive components
-    if ((code.includes('navbar') || code.includes('accordion')) && !hasStimulusControllers) {
-      suggestions.push('Consider using Stimulus controllers (data-controller="revealable" or "navbar") for interactive components');
+    // Check for Bootstrap data attributes on components that need them
+    if (code.includes('kds-accordion') && !code.includes('data-bs-toggle="collapse"')) {
+      errors.push('Accordion buttons require data-bs-toggle="collapse" attribute');
+    }
+
+    // Check for Stimulus.js controllers on navbar components
+    if (code.includes('kds-navbar') && !hasStimulusControllers) {
+      suggestions.push('Consider using Stimulus controllers (data-controller="revealable navbar") for responsive navigation');
     }
 
     // Check for accessibility attributes
@@ -1120,9 +1226,17 @@ export class KeystoneService {
       errors.push('Form inputs must have associated labels');
     }
 
-    // Check for proper ARIA on interactive elements
-    if (code.includes('data-controller="revealable"') && !code.includes('aria-expanded')) {
-      errors.push('Revealable controller requires aria-expanded attribute on toggle button');
+    // Check for proper ARIA on accordion elements
+    if (code.includes('kds-accordion-button') && !code.includes('aria-expanded')) {
+      errors.push('Accordion buttons require aria-expanded attribute');
+    }
+
+    if (code.includes('kds-accordion-button') && !code.includes('aria-controls')) {
+      errors.push('Accordion buttons require aria-controls attribute to associate with collapse panel');
+    }
+
+    if (code.includes('kds-accordion-collapse') && !code.includes('aria-labelledby')) {
+      warnings.push('Accordion panels should use aria-labelledby to reference their heading');
     }
 
     const valid = errors.length === 0;
