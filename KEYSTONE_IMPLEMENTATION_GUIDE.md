@@ -59,6 +59,11 @@ export interface KeystoneComponent {
   category: string;
   description: string;
   wcagLevel: 'A' | 'AA' | 'AAA';
+  usage?: {
+    whenToUse?: string[];
+    whenNotToUse?: string[];
+    bestPractices?: string[];
+  };
   props?: {
     name: string;
     type: string;
@@ -88,9 +93,31 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Button',
     category: 'forms',
-    description: 'Interactive button component with filled, outlined, and text variants',
+    description: 'Interactive button component for user actions. Available in filled (primary), outlined (secondary), and text (ghost) variants. Button labels should be short, clear, and written in sentence case. Use to trigger actions, not navigation.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-button--docs',
+    usage: {
+      whenToUse: [
+        'When a user will trigger an action (submit form, save data, log in)',
+        'For the most important call to action (use filled/primary style)',
+        'For helpful but non-essential actions (use outlined/secondary style)',
+        'For low-priority actions (use text/ghost style)',
+        'For well-established actions when saving space (icon button)',
+      ],
+      whenNotToUse: [
+        'Do not use buttons to navigate to different pages - use Link component instead',
+        'Do not use vague labels like "Click here", "Learn more", or "Read more"',
+        'Only use one primary button per page or section',
+      ],
+      bestPractices: [
+        'Use specific labels like "Submit form", "Cancel request", "Begin application"',
+        'Keep labels short and clear in sentence case',
+        'Provide context to help users understand what will happen',
+        'When using icon buttons, provide alt text or aria-label',
+        'Always pair secondary buttons with a primary button',
+        'Use ghost/text style when presenting multiple buttons together',
+      ],
+    },
     props: [
       {
         name: 'variant',
@@ -301,9 +328,28 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Breadcrumb',
     category: 'navigation',
-    description: 'Hierarchical navigation showing current page location. Desktop shows full trail, mobile shows back link.',
+    description: 'Secondary navigation showing the path from homepage to current page. Shows where the page fits in site hierarchy (not user history). Located at top left above page title. Desktop shows full trail, mobile shows simplified back link.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-breadcrumb--docs',
+    usage: {
+      whenToUse: [
+        'Show breadcrumbs on all pages except the homepage',
+        'When users need to see where they are in the website structure',
+        'To provide quick navigation back to parent pages',
+      ],
+      whenNotToUse: [
+        "Don't use breadcrumbs to replace main navigation",
+        "Don't show breadcrumbs on the homepage",
+        "Don't use breadcrumbs to show user navigation history",
+      ],
+      bestPractices: [
+        'Each breadcrumb item is the name of a parent page and links to that page',
+        'Breadcrumb links must clearly describe the link destination - avoid vague labels',
+        'Visually locate at top left of page, right above page title',
+        'On mobile, shorten breadcrumbs to save space',
+        'Separators between links are not interactive',
+      ],
+    },
     examples: [
       {
         title: 'Desktop Breadcrumb',
@@ -507,9 +553,30 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Accordion',
     category: 'content',
-    description: 'Expandable/collapsible content sections using Bootstrap collapse',
+    description: 'Expandable/collapsible content sections for hiding or showing large blocks of content. Each accordion has a heading and text area. Usually seen in groups. Helps save space and reduce user overwhelm, but can obscure important information.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-accordion--docs',
+    usage: {
+      whenToUse: [
+        'Content that is only relevant to a specific group of users',
+        'Scenarios where users might choose one or two headings while ignoring others (e.g., different transportation options)',
+        'Small collection of headings - more than a handful can overwhelm users',
+        'When users can gather value from scanning the headings',
+      ],
+      whenNotToUse: [
+        'Avoid using accordions to organize all of your content',
+        'Do not put critical information in an accordion',
+        'Do not use if text needs to be searchable online (harder for search engines)',
+        'Avoid if users need to compare content across multiple sections',
+      ],
+      bestPractices: [
+        'Use short and descriptive headings that are easy to compare',
+        'Keep accordion groups relatively small for easy scanning',
+        "Don't rely solely on accordions - pair with other components",
+        'Verify heading hierarchy is correct on the page',
+        'Make headings specific enough that users know what to expect when expanded',
+      ],
+    },
     props: [
       {
         name: 'id',
