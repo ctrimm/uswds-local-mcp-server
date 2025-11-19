@@ -232,12 +232,144 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Select',
     category: 'forms',
-    description: 'Dropdown select menu for choosing from predefined options',
+    description: 'Dropdown select component that allows users to choose one response from a drop-down list. Used for single selection only. Often used on forms (like choosing U.S. state), choosing an action, filtering a list, or sorting content.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-select--docs',
+    usage: {
+      whenToUse: [
+        'Building a form where user needs to submit selected data',
+        'User should select a single option from a list of many options',
+        'There is a limited and defined list of valid answers',
+        'Each option is brief (long list of wordy responses is harder to read)',
+        'Choosing an action, filtering a list, or sorting content',
+      ],
+      whenNotToUse: [
+        'If user should select more than one response - use a checkbox group instead',
+        'If the list only contains one or two possible responses - use a radio button group instead',
+      ],
+      bestPractices: [
+        'Always provide an accurate label for your select box',
+        'Keep options brief - long wordy responses are harder to read and select',
+        'Use a limited and defined list of valid answers',
+        'Assign a unique ID to any help text',
+        'Make sure the input has aria-describedby attribute that matches help text ID',
+        'Include a disabled, selected placeholder as the first option',
+      ],
+    },
+    props: [
+      {
+        name: 'variant',
+        type: "'default' | 'warning' | 'error'",
+        description: 'Visual state of the select box',
+        defaultValue: 'default',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description: 'Whether the select box is disabled',
+        defaultValue: 'false',
+      },
+      {
+        name: 'withHelpText',
+        type: 'boolean',
+        description: 'Whether to show help text below the select box',
+        defaultValue: 'false',
+      },
+    ],
+    examples: [
+      {
+        title: 'Default Select',
+        code: `<label class="kds-form-control">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Pick the best fantasy franchise</span>
+  </div>
+  <select class="kds-select" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text">
+    <option disabled selected></option>
+    <option value="1">Star Wars</option>
+    <option value="2">Harry Potter</option>
+    <option value="3">Lord of the Rings</option>
+    <option value="4">Planet of the Apes</option>
+    <option value="5">Star Trek</option>
+  </select>
+</label>`,
+        description: 'Standard select box with label. First option is disabled and selected (empty placeholder). Wrapped in label.kds-form-control.',
+      },
+      {
+        title: 'Disabled Select',
+        code: `<label class="kds-form-control">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Pick the best fantasy franchise</span>
+  </div>
+  <select class="kds-select" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" disabled>
+    <option disabled selected></option>
+    <option value="1">Star Wars</option>
+    <option value="2">Harry Potter</option>
+    <option value="3">Lord of the Rings</option>
+    <option value="4">Planet of the Apes</option>
+    <option value="5">Star Trek</option>
+  </select>
+</label>`,
+        description: 'Disabled select box using disabled attribute.',
+      },
+      {
+        title: 'Warning Select',
+        code: `<label class="kds-form-control">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Pick the best fantasy franchise</span>
+  </div>
+  <div class="kds-input-icon">
+    <select class="kds-select kds-select-warning" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text">
+      <option disabled selected></option>
+      <option value="1">Star Wars</option>
+      <option value="2">Harry Potter</option>
+      <option value="3">Lord of the Rings</option>
+      <option value="4">Planet of the Apes</option>
+      <option value="5">Star Trek</option>
+    </select>
+    <i class="kds-icon kds-text-warning ri-alert-fill" aria-label="Warning icon"></i>
+  </div>
+  <div class="kds-label">
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-warning">Alt label</span>
+  </div>
+</label>`,
+        description: 'Select box with warning state. Uses kds-select-warning class, wrapped in kds-input-icon with warning icon (ri-alert-fill), and help text with kds-text-warning class.',
+      },
+      {
+        title: 'Error Select',
+        code: `<label class="kds-form-control">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Pick the best fantasy franchise</span>
+  </div>
+  <div class="kds-input-icon">
+    <select class="kds-select kds-select-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" aria-invalid="true">
+      <option disabled selected></option>
+      <option value="1">Star Wars</option>
+      <option value="2">Harry Potter</option>
+      <option value="3">Lord of the Rings</option>
+      <option value="4">Planet of the Apes</option>
+      <option value="5">Star Trek</option>
+    </select>
+    <i class="kds-icon kds-text-error ri-error-warning-fill" aria-label="Error icon"></i>
+  </div>
+  <div class="kds-label">
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-error">Alt label</span>
+  </div>
+</label>`,
+        description: 'Select box with error state. Uses kds-select-error class, aria-invalid="true", wrapped in kds-input-icon with error icon (ri-error-warning-fill), and error help text with kds-text-error class.',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Arrow keys to navigate options, Enter to select, Escape to close',
-      ariaLabels: ['Associate label with select', 'Use aria-required for required fields'],
+      keyboardSupport: 'Arrow keys to navigate options, Enter to select, Space to open dropdown, Escape to close, Tab to move to next field',
+      ariaLabels: [
+        'Always provide an accurate label for select box',
+        'Use aria-labelledby to associate label with select element',
+        'Assign a unique ID to any help text',
+        'Use aria-describedby attribute that matches help text ID',
+        'Error state selects must include aria-invalid="true"',
+        'Warning/error icons must include aria-label to describe the state',
+        'Use aria-required for required fields',
+      ],
+      screenReaderNotes: 'Screen readers announce select box label, current value, number of options, and associated help text. Error state announced via aria-invalid.',
     },
     relatedComponents: ['Radio', 'Checkbox'],
   },
@@ -2565,6 +2697,85 @@ export class KeystoneService {
       // Check for disabled state
       if (code.includes('kds-disabled') && !code.includes('disabled')) {
         warnings.push('Disabled checkboxes should have disabled attribute on input');
+      }
+    }
+
+    // Check for select component structure
+    if (code.includes('kds-select')) {
+      // Check for form control wrapper
+      if (!code.includes('kds-form-control')) {
+        warnings.push('Select box should be wrapped in label.kds-form-control');
+      }
+
+      // Check for label
+      if (!code.includes('kds-label')) {
+        errors.push('Select box must have kds-label wrapper for label text');
+      }
+
+      if (!code.includes('kds-label-text')) {
+        errors.push('Select box must have span.kds-label-text for label text');
+      }
+
+      // Check for ARIA attributes
+      if (!code.includes('aria-labelledby')) {
+        errors.push('Select element must include aria-labelledby to associate with label');
+      }
+
+      // Check for help text association
+      if (code.includes('kds-label-text-alt') && !code.includes('aria-describedby')) {
+        errors.push('When help text is present, select must use aria-describedby');
+      }
+
+      // Check for error state attributes
+      if (code.includes('kds-select-error') && !code.includes('aria-invalid="true"')) {
+        errors.push('Error state selects must include aria-invalid="true"');
+      }
+
+      // Check for warning/error state wrapper
+      if ((code.includes('kds-select-warning') || code.includes('kds-select-error')) && !code.includes('kds-input-icon')) {
+        errors.push('Warning and error state selects must be wrapped in div.kds-input-icon with status icon');
+      }
+
+      // Check for warning/error icons
+      if ((code.includes('kds-text-warning') || code.includes('kds-text-error')) && code.includes('kds-icon')) {
+        if (!code.includes('aria-label')) {
+          errors.push('Status icons (warning/error) must include aria-label');
+        }
+      }
+
+      // Check for placeholder option
+      if (code.includes('<option')) {
+        if (!code.includes('disabled selected')) {
+          suggestions.push('Consider including a disabled, selected placeholder as the first option for better UX');
+        }
+      }
+
+      // Validate help text structure for warning/error
+      if (code.includes('kds-label-text-alt')) {
+        // Check for proper icon
+        if (code.includes('kds-text-warning') && !code.includes('ri-alert-fill')) {
+          suggestions.push('Warning state typically uses ri-alert-fill icon');
+        }
+
+        if (code.includes('kds-text-error') && !code.includes('ri-error-warning-fill')) {
+          suggestions.push('Error state typically uses ri-error-warning-fill icon');
+        }
+      }
+
+      // Check for option values
+      if (code.includes('<option') && !code.includes('value=')) {
+        warnings.push('Select options should include value attribute for proper form submission');
+      }
+
+      // Check that select is not multiple (this is single-select only)
+      if (code.includes('multiple')) {
+        warnings.push('Single-select component detected with multiple attribute. Use checkbox group for multi-select.');
+      }
+
+      // Suggest radio buttons for short lists
+      const optionCount = (code.match(/<option/g) || []).length;
+      if (optionCount <= 3 && optionCount > 0) {
+        suggestions.push('For 1-2 options, consider using radio buttons instead of a select box');
       }
     }
 
