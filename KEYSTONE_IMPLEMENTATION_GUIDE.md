@@ -2522,6 +2522,318 @@ export const keystoneComponents: KeystoneComponent[] = [
     relatedComponents: ['Button', 'Link', 'Card', 'Alert'],
   },
   {
+    name: 'Layout Grid',
+    category: 'foundations',
+    description: 'Responsive grid system with columns, gutters, and margins. Provides consistent layout principles across devices and screen sizes. Uses 4, 8, or 12 columns depending on breakpoint. Fluid grids (X-Small to Medium) adjust to viewport width, fixed grid (Large) maintains 1200px content area with auto margins.',
+    wcagLevel: 'AA',
+    storybookUrl: 'https://wcmauthorguide.pa.gov/en/keystone-design-system/foundations/layout-grid.html',
+    usage: {
+      whenToUse: [
+        'To create consistent layouts across all pages and components',
+        'When building responsive designs that adapt to different screen sizes',
+        'To establish visual rhythm and alignment throughout the interface',
+        'When combining multiple components in a page layout',
+      ],
+      whenNotToUse: [
+        "Don't extend content into gutters - use padding for spacing between elements",
+        "Don't change gutter widths within a breakpoint - they're fixed for consistency",
+        "Don't exceed 1200px content width on large displays - use auto margins instead",
+      ],
+      bestPractices: [
+        'Content should be contained within columns',
+        'Effects like shadows and hovers can expand into margins or gutters',
+        'Mix and match column widths by spanning multiple columns',
+        'Use fixed gutters within each breakpoint for visual consistency',
+        'Margins provide visual frame and prevent content from spilling over viewport',
+        'Test layouts at all breakpoint transitions to ensure smooth reflow',
+        'Consider how components stack on smaller breakpoints (typically to single column)',
+      ],
+    },
+    breakpoints: [
+      {
+        name: 'X-Small',
+        range: '0 to 640px',
+        columns: 4,
+        gutter: '16px',
+        margin: '16px',
+        gridType: 'fluid',
+        description: 'Mobile phones - 4 column fluid grid',
+      },
+      {
+        name: 'Small',
+        range: '641 to 991px',
+        columns: 8,
+        gutter: '16px',
+        margin: '24px',
+        gridType: 'fluid',
+        description: 'Tablets and small screens - 8 column fluid grid',
+      },
+      {
+        name: 'Medium',
+        range: '992 to 1439px',
+        columns: 12,
+        gutter: '24px',
+        margin: '32px',
+        gridType: 'fluid',
+        description: 'Desktop - 12 column fluid grid',
+      },
+      {
+        name: 'Large',
+        range: '1440px+',
+        columns: 12,
+        gutter: '24px',
+        margin: 'Auto',
+        gridType: 'fixed',
+        contentWidth: '1200px',
+        description: 'Large desktop - 12 column fixed grid at 1200px with auto margins',
+      },
+    ],
+    anatomy: {
+      columns: 'Equal width content containers. Column widths may vary at different points within breakpoint range but are always equal to each other. Content should be contained within columns.',
+      gutters: 'Fixed-width spacing between columns. Gutter widths are fixed within each breakpoint range to provide consistent visual order and prevent content overlap. Do not extend content into gutters.',
+      margins: 'White space beyond the content area. Margins provide visual frame and prevent content from spilling over viewable regions. Each breakpoint has specific margin widths that scale as viewport shifts.',
+    },
+    examples: [
+      {
+        title: 'Column Span Options',
+        description: 'Mix and match column widths by spanning multiple columns. Common patterns include 50/50 (6+6 columns), 33/33/33 (4+4+4 columns), 66/33 (8+4 columns), and 25/75 (3+9 columns).',
+        code: `<!-- 12 column grid on desktop -->
+<div class="container">
+  <div class="row">
+    <!-- Two equal columns (6 columns each) -->
+    <div class="col-md-6">Column 1 (50%)</div>
+    <div class="col-md-6">Column 2 (50%)</div>
+  </div>
+
+  <div class="row">
+    <!-- Three equal columns (4 columns each) -->
+    <div class="col-md-4">Column 1 (33%)</div>
+    <div class="col-md-4">Column 2 (33%)</div>
+    <div class="col-md-4">Column 3 (33%)</div>
+  </div>
+
+  <div class="row">
+    <!-- Sidebar layout (8 columns + 4 columns) -->
+    <div class="col-md-8">Main content (66%)</div>
+    <div class="col-md-4">Sidebar (33%)</div>
+  </div>
+</div>`,
+      },
+      {
+        title: 'Responsive Reflow',
+        description: 'Components reflow based on breakpoints. This example shows 3-column layout on desktop that stacks to single column on tablet/mobile.',
+        code: `<!-- Cards that reflow across breakpoints -->
+<div class="container">
+  <div class="row">
+    <!-- Desktop: 3 columns (4 each), Tablet: 2 columns, Mobile: 1 column -->
+    <div class="col-12 col-sm-6 col-md-4">Card 1</div>
+    <div class="col-12 col-sm-6 col-md-4">Card 2</div>
+    <div class="col-12 col-sm-6 col-md-4">Card 3</div>
+  </div>
+</div>`,
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Grid system does not impact keyboard navigation - proper tab order maintained by DOM order',
+      ariaLabels: [
+        'Grid system is purely visual - no ARIA labels required',
+        'Ensure logical DOM order matches visual layout for screen readers',
+        'Use semantic HTML within grid columns (nav, main, aside, etc.)',
+      ],
+      screenReaderNotes: 'Grid layout is transparent to screen readers. Content is read in DOM order regardless of visual column placement. Ensure DOM order is logical.',
+    },
+    relatedComponents: ['Card', 'List Group', 'Table', 'Footer'],
+  },
+  {
+    name: 'Elevation',
+    category: 'foundations',
+    description: 'Shadow system creating depth and focus through 4 elevation levels. Differentiates between elements, improves user experience, and guides attention. Based on consistent shadow principles using #001D34 color with varying blur, spread, and offset values.',
+    wcagLevel: 'AA',
+    storybookUrl: 'https://wcmauthorguide.pa.gov/en/keystone-design-system/foundations/elevation.html',
+    usage: {
+      whenToUse: [
+        'To establish clear hierarchy of elements',
+        'To indicate which elements are interactive or in focus',
+        'To create depth and separate content layers',
+        'To draw attention to important content like modals or cards',
+      ],
+      whenNotToUse: [
+        'Avoid overly dramatic shadows that clutter the interface',
+        'Do not use elevation when it compromises text readability',
+        'Limit elevation usage - use purposefully and sparingly',
+        'Do not stack too many elevated elements - creates visual noise',
+      ],
+      bestPractices: [
+        'Use elevation consistently across the website for coherent visual language',
+        'Lower elevation (1-2) for subtle depth like cards and buttons',
+        'Higher elevation (3-4) for floating elements like modals and dropdowns',
+        'Test elevation styles in context of entire interface',
+        'Ensure shadows do not compromise text readability or accessibility',
+        'Incorporate user feedback regarding readability and accessibility',
+        'Elevation 1: Subtle depth for cards, list items',
+        'Elevation 2: Moderate depth for raised buttons, selected items',
+        'Elevation 3: Prominent depth for dropdown menus, tooltips',
+        'Elevation 4: Maximum depth for modals, dialogs, popups',
+      ],
+    },
+    elevationStyles: [
+      {
+        level: 1,
+        shadow: '0px 1px 3px 1px rgba(0, 29, 52, 0.3)',
+        blur: '3px',
+        spread: '1px',
+        offsetX: '0px',
+        offsetY: '1px',
+        color: '#001D344D',
+        rgba: 'rgba(0, 29, 52, 0.3)',
+        usage: 'Subtle depth for cards, list items, slight emphasis',
+        cssClass: 'kds-elevation-1',
+      },
+      {
+        level: 2,
+        shadow: '0px 2px 6px 1px rgba(0, 29, 52, 0.3)',
+        blur: '6px',
+        spread: '1px',
+        offsetX: '0px',
+        offsetY: '2px',
+        color: '#001D344D',
+        rgba: 'rgba(0, 29, 52, 0.3)',
+        usage: 'Moderate depth for raised buttons, selected items, hover states',
+        cssClass: 'kds-elevation-2',
+      },
+      {
+        level: 3,
+        shadow: '0px 4px 6px 2px rgba(0, 29, 52, 0.25)',
+        blur: '6px',
+        spread: '2px',
+        offsetX: '0px',
+        offsetY: '4px',
+        color: '#001D3440',
+        rgba: 'rgba(0, 29, 52, 0.25)',
+        usage: 'Prominent depth for dropdown menus, tooltips, navigation drawers',
+        cssClass: 'kds-elevation-3',
+      },
+      {
+        level: 4,
+        shadow: '0px 6px 8px 2px rgba(0, 29, 52, 0.3)',
+        blur: '8px',
+        spread: '2px',
+        offsetX: '0px',
+        offsetY: '6px',
+        color: '#001D344D',
+        rgba: 'rgba(0, 29, 52, 0.3)',
+        usage: 'Maximum depth for modals, dialogs, popups, critical floating elements',
+        cssClass: 'kds-elevation-4',
+      },
+    ],
+    designTokens: {
+      format: 'JSON',
+      structure: {
+        Keystone: {
+          Elevation: {
+            '1': {
+              $type: 'shadow',
+              $value: {
+                blur: '3px',
+                color: '#001D344D',
+                spread: '1px',
+                offsetX: '0px',
+                offsetY: '1px',
+              },
+            },
+            '2': {
+              $type: 'shadow',
+              $value: {
+                blur: '6px',
+                color: '#001D344D',
+                spread: '1px',
+                offsetX: '0px',
+                offsetY: '2px',
+              },
+            },
+            '3': {
+              $type: 'shadow',
+              $value: {
+                blur: '6px',
+                color: '#001D3440',
+                spread: '2px',
+                offsetX: '0px',
+                offsetY: '4px',
+              },
+            },
+            '4': {
+              $type: 'shadow',
+              $value: {
+                blur: '8px',
+                color: '#001D344D',
+                spread: '2px',
+                offsetX: '0px',
+                offsetY: '6px',
+              },
+            },
+          },
+        },
+      },
+    },
+    examples: [
+      {
+        title: 'Card with Elevation 1',
+        code: `<div class="kds-card" style="box-shadow: 0px 1px 3px 1px rgba(0, 29, 52, 0.3);">
+  <div class="kds-card-body">
+    <h3 class="kds-card-title">Card Title</h3>
+    <p class="kds-card-text">Card content with subtle elevation for depth.</p>
+  </div>
+</div>`,
+        description: 'Elevation 1 provides subtle depth, suitable for cards and list items.',
+      },
+      {
+        title: 'Button with Elevation 2 (Hover)',
+        code: `<button class="kds-btn kds-btn-primary" style="box-shadow: 0px 2px 6px 1px rgba(0, 29, 52, 0.3);">
+  Hover State
+</button>`,
+        description: 'Elevation 2 for button hover states, providing moderate depth to indicate interactivity.',
+      },
+      {
+        title: 'Dropdown Menu with Elevation 3',
+        code: `<div class="kds-dropdown-menu" style="box-shadow: 0px 4px 6px 2px rgba(0, 29, 52, 0.25);">
+  <ul>
+    <li><a href="#">Menu Item 1</a></li>
+    <li><a href="#">Menu Item 2</a></li>
+    <li><a href="#">Menu Item 3</a></li>
+  </ul>
+</div>`,
+        description: 'Elevation 3 for dropdown menus, creating prominent depth to float above other content.',
+      },
+      {
+        title: 'Modal with Elevation 4',
+        code: `<div class="kds-modal" style="box-shadow: 0px 6px 8px 2px rgba(0, 29, 52, 0.3);">
+  <div class="kds-modal-header">
+    <h2>Modal Title</h2>
+  </div>
+  <div class="kds-modal-body">
+    <p>Modal content with maximum elevation for critical focus.</p>
+  </div>
+  <div class="kds-modal-footer">
+    <button class="kds-btn kds-btn-primary">Confirm</button>
+    <button class="kds-btn kds-btn-secondary">Cancel</button>
+  </div>
+</div>`,
+        description: 'Elevation 4 for modals and dialogs, providing maximum depth to demand attention.',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Elevation does not impact keyboard navigation',
+      ariaLabels: [
+        'Elevation is purely visual - no ARIA labels required',
+        'Ensure elevated elements do not compromise text readability',
+        'Test contrast ratios on elevated surfaces',
+        'Shadow color (#001D34) should not interfere with content visibility',
+      ],
+      screenReaderNotes: 'Elevation is visual only and not announced by screen readers. Ensure elevated content has proper semantic structure and ARIA attributes.',
+    },
+    relatedComponents: ['Card', 'Button', 'Modal', 'Alert', 'Navbar'],
+  },
+  {
     name: 'Icon object',
     category: 'ui',
     description: 'Icon component using Remix Icons (https://remixicon.com/). Simple, easily graspable way to add visual emphasis, signal actions, or indicate feedback state while reducing cognitive load. Available in small and large sizes.',
