@@ -398,34 +398,107 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Navbar',
     category: 'navigation',
-    description: 'Primary navigation bar with responsive toggle using Stimulus.js',
+    description: 'Header and navigation bar appearing throughout web app or site. Contains official website banner and navigation bar with logo, program name, search bar, navigation menu, and dropdown submenus. Required on every page.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-navbar--docs',
+    usage: {
+      whenToUse: [
+        'Required on every page throughout the site',
+        'Provide consistent site-wide navigation',
+        'Display official Commonwealth of Pennsylvania branding',
+        'Offer search functionality across the site',
+        'Organize navigation with dropdown submenus',
+      ],
+      whenNotToUse: [
+        'The header is required on all pages - should never be removed',
+      ],
+      bestPractices: [
+        'Use clear, descriptive labels for all menu items',
+        'Include official website banner with Commonwealth of Pennsylvania branding',
+        'Implement responsive design with hamburger menu for smaller screens',
+        'Use Stimulus controllers (revealable + navbar) for interactive behavior',
+        'Provide search functionality with visually-hidden labels',
+        'Organize complex navigation with dropdown submenus',
+        'Maintain consistent header across all pages',
+      ],
+    },
     examples: [
       {
-        title: 'Responsive Navbar',
-        code: `<nav data-controller="revealable navbar">
+        title: 'Complete Header and Navbar',
+        code: `<div class="kds-header">
+  <img aria-hidden="true" class="image"
+       src="https://www.pa.gov/content/dam/copapwp-pagov/en/global/images/bannerimage.png"
+       alt="Commonwealth of Pennsylvania">
+  <span class="kds-header-text">
+    <a href="#" class="kds-link kds-link-inline" role="link" aria-label="Link">Official Website</a> of the Commonwealth of Pennsylvania
+  </span>
+</div>
+<nav class="kds-navbar" data-controller="revealable navbar">
   <div class="kds-navbar-header">
-    <button
-      class="kds-navbar-toggler"
-      data-navbar-target="toggleButton"
-      data-action="click->revealable#toggle click->navbar#toggleLabel"
-      aria-expanded="false"
-    >
-      Menu
+    <h3 style="color: lightgrey">Keystone!</h3>
+    <form method="get" action="#" class="d-none d-md-block">
+      <div class="kds-search-input p-3">
+        <label class="visually-hidden">Search</label>
+        <input type="search" class="kds-text-input w-100" placeholder="Search" />
+        <button type="submit" class="kds-button kds-button-filled">
+          <span class="visually-hidden">Search</span>
+          <i aria-hidden="true" class="ri-search-line"></i>
+        </button>
+      </div>
+    </form>
+    <button class="kds-navbar-toggler" data-navbar-target="toggleButton"
+            data-action="click->revealable#toggle click->navbar#toggleLabel" aria-expanded="false">Menu
     </button>
   </div>
   <ul class="kds-nav" data-revealable-target="content">
-    <!-- Navigation items -->
+    <li class="kds-nav-item d-md-none">
+      <form method="get" action="#">
+        <div class="kds-search-input p-3">
+          <label class="visually-hidden">Search</label>
+          <input type="search" class="kds-text-input w-100" placeholder="Search" />
+          <button type="submit" class="kds-button kds-button-filled">
+            <span class="visually-hidden">Search</span>
+            <i aria-hidden="true" class="ri-search-line"></i>
+          </button>
+        </div>
+      </form>
+    </li>
+    <li class="kds-nav-item"><a href="#" class="kds-nav-link">Home</a></li>
+    <li class="kds-nav-item" data-controller="revealable">
+      <button
+        id="navbarDropdown"
+        class="kds-nav-link kds-dropdown-toggle"
+        data-action="click->revealable#toggle"
+        aria-expanded="false">
+        Reserve Your Spot
+      </button>
+      <ul class="kds-menu-list kds-dropdown kds-revealable"
+          data-revealable-target="content"
+          aria-labelledby="navbarDropdown">
+        <li><a class="kds-menu-item" href="#"><i class="kds-icon ri-circle-fill"></i>Sub Item 1</a></li>
+        <li><a class="kds-menu-item" href="#"><i class="kds-icon ri-triangle-fill"></i>Sub Item 2</a></li>
+        <li><a class="kds-menu-item" href="#"><i class="kds-icon ri-pentagon-fill"></i>Sub Item 3</a></li>
+      </ul>
+    </li>
+    <li class="kds-nav-item"><a href="#" class="kds-nav-link">Camping This Weekend</a></li>
+    <li class="kds-nav-item"><a href="#" class="kds-nav-link">Interactive Map</a></li>
+    <li class="kds-nav-item"><a href="#" class="kds-nav-link">Fees & Policies</a></li>
   </ul>
 </nav>`,
-        description: 'Navbar with Revealable and Navbar Stimulus controllers',
+        description: 'Complete header with Commonwealth banner and navbar with search, menu items, and dropdown submenu',
       },
     ],
     accessibility: {
-      keyboardSupport: 'Tab through nav items, Enter to activate links',
-      ariaLabels: ['Use nav element with aria-label', 'Toggle button manages aria-expanded'],
-      screenReaderNotes: 'Navbar state (open/closed) announced via aria-expanded',
+      keyboardSupport: 'Tab through nav items, Enter to activate links/buttons, Space to activate buttons, Arrow keys within dropdown menus, Escape to close dropdowns',
+      ariaLabels: [
+        'Use semantic <nav> element for navigation',
+        'Hamburger menu toggle button requires aria-expanded to indicate menu state',
+        'Dropdown toggle buttons require aria-expanded to indicate submenu state',
+        'Dropdown menus require aria-labelledby to associate with toggle button',
+        'Search inputs require visually-hidden labels (use Bootstrap .visually-hidden class)',
+        'Icon-only buttons (search, menu toggle) require visually-hidden text or aria-label',
+      ],
+      screenReaderNotes: 'Navbar state (open/closed) announced via aria-expanded. Stimulus controllers (revealable + navbar) manage ARIA attributes automatically. Responsive search appears in both desktop (d-none d-md-block) and mobile (d-md-none) versions with proper labels.',
     },
     relatedComponents: ['Link', 'Menu list', 'Breadcrumb'],
   },
@@ -2182,6 +2255,138 @@ export class KeystoneService {
 
       if (!isDecorative && !code.includes('aria-label')) {
         warnings.push('Functional icons should include aria-label to describe their purpose');
+      }
+    }
+
+    // Check for navbar/header component structure
+    if (code.includes('kds-navbar') || code.includes('kds-header')) {
+      // Check for header component presence (should appear with navbar)
+      if (code.includes('kds-navbar') && !code.includes('kds-header')) {
+        warnings.push('Navbar should be accompanied by kds-header component with Commonwealth branding');
+      }
+
+      // Check for semantic nav element
+      if (code.includes('kds-navbar') && !code.includes('<nav')) {
+        errors.push('Navbar must use semantic <nav> element');
+      }
+
+      // Check for Stimulus controllers on navbar
+      if (code.includes('kds-navbar')) {
+        if (!code.includes('data-controller="revealable navbar"') && !code.includes('data-controller="navbar revealable"')) {
+          warnings.push('Navbar should use Stimulus controllers: data-controller="revealable navbar"');
+        }
+      }
+
+      // Check for hamburger menu toggle button
+      if (code.includes('kds-navbar-toggler')) {
+        if (!code.includes('aria-expanded')) {
+          errors.push('Navbar toggle button (kds-navbar-toggler) must include aria-expanded attribute');
+        }
+
+        if (!code.includes('data-action')) {
+          warnings.push('Navbar toggle button should have data-action to trigger Stimulus controllers');
+        }
+
+        // Check for accessible label
+        const hasVisibleText = /kds-navbar-toggler[^>]*>[\s\S]*?[A-Za-z]/.test(code);
+        const hasAriaLabel = code.includes('aria-label');
+        if (!hasVisibleText && !hasAriaLabel) {
+          errors.push('Navbar toggle button must include visible text (e.g., "Menu") or aria-label');
+        }
+      }
+
+      // Check for dropdown structure
+      if (code.includes('kds-dropdown')) {
+        // Check for dropdown toggle button
+        if (code.includes('kds-dropdown-toggle')) {
+          if (!code.includes('aria-expanded')) {
+            errors.push('Dropdown toggle buttons must include aria-expanded attribute');
+          }
+
+          if (!code.includes('id=')) {
+            errors.push('Dropdown toggle buttons must have id attribute for aria-labelledby association');
+          }
+        }
+
+        // Check for dropdown menu aria-labelledby
+        if (code.includes('kds-menu-list') && code.includes('kds-dropdown')) {
+          if (!code.includes('aria-labelledby')) {
+            errors.push('Dropdown menus (kds-menu-list) must include aria-labelledby to associate with toggle button');
+          }
+        }
+      }
+
+      // Check for search input accessibility
+      if (code.includes('kds-search-input')) {
+        // Check for label (must be present, even if visually hidden)
+        if (!code.includes('<label')) {
+          errors.push('Search input must have a <label> element (use .visually-hidden if you want to hide it visually)');
+        }
+
+        // Suggest visually-hidden class for search labels
+        if (code.includes('<label') && !code.includes('visually-hidden')) {
+          suggestions.push('Consider using .visually-hidden class on search labels for cleaner visual design while maintaining accessibility');
+        }
+
+        // Check for search button accessibility
+        const hasSearchButton = code.includes('type="submit"') && code.includes('kds-search-input');
+        if (hasSearchButton) {
+          const hasIconOnly = code.includes('ri-search-line') && !/<button[^>]*>[^<]*[A-Za-z]/.test(code);
+          if (hasIconOnly && !code.includes('visually-hidden') && !code.includes('aria-label')) {
+            errors.push('Icon-only search buttons must include visually-hidden text (e.g., <span class="visually-hidden">Search</span>) or aria-label');
+          }
+        }
+      }
+
+      // Check for responsive design patterns
+      if (code.includes('kds-navbar')) {
+        const hasResponsiveClasses = code.includes('d-none d-md-block') || code.includes('d-md-none');
+        if (!hasResponsiveClasses) {
+          suggestions.push('Consider using Bootstrap responsive display classes (d-none, d-md-block, d-md-none) for mobile/desktop variants');
+        }
+
+        // Check for both desktop and mobile search if search is present
+        if (code.includes('kds-search-input')) {
+          const hasDesktopSearch = code.includes('d-none d-md-block');
+          const hasMobileSearch = code.includes('d-md-none');
+
+          if (hasDesktopSearch && !hasMobileSearch) {
+            warnings.push('If providing desktop search (d-none d-md-block), consider adding mobile search variant (d-md-none) for consistent experience');
+          }
+        }
+      }
+
+      // Check for navigation list structure
+      if (code.includes('kds-nav')) {
+        if (!code.includes('<ul') && !code.includes('<ol')) {
+          errors.push('Navigation menu (kds-nav) must use <ul> or <ol> for list structure');
+        }
+
+        if (!code.includes('kds-nav-item')) {
+          warnings.push('Navigation items should use kds-nav-item class on <li> elements');
+        }
+
+        if (!code.includes('kds-nav-link')) {
+          warnings.push('Navigation links should use kds-nav-link class');
+        }
+      }
+
+      // Check for header image accessibility
+      if (code.includes('kds-header') && code.includes('<img')) {
+        if (!code.includes('alt=')) {
+          errors.push('Header image must include alt attribute (e.g., alt="Commonwealth of Pennsylvania")');
+        }
+
+        // Check for aria-hidden on decorative header images
+        const hasDecorativeImage = code.includes('kds-header') && code.includes('aria-hidden="true"');
+        if (!hasDecorativeImage && code.includes('kds-header-text')) {
+          suggestions.push('Consider using aria-hidden="true" on decorative header images when text provides the same information');
+        }
+      }
+
+      // Check for official website text
+      if (code.includes('kds-header') && !code.includes('Official Website')) {
+        warnings.push('Header should include "Official Website of the Commonwealth of Pennsylvania" text');
       }
     }
 
