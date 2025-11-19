@@ -16,6 +16,7 @@ import { LayoutService } from './services/layout-service.js';
 import { SuggestionService } from './services/suggestion-service.js';
 import { ComparisonService } from './services/comparison-service.js';
 import { CodeGeneratorService } from './services/code-generator-service.js';
+import { TailwindUSWDSService } from './services/tailwind-uswds-service.js';
 
 // Server configuration
 const USE_REACT_COMPONENTS = process.env.USE_REACT_COMPONENTS === 'true';
@@ -30,6 +31,7 @@ const layoutService = new LayoutService(USE_REACT_COMPONENTS);
 const suggestionService = new SuggestionService(USE_REACT_COMPONENTS);
 const comparisonService = new ComparisonService(USE_REACT_COMPONENTS);
 const codeGeneratorService = new CodeGeneratorService(USE_REACT_COMPONENTS);
+const tailwindUSWDSService = new TailwindUSWDSService();
 
 // Create MCP server
 const server = new Server(
@@ -378,6 +380,73 @@ const tools: Tool[] = [
       required: ['conversion_spec'],
     },
   },
+  {
+    name: 'get_tailwind_uswds_getting_started',
+    description: 'Get the Getting Started guide for USWDS with Tailwind CSS integration',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'get_tailwind_uswds_component',
+    description: 'Get Tailwind USWDS component documentation, including usage examples and Tailwind classes',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        component_name: {
+          type: 'string',
+          description: 'Name of the component (e.g., "accordion", "alert", "button"). Leave empty to list all components.',
+        },
+      },
+    },
+  },
+  {
+    name: 'get_tailwind_uswds_javascript',
+    description: 'Get JavaScript documentation for USWDS with Tailwind CSS',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'get_tailwind_uswds_colors',
+    description: 'Get colors documentation for USWDS with Tailwind CSS, including color palettes and Tailwind classes',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'get_tailwind_uswds_icons',
+    description: 'Get icons documentation for USWDS with Tailwind CSS',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'get_tailwind_uswds_typography',
+    description: 'Get typography documentation for USWDS with Tailwind CSS, including font families, sizes, and Tailwind classes',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'search_tailwind_uswds_docs',
+    description: 'Search USWDS + Tailwind CSS documentation for specific topics, components, or patterns',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search query',
+        },
+      },
+      required: ['query'],
+    },
+  },
 ];
 
 // List tools handler
@@ -652,6 +721,92 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'convert_html_to_react': {
         const conversionSpec = args?.conversion_spec as any;
         const result = await codeGeneratorService.convertHtmlToReact(conversionSpec);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_tailwind_uswds_getting_started': {
+        const result = await tailwindUSWDSService.getGettingStarted();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_tailwind_uswds_component': {
+        const componentName = args?.component_name as string | undefined;
+        const result = await tailwindUSWDSService.getComponentDocs(componentName);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_tailwind_uswds_javascript': {
+        const result = await tailwindUSWDSService.getJavaScriptDocs();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_tailwind_uswds_colors': {
+        const result = await tailwindUSWDSService.getColorsDocs();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_tailwind_uswds_icons': {
+        const result = await tailwindUSWDSService.getIconsDocs();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_tailwind_uswds_typography': {
+        const result = await tailwindUSWDSService.getTypographyDocs();
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'search_tailwind_uswds_docs': {
+        const query = args?.query as string;
+        const result = await tailwindUSWDSService.searchDocs(query);
         return {
           content: [
             {
