@@ -372,12 +372,134 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Radio',
     category: 'forms',
-    description: 'Radio button input for single selection from multiple options',
+    description: 'Radio button input that lets users choose one option from a list of two or more choices. When a user picks a different option, the previous one is automatically unselected. Each radio button label should tell the user exactly what they are choosing.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-radio--docs',
+    usage: {
+      whenToUse: [
+        'When the user must choose only one option from multiple choices',
+        'Often used in forms and data tables',
+        'Keep the list of options short to avoid overwhelming users',
+      ],
+      whenNotToUse: [
+        "Don't use radio buttons if users need to choose more than one option - use checkboxes instead",
+        'Avoid long lists of radio options, which overwhelm users',
+      ],
+      bestPractices: [
+        'Keep the label short and meaningful - usually three words or fewer',
+        'Use sentence case for labels',
+        "Don't use ALL CAPS",
+        'Every radio button needs a clear and concise label',
+        'All radio buttons in a group must have the same name attribute',
+        'Use fieldset/legend to group related radio buttons',
+      ],
+    },
+    props: [
+      {
+        name: 'variant',
+        type: "'default' | 'warning' | 'error'",
+        description: 'Visual state of the radio button',
+        defaultValue: 'default',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description: 'Whether the radio button is disabled',
+        defaultValue: 'false',
+      },
+      {
+        name: 'withHelpText',
+        type: 'boolean',
+        description: 'Whether to show help text below the radio button',
+        defaultValue: 'false',
+      },
+      {
+        name: 'checked',
+        type: 'boolean',
+        description: 'Whether the radio button is selected',
+        defaultValue: 'false',
+      },
+    ],
+    examples: [
+      {
+        title: 'Default Radio Button',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="radio" class="kds-radio" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" />
+    <span id="text-input-label" class="kds-label-text">Some choice</span>
+  </label>
+</div>`,
+        description: 'Standard radio button with label. Must be wrapped in kds-form-control and kds-label.',
+      },
+      {
+        title: 'Disabled Radio Button',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="radio" class="kds-radio" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" disabled />
+    <span id="text-input-label" class="kds-label-text">Some choice</span>
+  </label>
+</div>`,
+        description: 'Disabled radio button using disabled attribute.',
+      },
+      {
+        title: 'Warning Radio Button',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="radio" class="kds-radio" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" />
+    <span id="text-input-label" class="kds-label-text">Some choice</span>
+  </label>
+  <div class="kds-label">
+    <i class="kds-icon kds-text-warning ri-alert-fill" aria-label="Warning icon"></i>
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-warning">Help text message</span>
+  </div>
+</div>`,
+        description: 'Radio button with warning state. Includes warning icon (ri-alert-fill) and help text with kds-text-warning class.',
+      },
+      {
+        title: 'Error Radio Button',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="radio" class="kds-radio kds-radio-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" aria-invalid="true" />
+    <span id="text-input-label" class="kds-label-text">Some choice</span>
+  </label>
+  <div class="kds-label">
+    <i class="kds-icon kds-text-error ri-error-warning-fill" aria-label="Error icon"></i>
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-error">Help text message</span>
+  </div>
+</div>`,
+        description: 'Radio button with error state. Includes kds-radio-error class, aria-invalid="true", error icon (ri-error-warning-fill), and error help text with kds-text-error class.',
+      },
+      {
+        title: 'Radio Button Group',
+        code: `<fieldset class="kds-form-control">
+  <legend class="kds-label-text">Select your preferred contact method</legend>
+  <label class="kds-label">
+    <input type="radio" name="contact" class="kds-radio" tabindex="0" aria-labelledby="contact-email" />
+    <span id="contact-email" class="kds-label-text">Email</span>
+  </label>
+  <label class="kds-label">
+    <input type="radio" name="contact" class="kds-radio" tabindex="0" aria-labelledby="contact-phone" />
+    <span id="contact-phone" class="kds-label-text">Phone</span>
+  </label>
+  <label class="kds-label">
+    <input type="radio" name="contact" class="kds-radio" tabindex="0" aria-labelledby="contact-mail" />
+    <span id="contact-mail" class="kds-label-text">Mail</span>
+  </label>
+</fieldset>`,
+        description: 'Radio button group using fieldset/legend for proper grouping. All radios share the same name attribute for mutual exclusivity.',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Arrow keys to change selection within group, Tab to move between groups',
-      ariaLabels: ['Use fieldset/legend for radio groups', 'All radios in group must have same name attribute'],
+      keyboardSupport: 'Arrow keys to move between radio buttons within group, Space to select, Tab to move between groups',
+      ariaLabels: [
+        'Use fieldset/legend to group related radio buttons',
+        'All radios in a group must have the same name attribute',
+        'Each radio must have aria-labelledby to associate with label text',
+        'Use aria-describedby to associate with help text when present',
+        'Error state radios must include aria-invalid="true"',
+        'Warning/error icons must include aria-label to describe the state',
+      ],
+      screenReaderNotes: 'Screen readers announce radio button state (checked/unchecked), label text, and associated help text. Grouping with fieldset/legend helps users understand the context of choices.',
     },
     relatedComponents: ['Checkbox', 'Select'],
   },
@@ -2443,6 +2565,101 @@ export class KeystoneService {
       // Check for disabled state
       if (code.includes('kds-disabled') && !code.includes('disabled')) {
         warnings.push('Disabled checkboxes should have disabled attribute on input');
+      }
+    }
+
+    // Check for radio button component structure
+    if (code.includes('kds-radio')) {
+      // Check for form control wrapper
+      if (!code.includes('kds-form-control')) {
+        warnings.push('Radio button should be wrapped in kds-form-control');
+      }
+
+      // Check for label association
+      if (!code.includes('kds-label')) {
+        errors.push('Radio button must be wrapped in label.kds-label');
+      }
+
+      if (!code.includes('kds-label-text')) {
+        errors.push('Radio button must have span.kds-label-text for label text');
+      }
+
+      // Check for ARIA attributes
+      if (!code.includes('aria-labelledby')) {
+        errors.push('Radio button must include aria-labelledby to associate with label');
+      }
+
+      // Check for helper text association
+      if (code.includes('kds-label-text-alt') && !code.includes('aria-describedby')) {
+        errors.push('When help text is present, radio button must use aria-describedby');
+      }
+
+      // Check for error state attributes
+      if (code.includes('kds-radio-error') && !code.includes('aria-invalid="true"')) {
+        errors.push('Error state radio buttons must include aria-invalid="true"');
+      }
+
+      // Check for warning/error icons
+      if ((code.includes('kds-text-warning') || code.includes('kds-text-error')) && code.includes('kds-icon')) {
+        if (!code.includes('aria-label')) {
+          errors.push('Status icons (warning/error) must include aria-label');
+        }
+      }
+
+      // Check for disabled state
+      if (code.includes('disabled') && !code.includes('kds-disabled')) {
+        suggestions.push('Consider adding kds-disabled class for consistent styling of disabled radio buttons');
+      }
+
+      // Check for radio button groups
+      if (code.includes('type="radio"')) {
+        // Count number of radio buttons
+        const radioCount = (code.match(/type="radio"/g) || []).length;
+
+        if (radioCount > 1) {
+          // Multiple radios - should be grouped
+          if (!code.includes('<fieldset')) {
+            warnings.push('Radio button groups should be wrapped in <fieldset> with <legend>');
+          }
+
+          if (!code.includes('<legend')) {
+            warnings.push('Radio button groups should have <legend> describing the group');
+          }
+
+          // Check for shared name attribute
+          if (!code.includes('name=')) {
+            errors.push('All radio buttons in a group must have the same name attribute for mutual exclusivity');
+          }
+        }
+      }
+
+      // Validate help text structure
+      if (code.includes('kds-label-text-alt')) {
+        // Check for proper icon
+        if (code.includes('kds-text-warning') && !code.includes('ri-alert-fill')) {
+          suggestions.push('Warning state typically uses ri-alert-fill icon');
+        }
+
+        if (code.includes('kds-text-error') && !code.includes('ri-error-warning-fill')) {
+          suggestions.push('Error state typically uses ri-error-warning-fill icon');
+        }
+      }
+
+      // Check label best practices
+      const labelMatch = code.match(/kds-label-text">([^<]+)</);
+      if (labelMatch && labelMatch[1]) {
+        const labelText = labelMatch[1].trim();
+
+        // Check for ALL CAPS
+        if (labelText === labelText.toUpperCase() && labelText.length > 1) {
+          warnings.push("Don't use ALL CAPS for radio button labels. Use sentence case instead.");
+        }
+
+        // Check label length (suggest keeping it short)
+        const wordCount = labelText.split(/\s+/).length;
+        if (wordCount > 5) {
+          suggestions.push('Keep radio button labels short and meaningful - usually three words or fewer');
+        }
       }
     }
 
