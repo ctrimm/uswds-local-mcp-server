@@ -1003,14 +1003,82 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Footer',
     category: 'content',
-    description: 'Page footer with site navigation and information',
+    description: 'Page footer appearing at the bottom of every page. Includes logo, up to 3 lists of links, and copyright banner with policy links. Required on all pages throughout web app or site.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-footer--docs',
-    accessibility: {
-      keyboardSupport: 'Tab through footer links',
-      ariaLabels: ['Use footer element', 'Provide aria-label if multiple footers exist'],
+    usage: {
+      whenToUse: [
+        'Required on every page throughout the site',
+        'Provide consistent site-wide navigation',
+        'Display copyright and legal information',
+        'Link to accessibility, privacy, and policy pages',
+      ],
+      whenNotToUse: [
+        'The footer is required on all pages - should never be removed',
+      ],
+      bestPractices: [
+        'Use clear, descriptive link text',
+        'Group similar links under clear headings for screen reader structure',
+        'Include Commonwealth of Pennsylvania logo',
+        'Maintain consistent footer across all pages',
+        'Include standard policy links: Accessibility, Privacy & Disclaimers, Translation Disclaimer, Security',
+      ],
     },
-    relatedComponents: ['Link', 'Navbar'],
+    examples: [
+      {
+        title: 'Complete Footer',
+        code: `<footer class="kds-footer">
+  <div class="d-flex flex-wrap justify-content-between gap-5 px-2">
+    <div>
+      <img class="kds-footer-logo" src="static/media/copa-logo.1be43736.svg" />
+    </div>
+    <div class="d-flex flex-wrap gap-5">
+      <ul class="list-unstyled">
+        <li class="pb-2 kds-title kds-title-sm kds-text-bold kds-text-uppercase kds-text-spacing-sm">Section Label 1</li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 1</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 2</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 3</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 4</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 5</a></li>
+      </ul>
+
+      <ul class="list-unstyled">
+        <li class="pb-2 kds-title kds-title-sm kds-text-bold kds-text-uppercase kds-text-spacing-sm">Section Label 2</li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 1</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 2</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 3</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 4</a></li>
+        <li class="py-2"><a href="#" class="kds-label kds-label-lg">Placeholder link 5</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="kds-footer-copyright-banner px-2">
+    <p class="kds-footer-copyright-banner-text">Copyright © 2025 Commonwealth of Pennsylvania. All rights reserved.</p>
+
+    <ul class="kds-footer-copyright-banner-links">
+      <li><a href="#">Accessibility</a></li>
+      <li><a href="#">Privacy & Disclaimers</a></li>
+      <li><a href="#">Translation Disclaimer</a></li>
+      <li><a href="#">Security</a></li>
+    </ul>
+  </div>
+</footer>`,
+        description: 'Full footer with logo, 2 link sections, and copyright banner with policy links',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Tab to navigate through footer links, Enter to activate',
+      ariaLabels: [
+        'Use <footer> semantic element',
+        'Group similar links under clear headings (kds-title)',
+        'Use descriptive link text - avoid "click here" or vague labels',
+        'Ensure sufficient color contrast for text and links',
+        'Use list-unstyled class with proper list structure (ul/li)',
+      ],
+      screenReaderNotes: 'Screen readers announce footer landmark. Section headings provide structure for navigation. Links are announced with their descriptive text.',
+    },
+    relatedComponents: ['Link', 'Navbar', 'Typography'],
   },
 
   // DATA DISPLAY
@@ -1930,6 +1998,46 @@ export class KeystoneService {
       // Check for disabled state
       if (code.includes('kds-disabled') && !code.includes('disabled')) {
         warnings.push('Disabled checkboxes should have disabled attribute on input');
+      }
+    }
+
+    // Check for footer component structure
+    if (code.includes('kds-footer')) {
+      // Check for semantic footer element
+      if (!code.includes('<footer')) {
+        errors.push('Footer must use semantic <footer> element');
+      }
+
+      // Check for logo
+      if (!code.includes('kds-footer-logo')) {
+        warnings.push('Footer should include kds-footer-logo with Commonwealth of Pennsylvania logo');
+      }
+
+      // Check for copyright banner
+      if (!code.includes('kds-footer-copyright-banner')) {
+        errors.push('Footer must include kds-footer-copyright-banner section');
+      }
+
+      // Check for copyright text
+      if (code.includes('kds-footer-copyright-banner') && !code.includes('kds-footer-copyright-banner-text')) {
+        errors.push('Copyright banner must include kds-footer-copyright-banner-text with copyright notice');
+      }
+
+      // Check for policy links
+      if (code.includes('kds-footer-copyright-banner') && !code.includes('kds-footer-copyright-banner-links')) {
+        warnings.push('Copyright banner should include kds-footer-copyright-banner-links (Accessibility, Privacy, etc.)');
+      }
+
+      // Check for link structure
+      if (code.includes('list-unstyled')) {
+        if (!code.includes('kds-title')) {
+          suggestions.push('Footer link sections should have kds-title headings for grouping');
+        }
+      }
+
+      // Check for logo alt text
+      if (code.includes('kds-footer-logo') && !code.includes('alt=')) {
+        warnings.push('Footer logo should have alt text (or empty alt="" if decorative)');
       }
     }
 
