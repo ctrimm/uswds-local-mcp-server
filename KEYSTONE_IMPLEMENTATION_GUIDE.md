@@ -1094,13 +1094,111 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Tag',
     category: 'feedback',
-    description: 'Small label for categorization or status indication',
+    description: 'Small elements that contain keywords to help users tell the difference between similar content. Tags may be purely informational or dismissable. Dismissable tags allow users to close or remove a tag by selecting an x button. Can use multiple tags but avoid stacking them vertically.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-tag--docs',
-    accessibility: {
-      ariaLabels: ['Ensure sufficient color contrast', 'Don't rely on color alone for meaning'],
+    usage: {
+      whenToUse: [
+        'For large collections of content that fits into defined categories',
+        'Help users identify the most relevant content for them',
+        'Label publication dates or audience types',
+        'Use the close button variant when a user can remove a filter',
+        'Sort and group content for comparison',
+      ],
+      whenNotToUse: [
+        "Don't use tags for unique identifiers",
+        'Tags help users to sort and group content - only useful when they help compare information',
+        "Don't use if content doesn't fit into comparable categories",
+      ],
+      bestPractices: [
+        'Provide brief, clear labels for each tag',
+        "Avoid relying on color to communicate the meaning of a particular tag",
+        'Can use multiple tags but avoid stacking them vertically',
+        'Use dismissable tags (with close button) when users can remove filters',
+        'Tags are for categorization and comparison, not unique identification',
+      ],
     },
-    relatedComponents: ['Alert'],
+    props: [
+      {
+        name: 'color',
+        type: "'primary' | 'secondary' | 'success' | 'error' | 'warning'",
+        description: 'Color variant of the tag',
+        defaultValue: 'primary',
+      },
+      {
+        name: 'label',
+        type: 'string',
+        description: 'Text content of the tag',
+        required: true,
+      },
+      {
+        name: 'dismissable',
+        type: 'boolean',
+        description: 'Whether the tag includes a close button',
+        defaultValue: 'true',
+      },
+    ],
+    examples: [
+      {
+        title: 'Primary Tag (Dismissable)',
+        code: `<div class="kds-tag kds-tag-primary" data-controller="presentation">
+  <span>Label</span>
+  <button class="kds-icon-button" data-action="click->presentation#dismiss"><i class="ri-close-line"></i></button>
+</div>`,
+        description: 'Primary tag with dismiss button. Uses Stimulus presentation controller for dismiss functionality.',
+      },
+      {
+        title: 'Secondary Tag (Dismissable)',
+        code: `<div class="kds-tag kds-tag-secondary" data-controller="presentation">
+  <span>Label</span>
+  <button class="kds-icon-button" data-action="click->presentation#dismiss"><i class="ri-close-line"></i></button>
+</div>`,
+        description: 'Secondary tag variant with dismiss button.',
+      },
+      {
+        title: 'Success Tag (Dismissable)',
+        code: `<div class="kds-tag kds-tag-success" data-controller="presentation">
+  <span>Label</span>
+  <button class="kds-icon-button" data-action="click->presentation#dismiss"><i class="ri-close-line"></i></button>
+</div>`,
+        description: 'Success tag variant with dismiss button.',
+      },
+      {
+        title: 'Error Tag (Dismissable)',
+        code: `<div class="kds-tag kds-tag-error" data-controller="presentation">
+  <span>Label</span>
+  <button class="kds-icon-button" data-action="click->presentation#dismiss"><i class="ri-close-line"></i></button>
+</div>`,
+        description: 'Error tag variant with dismiss button.',
+      },
+      {
+        title: 'Warning Tag (Dismissable)',
+        code: `<div class="kds-tag kds-tag-warning" data-controller="presentation">
+  <span>Label</span>
+  <button class="kds-icon-button" data-action="click->presentation#dismiss"><i class="ri-close-line"></i></button>
+</div>`,
+        description: 'Warning tag variant with dismiss button.',
+      },
+      {
+        title: 'Informational Tag (No Dismiss Button)',
+        code: `<div class="kds-tag kds-tag-primary">
+  <span>Publication: 2024</span>
+</div>`,
+        description: 'Informational tag without dismiss button. Used for displaying non-removable information like publication dates.',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Tab to focus dismiss button (if present), Enter or Space to activate dismiss',
+      ariaLabels: [
+        'Provide brief, clear labels for each tag',
+        "Avoid relying on color alone to communicate tag meaning - don't use color as the sole differentiator",
+        'Ensure sufficient color contrast for tag text',
+        'Dismiss buttons should include accessible labels or aria-label',
+        'Consider adding visually-hidden text to dismiss buttons (e.g., "Remove filter")',
+      ],
+      screenReaderNotes: 'Screen readers announce tag label text. When dismissable, announce button as interactive element. Avoid relying solely on color to convey meaning.',
+    },
+    relatedComponents: ['Card', 'Alert'],
   },
 
   // CONTENT & LAYOUT
@@ -3487,6 +3585,79 @@ export class KeystoneService {
       // Suggest brief, clear labels
       if (code.includes('<th')) {
         suggestions.push('Use brief, clear labels for table headers following plain language best practices');
+      }
+    }
+
+    // Check for tag component structure
+    if (code.includes('kds-tag')) {
+      // Check for color variant
+      const hasColorVariant = /kds-tag-(primary|secondary|success|error|warning)/.test(code);
+      if (!hasColorVariant) {
+        warnings.push('Tag should specify a color variant: kds-tag-primary, kds-tag-secondary, kds-tag-success, kds-tag-error, or kds-tag-warning');
+      }
+
+      // Check for label content
+      if (!code.includes('<span>')) {
+        warnings.push('Tag should contain a <span> element for label text');
+      }
+
+      // Check for dismissable tags with Stimulus controller
+      if (code.includes('kds-icon-button')) {
+        // Tag has dismiss button
+        if (!code.includes('data-controller="presentation"')) {
+          warnings.push('Dismissable tags should use data-controller="presentation" for Stimulus functionality');
+        }
+
+        if (!code.includes('data-action="click->presentation#dismiss"')) {
+          warnings.push('Dismiss button should have data-action="click->presentation#dismiss"');
+        }
+
+        // Check for close icon
+        if (!code.includes('ri-close-line')) {
+          suggestions.push('Dismiss button typically uses ri-close-line icon');
+        }
+
+        // Check for button type
+        if (code.includes('kds-icon-button') && !code.includes('type=')) {
+          suggestions.push('Dismiss button should include type="button" attribute');
+        }
+
+        // Check for accessible label on dismiss button
+        if (!code.includes('aria-label') && !code.includes('visually-hidden')) {
+          warnings.push('Dismiss button should include aria-label or visually-hidden text (e.g., "Remove filter")');
+        }
+      }
+
+      // Warn about color-only meaning
+      if (hasColorVariant) {
+        suggestions.push('Avoid relying on color alone to communicate tag meaning - ensure text labels are descriptive');
+      }
+
+      // Check for brief labels
+      const labelMatch = code.match(/<span>([^<]+)<\/span>/);
+      if (labelMatch && labelMatch[1]) {
+        const labelText = labelMatch[1].trim();
+        const wordCount = labelText.split(/\s+/).length;
+
+        if (wordCount > 4) {
+          suggestions.push('Keep tag labels brief and clear - usually 1-3 words');
+        }
+
+        // Check for unique identifiers (like IDs)
+        if (/^[A-Z0-9-]{8,}$/i.test(labelText) || /^ID[:-]?\d+$/i.test(labelText)) {
+          warnings.push("Tags should not be used for unique identifiers - use tags for categorization and comparison only");
+        }
+      }
+
+      // Check for vertical stacking
+      const tagCount = (code.match(/kds-tag/g) || []).length;
+      if (tagCount > 3 && code.includes('display: block') || code.includes('flex-direction: column')) {
+        warnings.push('Avoid stacking tags vertically - use horizontal layout for multiple tags');
+      }
+
+      // Validate structure
+      if (!code.includes('class="kds-tag')) {
+        errors.push('Tag must use kds-tag class');
       }
     }
 
