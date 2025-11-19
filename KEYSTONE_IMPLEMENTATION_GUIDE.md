@@ -244,12 +244,128 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Checkbox',
     category: 'forms',
-    description: 'Checkbox input for binary or multi-select options',
+    description: 'Checkbox input allowing users to select multiple options from a list. Users can choose as many or as few as they want. Selecting one checkbox does not affect others. Each checkbox has a clear label and can include helper text.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-checkbox--docs',
+    usage: {
+      whenToUse: [
+        'When users can select multiple options from a list',
+        'In forms for multi-select fields',
+        'For terms and conditions acceptance',
+        'To filter content with multiple criteria',
+        'When selection of one option does not affect others',
+      ],
+      whenNotToUse: [
+        "Don't use if users should only select one option - use Radio button instead",
+        "Don't create overly long lists - break into multiple questions",
+      ],
+      bestPractices: [
+        'Provide clear and concise label for each checkbox',
+        'Keep list of options short',
+        'Include instructions and helper text as needed',
+        'Use warning/error variants to show validation states',
+        'Associate labels properly using aria-labelledby',
+        'Use aria-describedby for helper text',
+      ],
+    },
+    props: [
+      {
+        name: 'variant',
+        type: "'default' | 'warning' | 'error'",
+        required: false,
+        description: 'Visual state of the checkbox',
+        defaultValue: 'default',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        required: false,
+        description: 'Whether checkbox is disabled',
+        defaultValue: 'false',
+      },
+      {
+        name: 'checked',
+        type: 'boolean',
+        required: false,
+        description: 'Whether checkbox is checked',
+        defaultValue: 'false',
+      },
+      {
+        name: 'withHelpText',
+        type: 'boolean',
+        required: false,
+        description: 'Whether to display helper/validation text',
+        defaultValue: 'false',
+      },
+      {
+        name: 'tabindex',
+        type: 'number',
+        required: false,
+        description: 'Tab index for keyboard navigation',
+        defaultValue: '0',
+      },
+    ],
+    examples: [
+      {
+        title: 'Default Checkbox',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="checkbox" class="kds-checkbox" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text"/>
+    <span id="text-input-label" class="kds-label-text">Remember me</span>
+  </label>
+</div>`,
+        description: 'Standard checkbox with label',
+      },
+      {
+        title: 'Disabled Checkbox',
+        code: `<div class="kds-form-control kds-disabled">
+  <label class="kds-label">
+    <input type="checkbox" class="kds-checkbox" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" disabled/>
+    <span id="text-input-label" class="kds-label-text">Remember me</span>
+  </label>
+</div>`,
+        description: 'Disabled checkbox (non-interactive)',
+      },
+      {
+        title: 'Warning Checkbox',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="checkbox" class="kds-checkbox" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text"/>
+    <span id="text-input-label" class="kds-label-text">Remember me</span>
+  </label>
+  <div class="kds-label">
+    <i class="kds-icon kds-text-warning ri-alert-fill" aria-label="Warning icon"></i>
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-warning">Alt label</span>
+  </div>
+</div>`,
+        description: 'Checkbox with warning state and helper text',
+      },
+      {
+        title: 'Error Checkbox',
+        code: `<div class="kds-form-control">
+  <label class="kds-label">
+    <input type="checkbox" class="kds-checkbox kds-checkbox-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" aria-invalid="true"/>
+    <span id="text-input-label" class="kds-label-text">Remember me</span>
+  </label>
+  <div class="kds-label">
+    <i class="kds-icon kds-text-error ri-error-warning-fill" aria-label="Error icon"></i>
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-error">Alt label</span>
+  </div>
+</div>`,
+        description: 'Checkbox with error state, validation message, and aria-invalid',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Space to toggle, Tab to navigate',
-      ariaLabels: ['Provide label for each checkbox', 'Use fieldset/legend for checkbox groups'],
+      keyboardSupport: 'Space to toggle checkbox, Tab to navigate between checkboxes',
+      ariaLabels: [
+        'Use aria-labelledby to associate input with label text',
+        'Use aria-describedby to associate input with helper/error text',
+        'Use aria-invalid="true" for error state',
+        'Provide aria-label on status icons',
+        'Use fieldset/legend for checkbox groups',
+        'Disabled checkboxes should have disabled attribute',
+      ],
+      screenReaderNotes: 'Screen readers announce checkbox label, state (checked/unchecked), and any helper text. Error state announced via aria-invalid.',
     },
     relatedComponents: ['Radio', 'Select'],
   },
@@ -1772,6 +1888,48 @@ export class KeystoneService {
       // Suggest proper heading usage
       if (code.includes('kds-card-title') && !code.includes('<h3')) {
         suggestions.push('Card titles should use h3 element for proper heading hierarchy');
+      }
+    }
+
+    // Check for checkbox component structure
+    if (code.includes('kds-checkbox')) {
+      // Check for form control wrapper
+      if (!code.includes('kds-form-control')) {
+        warnings.push('Checkbox should be wrapped in kds-form-control');
+      }
+
+      // Check for label association
+      if (!code.includes('kds-label')) {
+        errors.push('Checkbox must be wrapped in label.kds-label');
+      }
+
+      if (!code.includes('kds-label-text')) {
+        errors.push('Checkbox must have span.kds-label-text for label text');
+      }
+
+      // Check for ARIA attributes
+      if (!code.includes('aria-labelledby')) {
+        errors.push('Checkbox must include aria-labelledby to associate with label');
+      }
+
+      // Check for helper text association
+      if (code.includes('kds-label-text-alt') && !code.includes('aria-describedby')) {
+        errors.push('When helper text is present, checkbox must use aria-describedby');
+      }
+
+      // Check for error state attributes
+      if (code.includes('kds-checkbox-error') && !code.includes('aria-invalid="true"')) {
+        errors.push('Error state checkboxes must include aria-invalid="true"');
+      }
+
+      // Check for icon accessibility
+      if (code.includes('kds-icon') && !code.includes('aria-label')) {
+        errors.push('Status icons (warning/error) must include aria-label');
+      }
+
+      // Check for disabled state
+      if (code.includes('kds-disabled') && !code.includes('disabled')) {
+        warnings.push('Disabled checkboxes should have disabled attribute on input');
       }
     }
 
