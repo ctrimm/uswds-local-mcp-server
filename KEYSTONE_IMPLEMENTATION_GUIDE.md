@@ -1187,14 +1187,186 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'List group',
     category: 'content',
-    description: 'Styled list of items with optional actions',
+    description: 'Vertically stacked list of links for highlighting related content. Can be displayed in one or two columns. Each list item must include a title, link destination, and end link icon. Optional elements include leading icon, pretitle, and description.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-list-group--docs',
-    accessibility: {
-      keyboardSupport: 'Tab through interactive list items',
-      ariaLabels: ['Use semantic list elements (ul/ol)', 'Provide list description with aria-label if needed'],
+    usage: {
+      whenToUse: [
+        'Highlight links based on category, subject, or audience',
+        'Provide supplementary navigation',
+        'Display a curated list of related resources or pages',
+      ],
+      whenNotToUse: [
+        'Avoid list groups for unordered (bulleted) lists within running copy',
+        'List groups are designed as a separate component, not inline content',
+        'Only use a list group when each list item has a link',
+        "Don't use for non-clickable list items (use standard HTML lists instead)",
+      ],
+      bestPractices: [
+        'Each list item must include: title, link destination, and end link icon',
+        'All links must have meaningful link text',
+        'Use leading icons to provide visual categorization',
+        'Use pretitle for additional context or categorization',
+        'Use help text (description) to provide more detail about the destination',
+        'End adornment icon is required (typically ri-arrow-right-line or ri-external-link-line)',
+      ],
     },
-    relatedComponents: ['Menu list', 'Link'],
+    props: [
+      {
+        name: 'hasPretitle',
+        type: 'boolean',
+        description: 'Whether to show pretitle above the title',
+        defaultValue: 'false',
+      },
+      {
+        name: 'pretitleText',
+        type: 'string',
+        description: 'Text content for the pretitle',
+        required: false,
+      },
+      {
+        name: 'iconType',
+        type: "'ri-arrow-right-line' | 'ri-external-link-line'",
+        description: 'End adornment icon type (required link indicator)',
+        defaultValue: 'ri-arrow-right-line',
+      },
+      {
+        name: 'twoColumnLayout',
+        type: 'boolean',
+        description: 'Display list group in two-column layout',
+        defaultValue: 'false',
+      },
+      {
+        name: 'showAvatar',
+        type: 'boolean',
+        description: 'Show avatar/leading icon',
+        defaultValue: 'false',
+      },
+      {
+        name: 'showHelpText',
+        type: 'boolean',
+        description: 'Show help text (description) below title',
+        defaultValue: 'false',
+      },
+      {
+        name: 'helpText',
+        type: 'string',
+        description: 'Description text content below title',
+        required: false,
+      },
+    ],
+    examples: [
+      {
+        title: 'List Group with Leading Icons, Pretitles, and Descriptions',
+        code: `<div class="kds-list-group-container">
+  <ul class="kds-list-group">
+    <li class="kds-list-group-item">
+      <a href="#">
+        <i data-list-item-type="start-adornment" class="ri-drinks-2-line"></i>
+        <div class="kds-list-group-item-content">
+          <span class="kds-list-group-item-pretitle">Pretitle</span>
+          <span>Milk Shake</span>
+          <p class="kds-list-group-item-help-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget volutpat lacus. Nam fermentum augue at aliquet feugiat. Nunc faucibus odio tortor, eu laoreet risus mattis iaculis.</p>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-arrow-right-line"></i>
+      </a>
+    </li>
+    <li class="kds-list-group-item">
+      <a href="#">
+        <i data-list-item-type="start-adornment" class="ri-cup-line"></i>
+        <div class="kds-list-group-item-content">
+          <span class="kds-list-group-item-pretitle">Pretitle</span>
+          <span>Coffee</span>
+          <p class="kds-list-group-item-help-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget volutpat lacus. Nam fermentum augue at aliquet feugiat. Nunc faucibus odio tortor, eu laoreet risus mattis iaculis.</p>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-arrow-right-line"></i>
+      </a>
+    </li>
+    <li class="kds-list-group-item">
+      <a href="#">
+        <i data-list-item-type="start-adornment" class="ri-bowl-line"></i>
+        <div class="kds-list-group-item-content">
+          <span class="kds-list-group-item-pretitle">Pretitle</span>
+          <span>Ramen ラーメン</span>
+          <p class="kds-list-group-item-help-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget volutpat lacus. Nam fermentum augue at aliquet feugiat. Nunc faucibus odio tortor, eu laoreet risus mattis iaculis.</p>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-arrow-right-line"></i>
+      </a>
+    </li>
+  </ul>
+</div>`,
+        description: 'Complete list group with leading icons (start-adornment), pretitles, titles, descriptions (help-text), and end link icons (end-adornment).',
+      },
+      {
+        title: 'Simple List Group (Title and Link Icon Only)',
+        code: `<div class="kds-list-group-container">
+  <ul class="kds-list-group">
+    <li class="kds-list-group-item">
+      <a href="#">
+        <div class="kds-list-group-item-content">
+          <span>Apply for Benefits</span>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-arrow-right-line"></i>
+      </a>
+    </li>
+    <li class="kds-list-group-item">
+      <a href="#">
+        <div class="kds-list-group-item-content">
+          <span>Check Application Status</span>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-arrow-right-line"></i>
+      </a>
+    </li>
+    <li class="kds-list-group-item">
+      <a href="#">
+        <div class="kds-list-group-item-content">
+          <span>Find Local Services</span>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-arrow-right-line"></i>
+      </a>
+    </li>
+  </ul>
+</div>`,
+        description: 'Minimal list group with only required elements: title and end link icon. Leading icons, pretitles, and help text are optional.',
+      },
+      {
+        title: 'List Group with External Link Icons',
+        code: `<div class="kds-list-group-container">
+  <ul class="kds-list-group">
+    <li class="kds-list-group-item">
+      <a href="https://example.com" target="_blank">
+        <div class="kds-list-group-item-content">
+          <span>External Resource</span>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-external-link-line"></i>
+      </a>
+    </li>
+    <li class="kds-list-group-item">
+      <a href="https://example.org" target="_blank">
+        <div class="kds-list-group-item-content">
+          <span>Partner Website</span>
+        </div>
+        <i data-list-item-type="end-adornment" class="ri-external-link-line"></i>
+      </a>
+    </li>
+  </ul>
+</div>`,
+        description: 'Use ri-external-link-line icon for external links instead of ri-arrow-right-line.',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Tab through interactive list items, Enter to activate links',
+      ariaLabels: [
+        'Use semantic <ul> element for list structure',
+        'Each list item must be an <li> element',
+        'All links must have meaningful link text that describes the destination',
+        'If using external links, consider adding aria-label to indicate "Opens in new window"',
+        'Leading icons (start-adornment) should include aria-hidden="true" as they are decorative',
+        'End icons (end-adornment) should include aria-hidden="true" as link text conveys the action',
+      ],
+      screenReaderNotes: 'Screen readers announce list structure (number of items) and each link. Use meaningful link text so users can understand destinations without visual context.',
+    },
+    relatedComponents: ['Menu list', 'Link', 'Card'],
   },
   {
     name: 'Footer',
@@ -2483,6 +2655,83 @@ export class KeystoneService {
       // Check for official website text
       if (code.includes('kds-header') && !code.includes('Official Website')) {
         warnings.push('Header should include "Official Website of the Commonwealth of Pennsylvania" text');
+      }
+    }
+
+    // Check for list group component structure
+    if (code.includes('kds-list-group')) {
+      // Check for container wrapper
+      if (!code.includes('kds-list-group-container')) {
+        warnings.push('List group should be wrapped in kds-list-group-container div');
+      }
+
+      // Check for semantic list element
+      if (!code.includes('<ul') && !code.includes('<ol')) {
+        errors.push('List group must use semantic <ul> or <ol> element');
+      }
+
+      // Check for list items
+      if (!code.includes('kds-list-group-item')) {
+        errors.push('List group must contain kds-list-group-item elements');
+      }
+
+      // Check for required content wrapper
+      if (!code.includes('kds-list-group-item-content')) {
+        errors.push('Each list group item must include kds-list-group-item-content wrapper');
+      }
+
+      // Check for links in list items
+      if (code.includes('kds-list-group-item') && !code.includes('<a href')) {
+        errors.push('Each list group item must contain a link (<a> element). List groups are for linked items only.');
+      }
+
+      // Check for required end adornment (link icon)
+      if (code.includes('kds-list-group-item') && !code.includes('data-list-item-type="end-adornment"')) {
+        errors.push('Each list group item must include end adornment icon (data-list-item-type="end-adornment")');
+      }
+
+      // Check for appropriate end adornment icons
+      if (code.includes('data-list-item-type="end-adornment"')) {
+        const hasAppropriateIcon = code.includes('ri-arrow-right-line') || code.includes('ri-external-link-line');
+        if (!hasAppropriateIcon) {
+          warnings.push('End adornment icons should typically be ri-arrow-right-line or ri-external-link-line');
+        }
+      }
+
+      // Check for external links with appropriate icon
+      if (code.includes('target="_blank"') && code.includes('ri-arrow-right-line')) {
+        suggestions.push('Consider using ri-external-link-line icon for external links (target="_blank") instead of ri-arrow-right-line');
+      }
+
+      // Suggest aria-hidden for decorative icons
+      if (code.includes('data-list-item-type="start-adornment"') && !code.includes('aria-hidden')) {
+        suggestions.push('Leading icons (start-adornment) should include aria-hidden="true" as they are decorative');
+      }
+
+      if (code.includes('data-list-item-type="end-adornment"') && !code.includes('aria-hidden')) {
+        suggestions.push('End adornment icons should include aria-hidden="true" as link text conveys the action');
+      }
+
+      // Check for meaningful link text
+      const hasGenericText = code.toLowerCase().includes('>link</') || code.toLowerCase().includes('>click</');
+      if (hasGenericText) {
+        warnings.push('List group links should have meaningful text describing the destination, not generic text like "Link" or "Click"');
+      }
+
+      // Check structure: pretitle should come before title
+      if (code.includes('kds-list-group-item-pretitle')) {
+        // This is a suggestion to maintain proper order
+        suggestions.push('Ensure pretitle (kds-list-group-item-pretitle) appears before the title span in the DOM order');
+      }
+
+      // Check that help text uses paragraph element
+      if (code.includes('kds-list-group-item-help-text') && !code.includes('<p class="kds-list-group-item-help-text"')) {
+        warnings.push('Help text should use <p> element with kds-list-group-item-help-text class');
+      }
+
+      // Check for external links with target but no aria-label
+      if (code.includes('target="_blank"') && !code.includes('aria-label')) {
+        warnings.push('External links (target="_blank") should include aria-label to indicate "Opens in new window"');
       }
     }
 
