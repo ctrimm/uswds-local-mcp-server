@@ -1107,13 +1107,90 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Icon object',
     category: 'ui',
-    description: 'Icon component using Remix Icons',
+    description: 'Icon component using Remix Icons (https://remixicon.com/). Simple, easily graspable way to add visual emphasis, signal actions, or indicate feedback state while reducing cognitive load. Available in small and large sizes.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-icon-object--docs',
-    accessibility: {
-      ariaLabels: ['Use aria-hidden="true" for decorative icons', 'Provide aria-label or title for functional icons', 'Ensure icons are not the only indicator of meaning'],
+    usage: {
+      whenToUse: [
+        'To draw attention to actions - combine with text to inform users about performing an action',
+        'To help readers find key information - use as scannable visual indicators (phone number, email)',
+        'To enhance actionable targets - great for touch/click targets (menu, sharing)',
+        'For common actions like opening menus or sharing content',
+      ],
+      whenNotToUse: [
+        "When meaning is ambiguous - use icons conventionally only, add text if unclear",
+        "To compensate for page structure - fix content placement instead of using icons",
+        "For illustrative artwork - use illustrations instead, not functional icons",
+        "As sole indicator of meaning - always combine with text",
+      ],
+      bestPractices: [
+        'Combine icons with text to improve usability',
+        'Be consistent with icon meaning throughout site/app',
+        'Use icons in common or conventional ways only',
+        'When interactive, combine with other components (Button, Link)',
+        'Hide decorative icons from screen readers with aria-hidden="true"',
+        'Provide aria-label for meaningful/functional icons',
+        'Establish reliable relationship between icon and specific concept',
+        'Use consistent set of icons for familiar look and feel',
+      ],
     },
-    relatedComponents: ['Button', 'Link', 'Alert'],
+    props: [
+      {
+        name: 'size',
+        type: "'sm' | 'lg'",
+        required: false,
+        description: 'Icon size: small (kds-icon-object-sm) or large (kds-icon-object-lg)',
+        defaultValue: 'sm',
+      },
+      {
+        name: 'icon',
+        type: 'string',
+        required: true,
+        description: 'Remix Icon class name (e.g., ri-hand-heart-line)',
+      },
+      {
+        name: 'ariaLabel',
+        type: 'string',
+        required: false,
+        description: 'Descriptive label for screen readers (required for functional icons)',
+      },
+    ],
+    examples: [
+      {
+        title: 'Small Icon',
+        code: `<div class="kds-icon-object kds-icon-object-sm" aria-label="Hand with heart icon">
+  <i class="ri-hand-heart-line"></i>
+</div>`,
+        description: 'Small icon with aria-label for accessibility',
+      },
+      {
+        title: 'Large Icon',
+        code: `<div class="kds-icon-object kds-icon-object-lg" aria-label="Hand with heart icon">
+  <i class="ri-hand-heart-line"></i>
+</div>`,
+        description: 'Large icon with aria-label for accessibility',
+      },
+      {
+        title: 'Decorative Icon (Hidden from Screen Readers)',
+        code: `<a href="https://twitter.com/example">
+  <i class="ri-arrow-forward-line" aria-hidden="true" role="img"></i>
+  Twitter account
+</a>`,
+        description: 'Icon combined with text, hidden from screen readers as redundant',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Icons themselves are not interactive - keyboard support depends on parent component (Button, Link, etc.)',
+      ariaLabels: [
+        'Use aria-hidden="true" and role="img" for decorative/redundant icons',
+        'Provide aria-label for functional/meaningful icons',
+        'Ensure icons are not the only indicator of meaning - combine with text',
+        'When interactive, implement within functional component (Button, Link)',
+        'Decorative icons in links/buttons should be hidden if text is present',
+      ],
+      screenReaderNotes: 'Functional icons announced via aria-label. Decorative icons with aria-hidden="true" are skipped. Icons combined with text provide redundant visual emphasis.',
+    },
+    relatedComponents: ['Button', 'Link', 'Alert', 'Card'],
   },
 ];
 
@@ -2038,6 +2115,46 @@ export class KeystoneService {
       // Check for logo alt text
       if (code.includes('kds-footer-logo') && !code.includes('alt=')) {
         warnings.push('Footer logo should have alt text (or empty alt="" if decorative)');
+      }
+    }
+
+    // Check for icon object component
+    if (code.includes('kds-icon-object')) {
+      // Check for size specification
+      const hasSize = code.includes('kds-icon-object-sm') || code.includes('kds-icon-object-lg');
+      if (!hasSize) {
+        warnings.push('Icon object should specify size: kds-icon-object-sm or kds-icon-object-lg');
+      }
+
+      // Check for Remix Icon
+      if (!code.includes('class="ri-')) {
+        errors.push('Icon object must include Remix Icon (class starting with ri-)');
+      }
+
+      // Check for aria-label on functional icons
+      const isStandalone = !code.includes('<a') && !code.includes('<button');
+      if (isStandalone && !code.includes('aria-label')) {
+        errors.push('Standalone icon objects must include aria-label for accessibility');
+      }
+
+      // Suggest hiding decorative icons
+      const hasText = code.includes('</a>') || code.includes('</button>') || code.includes('<span');
+      if (hasText && !code.includes('aria-hidden')) {
+        suggestions.push('Consider using aria-hidden="true" on decorative icons when combined with text');
+      }
+    }
+
+    // Check for Remix Icons usage (not in icon-object wrapper)
+    if (code.includes('class="ri-') && !code.includes('kds-icon-object')) {
+      // Icon used directly (like in alerts, buttons, etc.)
+      const isDecorative = code.includes('<span') || code.includes('</a>') || code.includes('</button>');
+
+      if (isDecorative && !code.includes('aria-hidden="true"')) {
+        suggestions.push('Decorative icons should include aria-hidden="true" when combined with text');
+      }
+
+      if (!isDecorative && !code.includes('aria-label')) {
+        warnings.push('Functional icons should include aria-label to describe their purpose');
       }
     }
 
