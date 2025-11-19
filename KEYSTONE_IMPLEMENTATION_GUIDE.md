@@ -207,25 +207,238 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Text input',
     category: 'forms',
-    description: 'Text input field for single-line user input',
+    description: 'Text input component that allows users to enter short strings of text into a field. Label should clearly describe the information that a user needs to enter. Can include help text and placeholder text. Help text provides context or formatting instructions. Placeholder text should be used sparingly as it disappears when typing.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-text-input--docs',
+    usage: {
+      whenToUse: [
+        'Ideal for collecting short text responses from users',
+        'Information like first and last name, usernames, or passwords',
+        'Single-line text entry (words or short phrases)',
+      ],
+      whenNotToUse: [
+        'Avoid if users need to enter at least a sentence of text',
+        'Use text area component for longer text that needs more space and visibility',
+      ],
+      bestPractices: [
+        'Label must clearly describe the information you expect the user to provide',
+        'Never put critical information in placeholder text',
+        'Place any essential instructions in help text instead',
+        'Use sentence case for label and help text',
+        'Use sentence case for placeholder text unless it conflicts with formatting guidelines',
+        'Warning variant: when user needs to review a response (warning message replaces help text)',
+        'Error variant: when response will prevent submission/save (missing required or invalid responses)',
+      ],
+    },
+    props: [
+      {
+        name: 'variant',
+        type: "'default' | 'warning' | 'error'",
+        description: 'Visual state of the text input',
+        defaultValue: 'default',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description: 'Whether the text input is disabled',
+        defaultValue: 'false',
+      },
+      {
+        name: 'withHelpText',
+        type: 'boolean',
+        description: 'Whether to show help text below the input',
+        defaultValue: 'false',
+      },
+    ],
+    examples: [
+      {
+        title: 'Default Text Input',
+        code: `<label class="kds-form-control">
+  <div class="kds-label kds-label-md">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+  </div>
+  <input type="text" class="kds-text-input" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" />
+</label>`,
+        description: 'Standard text input with label. Wrapped in label.kds-form-control with kds-label-md class.',
+      },
+      {
+        title: 'Disabled Text Input',
+        code: `<label class="kds-form-control">
+  <div class="kds-label kds-label-md">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+  </div>
+  <input type="text" class="kds-text-input" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" disabled />
+</label>`,
+        description: 'Disabled text input using disabled attribute.',
+      },
+      {
+        title: 'Warning Text Input',
+        code: `<label class="kds-form-control">
+  <div class="kds-label kds-label-md">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+  </div>
+  <div class="kds-input-icon">
+    <input type="text" class="kds-text-input" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text"/>
+    <i class="kds-icon kds-text-warning ri-alert-fill" aria-label="Warning icon"></i>
+  </div>
+  <div class="kds-label">
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-warning">Helper text</span>
+  </div>
+</label>`,
+        description: 'Text input with warning state. Wrapped in kds-input-icon with warning icon (ri-alert-fill) and help text with kds-text-warning class. Warning message replaces help text.',
+      },
+      {
+        title: 'Error Text Input',
+        code: `<label class="kds-form-control">
+  <div class="kds-label kds-label-md">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+  </div>
+  <div class="kds-input-icon">
+    <input type="text" class="kds-text-input kds-text-input-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" aria-invalid="true"/>
+    <i class="kds-icon kds-text-error ri-error-warning-fill" aria-label="Error icon"></i>
+  </div>
+  <div class="kds-label">
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-error">Helper text</span>
+  </div>
+</label>`,
+        description: 'Text input with error state. Uses kds-text-input-error class, aria-invalid="true", wrapped in kds-input-icon with error icon (ri-error-warning-fill), and error help text with kds-text-error class. Error message replaces help text.',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Standard text input keyboard navigation',
-      ariaLabels: ['Always provide associated label', 'Use aria-describedby for helper text and errors'],
-      screenReaderNotes: 'Label and validation messages announced automatically',
+      keyboardSupport: 'Standard text input keyboard navigation, Tab to move between fields, Arrow keys to navigate text',
+      ariaLabels: [
+        'Always provide associated label',
+        'Use aria-labelledby to associate label with input element',
+        'Use aria-describedby for helper text and errors',
+        'Error state inputs must include aria-invalid="true"',
+        'Warning/error icons must include aria-label to describe the state',
+        'Never put critical information in placeholder text - use help text instead',
+      ],
+      screenReaderNotes: 'Screen readers announce label, current value, and associated help text. Error state announced via aria-invalid. Label and validation messages announced automatically.',
     },
     relatedComponents: ['Textarea', 'Select', 'Search input'],
   },
   {
     name: 'Textarea',
     category: 'forms',
-    description: 'Multi-line text input for longer form content',
+    description: 'Multi-line text input component for longer form content. Allows users to enter at least a sentence of text. Provides more space and better visibility than text input. Includes character count functionality via Stimulus controller.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-textarea--docs',
+    usage: {
+      whenToUse: [
+        'When users need to enter at least a sentence of text',
+        'For longer text that needs more space and visibility',
+        'Multi-line text entry (paragraphs, descriptions, comments)',
+      ],
+      whenNotToUse: [
+        'For short text responses (use text input instead)',
+        'Single-line entries like names, usernames, or passwords',
+      ],
+      bestPractices: [
+        'Label must clearly describe the information you expect the user to provide',
+        'Use Stimulus textarea controller for character count functionality',
+        'Set data-max attribute to define character limit',
+        'Character counter updates dynamically as user types',
+        'Use sentence case for label and help text',
+        'Warning variant: when user needs to review a response',
+        'Error variant: when response will prevent submission/save',
+      ],
+    },
+    props: [
+      {
+        name: 'variant',
+        type: "'default' | 'warning' | 'error'",
+        description: 'Visual state of the textarea',
+        defaultValue: 'default',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        description: 'Whether the textarea is disabled',
+        defaultValue: 'false',
+      },
+      {
+        name: 'withHelpText',
+        type: 'boolean',
+        description: 'Whether to show help text below the textarea',
+        defaultValue: 'false',
+      },
+      {
+        name: 'maxLength',
+        type: 'number',
+        description: 'Maximum character length (used with Stimulus controller)',
+        required: false,
+      },
+    ],
+    examples: [
+      {
+        title: 'Default Textarea with Character Count',
+        code: `<label class="kds-form-control" data-controller="textarea">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+    <span class="kds-label-text-alt" data-textarea-target="counter"></span>
+  </div>
+  <textarea class="kds-textarea" data-textarea-target="input" data-action="input->textarea#charCount" data-max="10" data-alert-class="kds-textarea-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text"></textarea>
+</label>`,
+        description: 'Standard textarea with Stimulus textarea controller for character counting. Counter target displays character count, data-max sets limit, data-action triggers count update on input.',
+      },
+      {
+        title: 'Disabled Textarea',
+        code: `<label class="kds-form-control" data-controller="textarea">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+    <span class="kds-label-text-alt" data-textarea-target="counter"></span>
+  </div>
+  <textarea class="kds-textarea" data-textarea-target="input" data-action="input->textarea#charCount" data-max="10" data-alert-class="kds-textarea-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" disabled></textarea>
+</label>`,
+        description: 'Disabled textarea using disabled attribute.',
+      },
+      {
+        title: 'Warning Textarea',
+        code: `<label class="kds-form-control" data-controller="textarea">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+    <span class="kds-label-text-alt" data-textarea-target="counter"></span>
+  </div>
+  <div class="kds-input-icon">
+    <textarea class="kds-textarea kds-textarea-warning" data-textarea-target="input" data-action="input->textarea#charCount" data-max="10" data-alert-class="kds-textarea-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text"></textarea>
+    <i class="kds-icon kds-text-warning ri-alert-fill" aria-label="Warning icon"></i>
+  </div>
+  <div class="kds-label">
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-warning">Helper text</span>
+  </div>
+</label>`,
+        description: 'Textarea with warning state. Uses kds-textarea-warning class, wrapped in kds-input-icon with warning icon (ri-alert-fill), and help text with kds-text-warning class.',
+      },
+      {
+        title: 'Error Textarea',
+        code: `<label class="kds-form-control" data-controller="textarea">
+  <div class="kds-label">
+    <span id="text-input-label" class="kds-label-text">Label</span>
+    <span class="kds-label-text-alt" data-textarea-target="counter"></span>
+  </div>
+  <div class="kds-input-icon">
+    <textarea class="kds-textarea kds-textarea-error" data-textarea-target="input" data-action="input->textarea#charCount" data-max="10" data-alert-class="kds-textarea-error" tabindex="0" aria-labelledby="text-input-label" aria-describedby="text-input-help-text" aria-invalid="true"></textarea>
+    <i class="kds-icon kds-text-error ri-error-warning-fill" aria-label="Error icon"></i>
+  </div>
+  <div class="kds-label">
+    <span id="text-input-help-text" class="kds-label-text-alt kds-text-error">Helper text</span>
+  </div>
+</label>`,
+        description: 'Textarea with error state. Uses kds-textarea-error class, aria-invalid="true", wrapped in kds-input-icon with error icon (ri-error-warning-fill), and error help text with kds-text-error class.',
+      },
+    ],
     accessibility: {
-      keyboardSupport: 'Standard textarea keyboard navigation',
-      ariaLabels: ['Provide label with for/id relationship', 'Use aria-describedby for character count or helper text'],
+      keyboardSupport: 'Standard textarea keyboard navigation, Tab to move between fields, Arrow keys to navigate text, Enter for new lines',
+      ariaLabels: [
+        'Provide label with for/id relationship',
+        'Use aria-labelledby to associate label with textarea',
+        'Use aria-describedby for character count or helper text',
+        'Error state textareas must include aria-invalid="true"',
+        'Warning/error icons must include aria-label to describe the state',
+        'Character counter should be accessible to screen readers',
+      ],
+      screenReaderNotes: 'Screen readers announce label, current value, character count, and associated help text. Error state announced via aria-invalid.',
     },
     relatedComponents: ['Text input'],
   },
@@ -3585,6 +3798,157 @@ export class KeystoneService {
       // Suggest brief, clear labels
       if (code.includes('<th')) {
         suggestions.push('Use brief, clear labels for table headers following plain language best practices');
+      }
+    }
+
+    // Check for text input component structure
+    if (code.includes('kds-text-input')) {
+      // Check for form control wrapper
+      if (!code.includes('kds-form-control')) {
+        warnings.push('Text input should be wrapped in label.kds-form-control');
+      }
+
+      // Check for label
+      if (!code.includes('kds-label')) {
+        errors.push('Text input must have kds-label wrapper for label text');
+      }
+
+      if (!code.includes('kds-label-text')) {
+        errors.push('Text input must have span.kds-label-text for label text');
+      }
+
+      // Check for ARIA attributes
+      if (!code.includes('aria-labelledby')) {
+        errors.push('Text input must include aria-labelledby to associate with label');
+      }
+
+      // Check for help text association
+      if (code.includes('kds-label-text-alt') && !code.includes('aria-describedby')) {
+        errors.push('When help text is present, text input must use aria-describedby');
+      }
+
+      // Check for error state attributes
+      if (code.includes('kds-text-input-error') && !code.includes('aria-invalid="true"')) {
+        errors.push('Error state text inputs must include aria-invalid="true"');
+      }
+
+      // Check for warning/error state wrapper
+      if ((code.includes('kds-text-warning') || code.includes('kds-text-error')) && code.includes('kds-icon')) {
+        if (!code.includes('kds-input-icon')) {
+          errors.push('Warning and error state text inputs must be wrapped in div.kds-input-icon with status icon');
+        }
+      }
+
+      // Check for warning/error icons
+      if ((code.includes('kds-text-warning') || code.includes('kds-text-error')) && code.includes('kds-icon')) {
+        if (!code.includes('aria-label')) {
+          errors.push('Status icons (warning/error) must include aria-label');
+        }
+      }
+
+      // Validate help text structure for warning/error
+      if (code.includes('kds-label-text-alt')) {
+        // Check for proper icon
+        if (code.includes('kds-text-warning') && !code.includes('ri-alert-fill')) {
+          suggestions.push('Warning state typically uses ri-alert-fill icon');
+        }
+
+        if (code.includes('kds-text-error') && !code.includes('ri-error-warning-fill')) {
+          suggestions.push('Error state typically uses ri-error-warning-fill icon');
+        }
+      }
+
+      // Warn about placeholder text
+      if (code.includes('placeholder=')) {
+        suggestions.push('Use placeholder text sparingly - never put critical information in placeholder text. Use help text instead.');
+      }
+
+      // Check for input type
+      if (!code.includes('type=')) {
+        suggestions.push('Text input should specify type attribute (text, email, password, etc.)');
+      }
+    }
+
+    // Check for textarea component structure
+    if (code.includes('kds-textarea')) {
+      // Check for form control wrapper
+      if (!code.includes('kds-form-control')) {
+        warnings.push('Textarea should be wrapped in label.kds-form-control');
+      }
+
+      // Check for Stimulus controller
+      if (!code.includes('data-controller="textarea"')) {
+        suggestions.push('Textarea should use data-controller="textarea" for character count functionality');
+      }
+
+      // Check for character counter target
+      if (code.includes('data-controller="textarea"') && !code.includes('data-textarea-target="counter"')) {
+        warnings.push('Textarea with Stimulus controller should include character counter target (data-textarea-target="counter")');
+      }
+
+      // Check for character count input target
+      if (code.includes('data-controller="textarea"') && !code.includes('data-textarea-target="input"')) {
+        warnings.push('Textarea with Stimulus controller should include input target (data-textarea-target="input")');
+      }
+
+      // Check for character count action
+      if (code.includes('data-controller="textarea"') && !code.includes('data-action="input->textarea#charCount"')) {
+        warnings.push('Textarea should trigger charCount on input (data-action="input->textarea#charCount")');
+      }
+
+      // Check for data-max attribute
+      if (code.includes('data-controller="textarea"') && !code.includes('data-max=')) {
+        suggestions.push('Consider adding data-max attribute to define character limit');
+      }
+
+      // Check for label
+      if (!code.includes('kds-label')) {
+        errors.push('Textarea must have kds-label wrapper for label text');
+      }
+
+      if (!code.includes('kds-label-text')) {
+        errors.push('Textarea must have span.kds-label-text for label text');
+      }
+
+      // Check for ARIA attributes
+      if (!code.includes('aria-labelledby')) {
+        errors.push('Textarea must include aria-labelledby to associate with label');
+      }
+
+      // Check for help text association
+      if (code.includes('kds-label-text-alt') && !code.includes('aria-describedby')) {
+        errors.push('When help text is present, textarea must use aria-describedby');
+      }
+
+      // Check for error state attributes
+      if (code.includes('kds-textarea-error') && !code.includes('aria-invalid="true"')) {
+        errors.push('Error state textareas must include aria-invalid="true"');
+      }
+
+      // Check for warning/error state wrapper
+      if ((code.includes('kds-textarea-warning') || code.includes('kds-textarea-error')) && code.includes('kds-icon')) {
+        if (!code.includes('kds-input-icon')) {
+          errors.push('Warning and error state textareas must be wrapped in div.kds-input-icon with status icon');
+        }
+      }
+
+      // Check for warning/error icons
+      if ((code.includes('kds-text-warning') || code.includes('kds-text-error')) && code.includes('kds-icon')) {
+        if (!code.includes('aria-label')) {
+          errors.push('Status icons (warning/error) must include aria-label');
+        }
+      }
+
+      // Validate help text structure for warning/error
+      if (code.includes('kds-label-text-alt')) {
+        // Check for proper icon
+        if (code.includes('kds-text-warning') && !code.includes('ri-alert-fill')) {
+          suggestions.push('Warning state typically uses ri-alert-fill icon');
+        }
+
+        if (code.includes('kds-text-error') && !code.includes('ri-error-warning-fill')) {
+          suggestions.push('Error state typically uses ri-error-warning-fill icon');
+        }
       }
     }
 
