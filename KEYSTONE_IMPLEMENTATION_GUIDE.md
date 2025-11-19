@@ -2189,12 +2189,337 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Typography',
     category: 'content',
-    description: 'Text styling using Plus Jakarta Sans and Zilla Slab fonts',
+    description: 'Foundational text styling system using Zilla Slab (display/headline) and Plus Jakarta Sans (title/label/body). Type scale includes 15 styles organized into 5 roles: display, headline, title, label, and body. Supports hierarchy through font weight, size, line height, and letter spacing. Responsive font ramp for XS-S breakpoints (<992px).',
     wcagLevel: 'AA',
-    storybookUrl: 'https://components.pa.gov/?path=/docs/components-typography--docs',
-    accessibility: {
-      ariaLabels: ['Maintain proper heading hierarchy', 'Ensure minimum 16px font size for body text', 'Meet color contrast ratios'],
+    storybookUrl: 'https://components.pa.gov/?path=/docs/foundations-typography--docs',
+    usage: {
+      whenToUse: [
+        'Establish clear visual hierarchy throughout the application',
+        'Create consistent text styling across all components and pages',
+        'Support readability with proper font sizes and line heights',
+        'Ensure responsive text sizing for different screen sizes',
+      ],
+      whenNotToUse: [
+        'Typography styles should not be mixed arbitrarily - follow pairing guidelines',
+        "Don't use display styles for body text or long passages",
+        "Don't skip type scale levels - maintain logical hierarchy",
+      ],
+      bestPractices: [
+        'Pair type styles from the same size group (large, medium, small)',
+        'Exception: pre-title should always use title.small.uppercase',
+        'Maintain proper heading hierarchy (H1, H2, H3, etc.)',
+        'Remember styles do not correspond to specific HTML tags - H1 can use any header style',
+        'For body text, recommended line length is 40-75 characters',
+        'Use responsive display/header variants for XS-S breakpoints (<992px)',
+        'Default text color: on-surface (alternative: on-surface-variant)',
+        'Large text (18px+ or 14px+ bold): 3:1 contrast ratio minimum',
+        'Standard text (<18px or <14px bold): 4.5:1 contrast ratio minimum',
+      ],
     },
+    typefaces: [
+      {
+        name: 'Zilla Slab',
+        usage: 'Display and headline styles',
+        download: '/content/dam/copapwp-wcmauthorguide/en/global/files/KDS%20Fonts.zip',
+      },
+      {
+        name: 'Plus Jakarta Sans',
+        usage: 'Titles, labels, and body text',
+        download: '/content/dam/copapwp-wcmauthorguide/en/global/files/KDS%20Fonts.zip',
+      },
+    ],
+    typeScale: [
+      // Display styles (Zilla Slab)
+      {
+        role: 'Display',
+        name: 'Display Large',
+        desktopSize: '72px',
+        responsiveSize: '48px',
+        lineHeight: '105%',
+        typeface: 'Zilla Slab',
+        className: 'kds-display kds-display-lg',
+        description: 'Largest text on screen, reserved for short, important text or numerals. Works best on large screens.',
+      },
+      {
+        role: 'Display',
+        name: 'Display Medium',
+        desktopSize: '56px',
+        responsiveSize: '40px',
+        lineHeight: '105%',
+        typeface: 'Zilla Slab',
+        className: 'kds-display kds-display-md',
+        description: 'Large display text for important content on screens.',
+      },
+      {
+        role: 'Display',
+        name: 'Display Small',
+        desktopSize: '48px',
+        responsiveSize: '32px',
+        lineHeight: '105%',
+        typeface: 'Zilla Slab',
+        className: 'kds-display kds-display-sm',
+        description: 'Smaller display text for prominent content.',
+      },
+      // Headline styles (Zilla Slab)
+      {
+        role: 'Headline',
+        name: 'Headline Large',
+        desktopSize: '40px',
+        responsiveSize: '24px',
+        lineHeight: '120%',
+        typeface: 'Zilla Slab',
+        className: 'kds-headline kds-headline-lg',
+        description: 'Best suited for short, high-emphasis text on smaller screens. Useful for marking primary passages or important regions.',
+      },
+      {
+        role: 'Headline',
+        name: 'Headline Medium',
+        desktopSize: '32px',
+        responsiveSize: '20px',
+        lineHeight: '120%',
+        typeface: 'Zilla Slab',
+        className: 'kds-headline kds-headline-md',
+        description: 'Medium headline for high-emphasis text on smaller screens.',
+      },
+      {
+        role: 'Headline',
+        name: 'Headline Small',
+        desktopSize: '24px',
+        responsiveSize: '16px',
+        lineHeight: '120%',
+        typeface: 'Zilla Slab',
+        className: 'kds-headline kds-headline-sm',
+        description: 'Smallest headline size for high-emphasis text.',
+      },
+      // Title styles (Plus Jakarta Sans)
+      {
+        role: 'Title',
+        name: 'Title Large',
+        desktopSize: '20px',
+        responsiveSize: '–',
+        lineHeight: '120%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-title kds-title-lg',
+        description: 'Smaller than headline, for medium-emphasis text. Use to divide secondary passages or regions of content.',
+      },
+      {
+        role: 'Title',
+        name: 'Title Medium',
+        desktopSize: '16px',
+        responsiveSize: '–',
+        lineHeight: '120%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-title kds-title-md',
+        description: 'Medium title for secondary text emphasis.',
+      },
+      {
+        role: 'Title',
+        name: 'Title Small',
+        desktopSize: '12px',
+        responsiveSize: '–',
+        lineHeight: '120%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-title kds-title-sm',
+        description: 'Small title, often used for pre-titles with uppercase.',
+      },
+      // Body styles (Plus Jakarta Sans)
+      {
+        role: 'Body',
+        name: 'Body Large',
+        desktopSize: '16px',
+        responsiveSize: '–',
+        lineHeight: '150%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-body kds-body-lg',
+        description: 'Used for longer passages of text. Recommended max-width: 510px for proper line length.',
+        maxWidth: '510px',
+      },
+      {
+        role: 'Body',
+        name: 'Body Medium',
+        desktopSize: '14px',
+        responsiveSize: '–',
+        lineHeight: '150%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-body kds-body-md',
+        description: 'Medium body text for longer passages. Recommended max-width: 486px.',
+        maxWidth: '486px',
+      },
+      {
+        role: 'Body',
+        name: 'Body Small',
+        desktopSize: '12px',
+        responsiveSize: '–',
+        lineHeight: '150%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-body kds-body-sm',
+        description: 'Small body text. Recommended max-width: 384px.',
+        maxWidth: '384px',
+      },
+      // Label styles (Plus Jakarta Sans)
+      {
+        role: 'Label',
+        name: 'Label Large',
+        desktopSize: '14px',
+        responsiveSize: '–',
+        lineHeight: '125%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-label kds-label-lg',
+        description: 'Smaller, utilitarian style for text inside components or very small text like captions. Buttons use label large.',
+      },
+      {
+        role: 'Label',
+        name: 'Label Medium',
+        desktopSize: '12px',
+        responsiveSize: '–',
+        lineHeight: '125%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-label kds-label-md',
+        description: 'Medium label for component text.',
+      },
+      {
+        role: 'Label',
+        name: 'Label Small',
+        desktopSize: '11px',
+        responsiveSize: '–',
+        lineHeight: '125%',
+        typeface: 'Plus Jakarta Sans',
+        className: 'kds-label kds-label-sm',
+        description: 'Smallest label for component text or captions.',
+      },
+    ],
+    modifierClasses: [
+      {
+        name: 'kds-text-bold',
+        description: 'Bold font weight',
+      },
+      {
+        name: 'kds-text-semibold',
+        description: 'Semi-bold font weight',
+      },
+      {
+        name: 'kds-text-medium',
+        description: 'Medium font weight',
+      },
+      {
+        name: 'kds-text-uppercase',
+        description: 'Transform text to uppercase',
+      },
+      {
+        name: 'kds-text-underline',
+        description: 'Add underline to text',
+      },
+      {
+        name: 'kds-text-spacing-lg',
+        description: 'Large letter spacing',
+      },
+      {
+        name: 'kds-text-spacing-md',
+        description: 'Medium letter spacing',
+      },
+      {
+        name: 'kds-text-spacing-sm',
+        description: 'Small letter spacing',
+      },
+    ],
+    examples: [
+      {
+        title: 'Complete Type Scale',
+        code: `<p class="kds-display kds-display-lg">Display Large</p>
+<p class="kds-display kds-display-md">Display Medium</p>
+<p class="kds-display kds-display-sm">Display Small</p>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-headline kds-headline-lg kds-text-bold">Headline Large</p>
+  <p class="kds-headline kds-headline-lg">Headline Large</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-headline kds-headline-md kds-text-bold">Headline Medium</p>
+  <p class="kds-headline kds-headline-md">Headline Medium</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-headline kds-headline-sm kds-text-bold">Headline Small</p>
+  <p class="kds-headline kds-headline-sm">Headline Small</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-title kds-title-lg kds-text-bold kds-text-uppercase kds-text-spacing-lg">Title Large</p>
+  <p class="kds-title kds-title-lg kds-text-bold">Title Large</p>
+  <p class="kds-title kds-title-lg kds-text-medium">Title Large</p>
+  <p class="kds-title kds-title-lg">Title Large</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-title kds-title-md kds-text-bold kds-text-uppercase kds-text-spacing-md">Title Medium</p>
+  <p class="kds-title kds-title-md kds-text-bold">Title Medium</p>
+  <p class="kds-title kds-title-md kds-text-medium">Title Medium</p>
+  <p class="kds-title kds-title-md">Title Medium</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-title kds-title-sm kds-text-bold kds-text-uppercase kds-text-spacing-sm">Title Small</p>
+  <p class="kds-title kds-title-sm kds-text-bold">Title Small</p>
+  <p class="kds-title kds-title-sm kds-text-medium">Title Small</p>
+  <p class="kds-title kds-title-sm">Title Small</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-body kds-body-lg kds-text-bold">Body Large</p>
+  <p class="kds-body kds-body-lg kds-text-semibold">Body Large</p>
+  <p class="kds-body kds-body-lg kds-text-medium">Body Large</p>
+  <p class="kds-body kds-body-lg kds-text-underline">Body Large</p>
+  <p class="kds-body kds-body-lg">Body Large</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-body kds-body-md kds-text-bold">Body Medium</p>
+  <p class="kds-body kds-body-md kds-text-semibold">Body Medium</p>
+  <p class="kds-body kds-body-md kds-text-medium">Body Medium</p>
+  <p class="kds-body kds-body-md kds-text-underline">Body Medium</p>
+  <p class="kds-body kds-body-md">Body Medium</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-label kds-label-lg">Label Large</p>
+  <p class="kds-label kds-label-lg kds-text-bold">Label Large</p>
+  <p class="kds-label kds-label-lg kds-text-semibold">Label Large</p>
+  <p class="kds-label kds-label-lg kds-text-medium">Label Large</p>
+  <p class="kds-label kds-label-lg kds-text-underline">Label Large</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-label kds-label-md">Label Medium</p>
+  <p class="kds-label kds-label-md kds-text-bold">Label Medium</p>
+  <p class="kds-label kds-label-md kds-text-semibold">Label Medium</p>
+  <p class="kds-label kds-label-md kds-text-medium">Label Medium</p>
+  <p class="kds-label kds-label-md kds-text-underline">Label Medium</p>
+</div>
+
+<div style="display:flex; justify-content: space-between;">
+  <p class="kds-label kds-label-sm">Label Small</p>
+  <p class="kds-label kds-label-sm kds-text-bold">Label Small</p>
+  <p class="kds-label kds-label-sm kds-text-semibold">Label Small</p>
+  <p class="kds-label kds-label-sm kds-text-medium">Label Small</p>
+  <p class="kds-label kds-label-sm kds-text-underline">Label Small</p>
+</div>`,
+        description: 'Complete demonstration of all 15 type scale styles with weight and decoration variants.',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Standard text navigation and selection',
+      ariaLabels: [
+        'Maintain proper heading hierarchy (H1, H2, H3, etc.)',
+        'Large text (18px+ or 14px+ bold): minimum 3:1 contrast ratio',
+        'Standard text (<18px or <14px bold): minimum 4.5:1 contrast ratio',
+        'Default text color: on-surface (alternative: on-surface-variant)',
+        'Ensure minimum 16px font size for body text',
+        'Meet WCAG 2.1 AA color contrast requirements',
+      ],
+      screenReaderNotes: 'Typography establishes visual hierarchy. Ensure semantic HTML (proper heading tags) matches visual hierarchy. Screen readers announce heading levels and text content.',
+    },
+    relatedComponents: ['Button', 'Link', 'Card', 'Alert'],
   },
   {
     name: 'Icon object',
