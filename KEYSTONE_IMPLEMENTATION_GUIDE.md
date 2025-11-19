@@ -1707,14 +1707,173 @@ export const keystoneComponents: KeystoneComponent[] = [
   {
     name: 'Table',
     category: 'data',
-    description: 'Data table with proper semantic markup',
+    description: 'Simple grid that displays data in a structured format using numbers, short sentences, phrases, or other data points. Helps users find specific information and compare content across columns and rows.',
     wcagLevel: 'AA',
     storybookUrl: 'https://components.pa.gov/?path=/docs/components-table--docs',
-    accessibility: {
-      keyboardSupport: 'Tab through interactive table elements',
-      ariaLabels: ['Use th for headers', 'Use scope attribute on headers', 'Provide caption or aria-label'],
-      screenReaderNotes: 'Screen readers announce row and column headers',
+    usage: {
+      whenToUse: [
+        'Display data simply in a structured format',
+        'Compare content across columns and rows',
+        'Structure short bits of content to be visually scannable',
+        'Help users find specific information (e.g., office addresses and hours)',
+        'For large data sets, consider using multiple tables with clear headings',
+      ],
+      whenNotToUse: [
+        'Avoid tables if you have cells with long written sections or paragraph-length information',
+        'Do not use tables to create layouts for web pages - use layout grid instead',
+        'If your table includes paragraph-length information, consider another format',
+      ],
+      bestPractices: [
+        'A table needs a clear header that gives the user enough context to understand the contents',
+        'Use brief, clear labels for columns and rows',
+        'Follow plain language best practices',
+        'Use th elements for headers with scope attribute',
+        'First column can be used as row headers with scope="row"',
+        'Include a descriptive table title using h2.kds-table-title',
+        'Keep cell content short - avoid long paragraphs',
+      ],
     },
+    props: [
+      {
+        name: 'headers',
+        type: 'string[]',
+        description: 'Column headers for the table',
+        required: true,
+      },
+      {
+        name: 'rows',
+        type: 'array[]',
+        description: 'Table rows data',
+        required: true,
+      },
+      {
+        name: 'firstColumnAsHeader',
+        type: 'boolean',
+        description: 'Renders the first column as header cells (th with scope="row")',
+        defaultValue: 'false',
+      },
+      {
+        name: 'firstRowAsHeader',
+        type: 'boolean',
+        description: 'Controls the visibility of the table header (thead)',
+        defaultValue: 'true',
+      },
+      {
+        name: 'title',
+        type: 'string',
+        description: 'Title for the table',
+        required: false,
+      },
+      {
+        name: 'showTitle',
+        type: 'boolean',
+        description: 'Controls the visibility of the table title',
+        defaultValue: 'false',
+      },
+    ],
+    examples: [
+      {
+        title: 'Table with Title and Row Headers',
+        code: `<table class="kds-table">
+  <h2 class="kds-table-title">Financial Performance</h2>
+  <thead>
+    <tr>
+      <th>Quarter</th>
+      <th>Revenue</th>
+      <th>Expenses</th>
+      <th>Profit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Q1 2024</th>
+      <td>$100,000</td>
+      <td>$80,000</td>
+      <td>$20,000</td>
+    </tr>
+    <tr>
+      <th scope="row">Q2 2024</th>
+      <td>$120,000</td>
+      <td>$85,000</td>
+      <td>$35,000</td>
+    </tr>
+    <tr>
+      <th scope="row">Q3 2024</th>
+      <td>$150,000</td>
+      <td>$95,000</td>
+      <td>$55,000</td>
+    </tr>
+  </tbody>
+</table>`,
+        description: 'Table with descriptive title (h2.kds-table-title), column headers in thead, and first column as row headers (th with scope="row"). Data cells use td elements.',
+      },
+      {
+        title: 'Simple Table without Title',
+        code: `<table class="kds-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>John Smith</td>
+      <td>john@example.com</td>
+      <td>(555) 123-4567</td>
+    </tr>
+    <tr>
+      <td>Jane Doe</td>
+      <td>jane@example.com</td>
+      <td>(555) 987-6543</td>
+    </tr>
+  </tbody>
+</table>`,
+        description: 'Simple table without title. Uses thead for column headers and tbody for data rows. All cells are td elements.',
+      },
+      {
+        title: 'Table with Caption',
+        code: `<table class="kds-table">
+  <caption>Office Locations and Hours</caption>
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Address</th>
+      <th>Hours</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Harrisburg Office</th>
+      <td>123 State St, Harrisburg, PA</td>
+      <td>Mon-Fri 9am-5pm</td>
+    </tr>
+    <tr>
+      <th scope="row">Philadelphia Office</th>
+      <td>456 Market St, Philadelphia, PA</td>
+      <td>Mon-Fri 8am-6pm</td>
+    </tr>
+  </tbody>
+</table>`,
+        description: 'Table using standard HTML caption element for accessibility. First column as row headers with scope="row".',
+      },
+    ],
+    accessibility: {
+      keyboardSupport: 'Tab through interactive table elements (if table contains links or buttons)',
+      ariaLabels: [
+        'Use semantic <table> element',
+        'Use <th> elements for all headers (column and row headers)',
+        'Use scope="col" for column headers (default for th in thead)',
+        'Use scope="row" for row headers (when first column is a header)',
+        'Provide table context with <caption> element or h2.kds-table-title',
+        'Use <thead> for table header rows',
+        'Use <tbody> for table body rows',
+        'Brief, clear labels for columns and rows following plain language',
+      ],
+      screenReaderNotes: 'Screen readers announce row and column headers when navigating table cells. Proper use of th with scope attribute helps screen reader users understand table structure and relationships.',
+    },
+    relatedComponents: ['List group', 'Typography'],
   },
   {
     name: 'Typography',
@@ -3233,6 +3392,101 @@ export class KeystoneService {
 
       if (code.includes('href="tel:')) {
         suggestions.push('Phone links (tel:) should display formatted phone number like "(555) 123-4567"');
+      }
+    }
+
+    // Check for table component structure
+    if (code.includes('kds-table') || (code.includes('<table') && code.includes('class='))) {
+      // Check for semantic table element
+      if (!code.includes('<table')) {
+        errors.push('Tables must use semantic <table> element');
+      }
+
+      // Check for table class
+      if (code.includes('<table') && !code.includes('kds-table')) {
+        warnings.push('Tables should use kds-table class for proper styling');
+      }
+
+      // Check for thead section
+      if (!code.includes('<thead')) {
+        warnings.push('Tables should have <thead> section for column headers');
+      }
+
+      // Check for tbody section
+      if (!code.includes('<tbody')) {
+        warnings.push('Tables should have <tbody> section for data rows');
+      }
+
+      // Check for th elements in header
+      if (code.includes('<thead') && !code.includes('<th')) {
+        errors.push('Table header (<thead>) must contain <th> elements for column headers');
+      }
+
+      // Check for tr elements
+      if (!code.includes('<tr')) {
+        errors.push('Tables must contain <tr> elements for rows');
+      }
+
+      // Check for td or th elements in tbody
+      if (code.includes('<tbody') && !code.includes('<td') && !code.includes('<th')) {
+        errors.push('Table body must contain <td> or <th> elements for data cells');
+      }
+
+      // Check for scope attribute on th elements
+      if (code.includes('<th') && code.includes('<tbody')) {
+        // If there are th elements in tbody (row headers), they should have scope="row"
+        if (!code.includes('scope="row"') && code.includes('<tbody>')) {
+          suggestions.push('Row headers (th in tbody) should include scope="row" attribute for accessibility');
+        }
+      }
+
+      // Check for table title or caption
+      const hasTitle = code.includes('kds-table-title');
+      const hasCaption = code.includes('<caption');
+
+      if (!hasTitle && !hasCaption) {
+        warnings.push('Tables should have a title (h2.kds-table-title) or <caption> for context');
+      }
+
+      // Validate title element if present
+      if (code.includes('kds-table-title')) {
+        if (!code.includes('<h2 class="kds-table-title"') && !code.includes('class="kds-table-title"')) {
+          suggestions.push('Table title should use <h2> element with kds-table-title class');
+        }
+      }
+
+      // Check that table is not being used for layout
+      const hasLayoutIndicators = code.includes('width=') || code.includes('border="0"') || code.includes('cellpadding');
+      if (hasLayoutIndicators) {
+        errors.push('Do not use tables for layout. Use layout grid instead. Tables are for data only.');
+      }
+
+      // Warn about potential long content
+      const avgCellLength = code.length / ((code.match(/<td/g) || []).length || 1);
+      if (avgCellLength > 200) {
+        suggestions.push('Table cells appear to contain long content. Consider another format if cells have paragraph-length information.');
+      }
+
+      // Check for consistent row structure
+      const rows = code.match(/<tr[^>]*>[\s\S]*?<\/tr>/g) || [];
+      if (rows.length > 1) {
+        const cellCounts = rows.map(row => {
+          const tdCount = (row.match(/<td/g) || []).length;
+          const thCount = (row.match(/<th/g) || []).length;
+          return tdCount + thCount;
+        });
+
+        const firstRowCellCount = cellCounts[0];
+        const inconsistent = cellCounts.some(count => count !== firstRowCellCount);
+
+        if (inconsistent) {
+          warnings.push('Table rows should have consistent number of cells for proper structure');
+        }
+      }
+
+      // Suggest brief, clear labels
+      if (code.includes('<th')) {
+        suggestions.push('Use brief, clear labels for table headers following plain language best practices');
       }
     }
 
