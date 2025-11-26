@@ -1,5 +1,5 @@
 {
-  "name": "uswds-local-mcp-server",
+  "name": "@cdt5058/uswds-mcp-server",
   "version": "0.1.0",
   "description": "MCP server for USWDS development with React component support",
   "type": "module",
