@@ -2,7 +2,7 @@
  * Comprehensive React-USWDS component database
  * Based on https://github.com/trussworks/react-uswds
  *
- * @version React-USWDS v11.0.0 (December 2024)
+ * @version React-USWDS v11.0.0 (December 2025)
  * @uswdsVersion USWDS 3.13.0
  * @see https://github.com/trussworks/react-uswds/releases/tag/11.0.0
  */

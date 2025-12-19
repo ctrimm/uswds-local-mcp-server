@@ -8,7 +8,7 @@
 A Model Context Protocol (MCP) server that provides tools for working with the U.S. Web Design System (USWDS) and React-USWDS components. This server helps developers build accessible, compliant government websites faster by providing component information, design tokens, and validation tools.
 
 **Supported Versions:**
-- **React-USWDS**: v11.0.0 (December 2024)
+- **React-USWDS**: v11.0.0 (December 2025)
 - **USWDS**: 3.13.0
 - **React**: 16.x, 17.x, 18.x, 19.x
 
@@ -16,7 +16,7 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 
 ## What's New
 
-### React-USWDS v11.0.0 Support (December 2024)
+### React-USWDS v11.0.0 Support (December 2025)
 
 Updated to support the latest React-USWDS v11.0.0, which includes:
 
@@ -36,7 +36,7 @@ Updated to support the latest React-USWDS v11.0.0, which includes:
 - Improved TypeScript type exports
 - Various accessibility and bug fixes
 
-### Tailwind USWDS Integration (December 2024)
+### Tailwind USWDS Integration (December 2025)
 
 Added comprehensive support for USWDS components built with Tailwind CSS:
 
