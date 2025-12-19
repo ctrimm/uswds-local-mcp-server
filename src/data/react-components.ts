@@ -160,7 +160,7 @@ export function Example() {
   TextInput: {
     name: 'TextInput',
     category: 'forms',
-    description: 'A text input allows users to enter any combination of letters, numbers, or symbols',
+    description: 'A text input allows users to enter any combination of letters, numbers, or symbols. v9.1.0+ has improved ref forwarding.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-text-input--docs',
     props: [
@@ -172,7 +172,7 @@ export function Example() {
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable the input' },
       { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state' },
       { name: 'inputSize', type: "'small' | 'medium'", required: false, description: 'Input size variant' },
-      { name: 'inputRef', type: 'React.RefObject<HTMLInputElement>', required: false, description: 'Ref for the input element' },
+      { name: 'inputRef', type: 'React.RefObject<HTMLInputElement>', required: false, description: 'Ref for the input element (improved forwarding in v9.1.0+)', since: 'v9.1.0: improved' },
     ],
     examples: [
       {
@@ -411,14 +411,14 @@ export function Example() {
   Select: {
     name: 'Select',
     category: 'forms',
-    description: 'A select component allows users to choose one option from a dropdown list',
+    description: 'A select component allows users to choose one option from a dropdown list. Note: Deprecated Dropdown component was removed in v6.0.0 - use Select instead.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-select--docs',
     props: [
       { name: 'id', type: 'string', required: true, description: 'Select ID' },
       { name: 'name', type: 'string', required: true, description: 'Select name' },
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable the select' },
-      { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state' },
+      { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state', since: 'v5.0.0 (originally on Dropdown)' },
     ],
     examples: [
       {
@@ -555,7 +555,7 @@ export function Example() {
   Alert: {
     name: 'Alert',
     category: 'ui',
-    description: 'Alerts keep users informed of important and sometimes time-sensitive changes',
+    description: 'Alerts keep users informed of important and sometimes time-sensitive changes. USWDS 3.9.0+ fixed alignment bug with theme-site-margins-width.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-alert--docs',
     props: [
@@ -564,7 +564,7 @@ export function Example() {
       { name: 'headingLevel', type: "'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'", required: false, default: 'h4', description: 'Heading level for accessibility' },
       { name: 'slim', type: 'boolean', required: false, description: 'Use slim variant' },
       { name: 'noIcon', type: 'boolean', required: false, description: 'Hide alert icon' },
-      { name: 'validation', type: 'boolean', required: false, description: 'Use for form validation' },
+      { name: 'validation', type: 'boolean', required: false, description: 'Use for form validation', since: 'v5.2.0' },
       { name: 'cta', type: 'React.ReactNode', required: false, description: 'Call-to-action element' },
     ],
     examples: [
@@ -755,7 +755,7 @@ export function Example() {
   Card: {
     name: 'Card',
     category: 'ui',
-    description: 'Cards contain content and actions about a single subject',
+    description: 'Cards contain content and actions about a single subject. v8.0.0+ uses link instead of button for card actions. USWDS 3.9.0+ fixed theme-card-font-family setting.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-card--docs',
     props: [
@@ -835,7 +835,7 @@ export function Example() {
   Table: {
     name: 'Table',
     category: 'ui',
-    description: 'A table organizes complex information in a grid',
+    description: 'A table organizes complex information in a grid. USWDS 3.11.0+ has consistent header styles across thead/tbody/tfoot th elements.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-table--docs',
     props: [
@@ -845,6 +845,7 @@ export function Example() {
       { name: 'fullWidth', type: 'boolean', required: false, description: 'Make table full width' },
       { name: 'scrollable', type: 'boolean', required: false, description: 'Enable horizontal scrolling' },
       { name: 'caption', type: 'string', required: false, description: 'Table caption' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes', since: 'v4.2.0' },
     ],
     examples: [
       {
@@ -899,7 +900,7 @@ export function Example() {
   Header: {
     name: 'Header',
     category: 'navigation',
-    description: 'The header provides consistent structure for branding and navigation',
+    description: 'The header provides consistent structure for branding and navigation. v7.0.0+ includes overlay element within header component.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-header--docs',
     props: [
@@ -1147,7 +1148,7 @@ export function Example() {
   Banner: {
     name: 'Banner',
     category: 'ui',
-    description: 'The banner identifies official U.S. government websites',
+    description: 'The banner identifies official U.S. government websites. v6.2.0+ removed image role from BannerIcon. USWDS 3.13.0 introduced Web Component variant.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-banner--docs',
     props: [
@@ -1268,13 +1269,14 @@ export function Example() {
   Search: {
     name: 'Search',
     category: 'forms',
-    description: 'Search allows users to search for specific content',
+    description: 'Search allows users to search for specific content. v7.0.0+ has improved accessible naming for submit button. v4.1.0+ is extendable.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-search--docs',
     props: [
       { name: 'size', type: "'big' | 'small'", required: false, description: 'Search input size' },
       { name: 'onSubmit', type: 'function', required: true, description: 'Form submit handler' },
       { name: 'placeholder', type: 'string', required: false, description: 'Search input placeholder' },
+      { name: 'defaultValue', type: 'string', required: false, description: 'Default search input value', since: 'v4.1.0' },
     ],
     examples: [
       {
@@ -1393,7 +1395,7 @@ export function Example() {
   SiteAlert: {
     name: 'SiteAlert',
     category: 'ui',
-    description: 'A site alert communicates urgent sitewide information',
+    description: 'A site alert communicates urgent sitewide information. USWDS 3.9.0+ fixed alignment bug with theme-site-margins-width. USWDS 3.12.0+ removed top margin.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-site-alert--docs',
     props: [
@@ -1821,12 +1823,13 @@ export function Example() {
   LanguageSelector: {
     name: 'LanguageSelector',
     category: 'navigation',
-    description: 'Language selector allows users to change the site language',
+    description: 'Language selector allows users to change the site language. Added in v5.2.0.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-language-selector--docs',
     props: [
-      { name: 'langs', type: 'LanguageDefinition[]', required: true, description: 'Available languages' },
+      { name: 'langs', type: 'LanguageDefinition[]', required: true, description: 'Available languages (LanguageDefinition exported in v5.5.0+)' },
       { name: 'onLanguageChange', type: 'function', required: false, description: 'Language change callback' },
+      { name: 'displayLang', type: 'string', required: false, description: 'Display language for button label', since: 'v5.5.0' },
     ],
     examples: [
       {
