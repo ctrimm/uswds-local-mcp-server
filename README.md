@@ -7,7 +7,43 @@
 
 A Model Context Protocol (MCP) server that provides tools for working with the U.S. Web Design System (USWDS) and React-USWDS components. This server helps developers build accessible, compliant government websites faster by providing component information, design tokens, and validation tools.
 
+**Supported Versions:**
+- **React-USWDS**: v11.0.0 (December 2024)
+- **USWDS**: 3.13.0
+- **React**: 16.x, 17.x, 18.x, 19.x
+
 > **⚠️ Important**: This server requires **Node.js 20+** due to the File API requirement in the MCP SDK. See [troubleshooting](#node-version-requirement) for details.
+
+## What's New
+
+### React-USWDS v11.0.0 Support (December 2024)
+
+Updated to support the latest React-USWDS v11.0.0, which includes:
+
+**USWDS 3.13.0 Features:**
+- ✨ First Web Component in USWDS (banner variant)
+- ♿ Enhanced accessibility with reduced motion preference support
+- 🎨 Improved range slider with visible values
+- 🔍 Better combo box search result ordering
+- 📊 Enhanced character count visual cues
+
+**Breaking Changes:**
+- Visual updates from USWDS 3.9.0 - see [USWDS 3.9.0 release notes](https://github.com/uswds/uswds/releases/tag/v3.9.0)
+
+**Additional Updates:**
+- Node 24 LTS support (v10.1.0)
+- React 19 support (v10.0.0)
+- Improved TypeScript type exports
+- Various accessibility and bug fixes
+
+### Tailwind USWDS Integration (December 2024)
+
+Added comprehensive support for USWDS components built with Tailwind CSS:
+
+- 🎨 Access Tailwind USWDS component documentation
+- 📖 Getting started guide with installation steps
+- 🔧 JavaScript, colors, icons, and typography utilities
+- 🔍 Search across all Tailwind USWDS documentation
 
 ## Features
 

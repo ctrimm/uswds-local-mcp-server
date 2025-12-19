@@ -1,7 +1,7 @@
 {
   "name": "uswds-local-mcp-server",
-  "version": "0.1.0",
-  "description": "MCP server for USWDS development with React component support",
+  "version": "0.2.0",
+  "description": "MCP server for USWDS development with React-USWDS v11.0.0 and Tailwind support",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
