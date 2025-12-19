@@ -46,7 +46,7 @@ export const REACT_COMPONENTS: Record<string, ComponentData> = {
   Button: {
     name: 'Button',
     category: 'forms',
-    description: 'Buttons signal actions and direct users through key moments in an experience',
+    description: 'Buttons signal actions and direct users through key moments in an experience. USWDS 3.9.0+ updates unstyled buttons to have width: auto at narrow screen widths.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-button--docs',
     props: [
@@ -127,7 +127,7 @@ export function Example() {
   ButtonGroup: {
     name: 'ButtonGroup',
     category: 'forms',
-    description: 'Group related buttons together',
+    description: 'Group related buttons together. USWDS 3.13.0+ improves nested button group styles to match parent height.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-button-group--docs',
     props: [
@@ -455,7 +455,7 @@ export function Example() {
   ComboBox: {
     name: 'ComboBox',
     category: 'forms',
-    description: 'A combo box combines a text input with a dropdown list, allowing users to type or select. USWDS 3.10.0+ prioritizes options starting with query in search results.',
+    description: 'A combo box combines a text input with a dropdown list, allowing users to type or select. v10.0.2+ correctly passes down className props. USWDS 3.10.0+ prioritizes options starting with query in search results.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-combo-box--docs',
     props: [
@@ -509,7 +509,7 @@ export function Example() {
   DatePicker: {
     name: 'DatePicker',
     category: 'forms',
-    description: 'A date picker helps users select a single date with customizable format support',
+    description: 'A date picker helps users select a single date with customizable format support. USWDS 3.9.0+ supports aria-disabled attribute and disables toggle when present.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-picker--docs',
     props: [
@@ -1183,7 +1183,7 @@ export function Example() {
   Footer: {
     name: 'Footer',
     category: 'navigation',
-    description: 'The footer provides consistent structure for footer content across government websites',
+    description: 'The footer provides consistent structure for footer content across government websites. v11.0.0+ applies consistent USWDS classes in slim variant. USWDS 3.13.0+ restores usa-layout-grid dependency to prevent visual regressions.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-footer--docs',
     props: [
@@ -1223,7 +1223,7 @@ export function Example() {
   Pagination: {
     name: 'Pagination',
     category: 'navigation',
-    description: 'Pagination helps users navigate through pages of content',
+    description: 'Pagination helps users navigate through pages of content. USWDS 3.9.0+ adds text underline styles to pagination links for visual consistency.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-pagination--docs',
     props: [
@@ -1313,7 +1313,7 @@ export function Example() {
   Tooltip: {
     name: 'Tooltip',
     category: 'ui',
-    description: 'A tooltip provides additional information on hover or focus. Note: v10.1.0+ does not set title attribute on trigger element.',
+    description: 'A tooltip provides additional information on hover or focus. Note: v10.1.0+ does not set title attribute on trigger element. USWDS 3.13.0+ closes active tooltips when Escape key is pressed (WCAG 1.4.13 dismissible requirement).',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-tooltip--docs',
     props: [
@@ -1692,7 +1692,7 @@ export function Example() {
   DateInput: {
     name: 'DateInput',
     category: 'forms',
-    description: 'Date input allows users to enter a date using three text fields',
+    description: 'Date input allows users to enter a date using three text fields. v10.1.0+ examples include aria-describedby for USWDS compliance.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-input--docs',
     props: [
@@ -1909,7 +1909,7 @@ export function Example() {
   DateRangePicker: {
     name: 'DateRangePicker',
     category: 'forms',
-    description: 'Date range picker for selecting a start and end date',
+    description: 'Date range picker for selecting a start and end date. USWDS 3.9.0+ supports aria-disabled attribute and disables toggle when present.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-range-picker--docs',
     props: [
