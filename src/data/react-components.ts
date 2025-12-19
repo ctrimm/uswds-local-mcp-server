@@ -25,6 +25,8 @@ export interface PropDefinition {
   required: boolean;
   default?: string;
   description: string;
+  since?: string; // Version when prop was added (e.g., "v10.1.0", "USWDS 3.9.0")
+  deprecated?: string; // Version when deprecated, with migration note
 }
 
 export interface CodeExample {
@@ -453,13 +455,13 @@ export function Example() {
   ComboBox: {
     name: 'ComboBox',
     category: 'forms',
-    description: 'A combo box combines a text input with a dropdown list, allowing users to type or select',
+    description: 'A combo box combines a text input with a dropdown list, allowing users to type or select. USWDS 3.10.0+ prioritizes options starting with query in search results.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-combo-box--docs',
     props: [
       { name: 'id', type: 'string', required: true, description: 'ComboBox ID' },
       { name: 'name', type: 'string', required: true, description: 'ComboBox name' },
-      { name: 'options', type: 'ComboBoxOption[]', required: true, description: 'Array of options' },
+      { name: 'options', type: 'ComboBoxOption[]', required: true, description: 'Array of options (search results ordered: starts-with first, then contains - USWDS 3.10.0+)' },
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable the combo box' },
     ],
     examples: [
@@ -507,7 +509,7 @@ export function Example() {
   DatePicker: {
     name: 'DatePicker',
     category: 'forms',
-    description: 'A date picker helps users select a single date',
+    description: 'A date picker helps users select a single date with customizable format support',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-picker--docs',
     props: [
@@ -517,6 +519,7 @@ export function Example() {
       { name: 'minDate', type: 'string', required: false, description: 'Minimum selectable date (YYYY-MM-DD)' },
       { name: 'maxDate', type: 'string', required: false, description: 'Maximum selectable date (YYYY-MM-DD)' },
       { name: 'defaultValue', type: 'string', required: false, description: 'Default date value' },
+      { name: 'dateFormat', type: 'string', required: false, description: 'Custom date format string (e.g., "MM/DD/YYYY")', since: 'v10.2.0' },
     ],
     examples: [
       {
@@ -623,13 +626,13 @@ export function Example() {
   Accordion: {
     name: 'Accordion',
     category: 'ui',
-    description: 'An accordion is a list of collapsible sections used to organize content',
+    description: 'An accordion is a list of collapsible sections used to organize content. v10.2.0 updated expansion behavior, v9.1.0 added custom onClick support.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-accordion--docs',
     props: [
-      { name: 'items', type: 'AccordionItemProps[]', required: true, description: 'Array of accordion items' },
+      { name: 'items', type: 'AccordionItemProps[]', required: true, description: 'Array of accordion items. Each item can have: title, content, expanded, id, headingLevel, onClick (v9.1.0+)' },
       { name: 'bordered', type: 'boolean', required: false, description: 'Add borders to accordion' },
-      { name: 'multiselectable', type: 'boolean', required: false, description: 'Allow multiple items open' },
+      { name: 'multiselectable', type: 'boolean', required: false, description: 'Allow multiple items open simultaneously' },
     ],
     examples: [
       {
@@ -1018,13 +1021,14 @@ export function Example() {
   StepIndicator: {
     name: 'StepIndicator',
     category: 'navigation',
-    description: 'A step indicator shows progress through a multi-step process',
+    description: 'A step indicator shows progress through a multi-step process with i18n support',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-step-indicator--docs',
     props: [
       { name: 'headingLevel', type: "'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'", required: false, default: 'h4', description: 'Heading level' },
-      { name: 'ofText', type: 'string', required: false, default: 'of', description: 'Text for "of"' },
-      { name: 'stepText', type: 'string', required: false, default: 'Step', description: 'Text for "Step"' },
+      { name: 'ofText', type: 'string', required: false, default: 'of', description: 'Text for "of" (for i18n)' },
+      { name: 'stepText', type: 'string', required: false, default: 'Step', description: 'Text for "Step" (for i18n)' },
+      { name: 'statusText', type: 'string', required: false, description: 'Custom text for sr-only status element (for i18n)', since: 'v9.1.0' },
     ],
     examples: [
       {
@@ -1307,11 +1311,11 @@ export function Example() {
   Tooltip: {
     name: 'Tooltip',
     category: 'ui',
-    description: 'A tooltip provides additional information on hover or focus',
+    description: 'A tooltip provides additional information on hover or focus. Note: v10.1.0+ does not set title attribute on trigger element.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-tooltip--docs',
     props: [
-      { name: 'label', type: 'string', required: true, description: 'Tooltip text content' },
+      { name: 'label', type: 'string | React.ReactNode', required: true, description: 'Tooltip content (string or React component)', since: 'v5.5.0: ReactNode support' },
       { name: 'position', type: "'top' | 'bottom' | 'left' | 'right'", required: false, default: 'top', description: 'Tooltip position' },
       { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' },
     ],
@@ -1638,13 +1642,13 @@ export function Example() {
   CharacterCount: {
     name: 'CharacterCount',
     category: 'forms',
-    description: 'Character count helps users know how much text they can enter',
+    description: 'Character count helps users know how much text they can enter. USWDS 3.9.0+ uses enhanced error styles when maxlength is exceeded.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-character-count--docs',
     props: [
       { name: 'id', type: 'string', required: true, description: 'Input ID' },
       { name: 'name', type: 'string', required: true, description: 'Input name' },
-      { name: 'maxLength', type: 'number', required: true, description: 'Maximum character count' },
+      { name: 'maxLength', type: 'number', required: true, description: 'Maximum character count (shows enhanced error visual when exceeded in USWDS 3.9.0+)' },
       { name: 'defaultValue', type: 'string', required: false, description: 'Default input value' },
       { name: 'isTextArea', type: 'boolean', required: false, description: 'Use textarea instead of input' },
     ],
@@ -1727,7 +1731,7 @@ export function Example() {
   RangeInput: {
     name: 'RangeInput',
     category: 'forms',
-    description: 'Range input allows users to select from a range of values',
+    description: 'Range input allows users to select from a range of values with visible value display (USWDS 3.13.0+)',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-range-input--docs',
     props: [
@@ -1737,6 +1741,8 @@ export function Example() {
       { name: 'max', type: 'number', required: true, description: 'Maximum value' },
       { name: 'step', type: 'number', required: false, description: 'Step increment' },
       { name: 'defaultValue', type: 'number', required: false, description: 'Default value' },
+      { name: 'data-text-unit', type: 'string', required: false, description: 'Unit type for value display (e.g., "stars", "dollars")', since: 'USWDS 3.12.0' },
+      { name: 'data-text-preposition', type: 'string', required: false, description: 'Preposition for unit (e.g., "of")', since: 'USWDS 3.12.0' },
     ],
     examples: [
       {
@@ -1968,7 +1974,7 @@ export default function Example() {
   FileInput: {
     name: 'FileInput',
     category: 'forms',
-    description: 'File input component for uploading files',
+    description: 'File input component for uploading files with customizable text and drag-and-drop support',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-file-input--docs',
     props: [
@@ -1978,6 +1984,9 @@ export default function Example() {
       { name: 'multiple', type: 'boolean', required: false, default: 'false', description: 'Allow multiple file selection' },
       { name: 'onChange', type: 'function', required: false, description: 'Callback when files are selected' },
       { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the input' },
+      { name: 'chooseText', type: 'string', required: false, description: 'Custom text for the "Choose file" button', since: 'v10.1.0' },
+      { name: 'dragText', type: 'string', required: false, description: 'Custom text for the drag-and-drop area', since: 'v10.1.0' },
+      { name: 'selectedText', type: 'string', required: false, description: 'Custom text shown after files are selected', since: 'v10.1.0' },
       { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' }
     ],
     examples: [
@@ -2036,7 +2045,7 @@ export default function Example() {
   TimePicker: {
     name: 'TimePicker',
     category: 'forms',
-    description: 'Time picker component for selecting times',
+    description: 'Time picker component for selecting times. USWDS 3.10.0+ uses improved hint text: "Select a time from the dropdown" (WCAG 3.3.2).',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-time-picker--docs',
     props: [
@@ -2047,7 +2056,8 @@ export default function Example() {
       { name: 'maxTime', type: 'string', required: false, description: 'Maximum selectable time' },
       { name: 'step', type: 'number', required: false, default: '30', description: 'Minute interval steps' },
       { name: 'onChange', type: 'function', required: false, description: 'Callback when time changes' },
-      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the picker' }
+      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the picker' },
+      { name: 'label', type: 'string', required: true, description: 'Label for the time picker (required for accessibility)', since: 'v6.0.0+' }
     ],
     examples: [
       {
