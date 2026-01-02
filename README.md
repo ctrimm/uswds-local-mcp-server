@@ -363,6 +363,14 @@ npm run inspector
 
 - **[USWDS_AGENT_IMPLEMENTATION.md](USWDS_AGENT_IMPLEMENTATION.md)** - Agent implementation details
 - **[MCP_TOOLS_GUIDE.md](MCP_TOOLS_GUIDE.md)** - MCP tools reference
+- **[TOOLS.md](TOOLS.md)** - Complete tool reference with all 18 tools documented ⭐
+
+### Deployment
+
+- **[DEPLOY.md](DEPLOY.md)** - AWS Lambda deployment guide
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design
+- **[VALIDATION.md](VALIDATION.md)** - Lambda implementation validation
+- **[RATE_LIMITING.md](RATE_LIMITING.md)** - Rate limiting implementation guide
 
 ### Troubleshooting
 
