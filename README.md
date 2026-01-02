@@ -87,6 +87,126 @@ Added comprehensive support for USWDS components built with Tailwind CSS:
 - `get_tailwind_uswds_typography` - Get typography utilities and styles
 - `search_tailwind_uswds_docs` - Search all Tailwind USWDS documentation
 
+## Architecture & How It Works
+
+### Dual-Mode Deployment
+
+This MCP server supports two deployment modes:
+
+1. **Local Mode** (stdio): For development and local use
+2. **Remote Mode** (AWS Lambda): For production serverless deployment
+
+### MCP Tool Call Flow
+
+When a client (like Claude Desktop) requests component information, here's what happens:
+
+```
+┌─────────────┐
+│   Client    │ (Claude Desktop, Cursor, etc.)
+│  (MCP SDK)  │
+└──────┬──────┘
+       │ 1. HTTP POST to Lambda Function URL (or stdio locally)
+       │    Content-Type: application/json
+       │    Body: {"jsonrpc":"2.0","method":"tools/call",
+       │           "params":{"name":"get_component_info","arguments":{"component_name":"Button"}}}
+       │
+┌──────▼───────────────────────────────────────────┐
+│         AWS Lambda Function URL / stdio          │
+│         (Streamable HTTP Transport)              │
+└──────┬───────────────────────────────────────────┘
+       │ 2. Lambda invokes handler / stdio processes request
+       │
+┌──────▼───────────────────────────────────────────┐
+│         Lambda Execution Environment             │
+│  ┌─────────────────────────────────────────┐    │
+│  │  Container (Warm or Cold)               │    │
+│  │  ┌───────────────────────────────────┐  │    │
+│  │  │ L1: In-Memory Cache               │  │    │
+│  │  │ - Component data: Map<>           │  │    │
+│  │  │ - Tailwind docs: Map<>            │  │    │
+│  │  │ - TTL: 1 hour                     │  │    │
+│  │  └───────────────────────────────────┘  │    │
+│  │  ┌───────────────────────────────────┐  │    │
+│  │  │ L2: /tmp Directory Cache          │  │    │
+│  │  │ - File system cache               │  │    │
+│  │  │ - Survives warm starts            │  │    │
+│  │  │ - Up to 10GB available            │  │    │
+│  │  └───────────────────────────────────┘  │    │
+│  │                                          │    │
+│  │  Handler receives MCP request           │    │
+│  │  ↓                                       │    │
+│  │  Parse: method="tools/call"             │    │
+│  │         name="get_component_info"       │    │
+│  │         args={component_name:"Button"}  │    │
+│  │  ↓                                       │    │
+│  │  Route to Tool Handler                  │    │
+│  │  ↓                                       │    │
+│  │  ┌─────────────────────────────┐        │    │
+│  │  │ ComponentService            │        │    │
+│  │  │ getComponentInfo("Button")  │        │    │
+│  │  │   ↓                          │        │    │
+│  │  │   Check L1 cache (memory)   │        │    │
+│  │  │   ↓                          │        │    │
+│  │  │   If HIT: return cached     │        │    │
+│  │  │   If MISS:                  │        │    │
+│  │  │     Check L2 cache (/tmp)   │        │    │
+│  │  │     If HIT: return cached   │        │    │
+│  │  │     If MISS:                │        │    │
+│  │  │       Load from data file   │        │    │
+│  │  │       Cache in L1 + L2      │        │    │
+│  │  │       Return                │        │    │
+│  │  └─────────────────────────────┘        │    │
+│  │  ↓                                       │    │
+│  │  Format MCP Response:                   │    │
+│  │  {                                       │    │
+│  │    "jsonrpc": "2.0",                    │    │
+│  │    "id": 1,                             │    │
+│  │    "result": {                          │    │
+│  │      "content": [{                      │    │
+│  │        "type": "text",                  │    │
+│  │        "text": "Button component..."   │    │
+│  │      }]                                 │    │
+│  │    }                                    │    │
+│  │  }                                      │    │
+│  └──────────────────────────────────────────┘    │
+└──────┬───────────────────────────────────────────┘
+       │ 3. Stream response back
+       │
+┌──────▼───────────────────────────────────────────┐
+│         Response Streaming                       │
+│         (Lambda Function URL / stdio)            │
+└──────┬───────────────────────────────────────────┘
+       │ 4. HTTP 200 OK / stdio output
+       │    Content-Type: application/json
+       │    Body: {result with component data}
+       │
+┌──────▼──────┐
+│   Client    │ Receives component data
+│  (MCP SDK)  │ Displays to user
+└─────────────┘
+```
+
+### Multi-Layer Caching Strategy
+
+The server uses a sophisticated caching approach optimized for both local and Lambda deployments:
+
+- **L1: Memory Cache** - In-process cache (<1ms latency), survives warm starts
+- **L2: /tmp Directory** - File system cache (1-5ms latency), up to 10GB in Lambda
+- **L3: Embedded Data** - Static JSON bundled with code, always available
+
+This ensures fast responses even on Lambda cold starts while minimizing external dependencies.
+
+### Serverless Deployment
+
+For production use, deploy to AWS Lambda with SST V3:
+
+- **Cost-effective**: ~$2-5/month for typical usage (vs ~$100/month for containers)
+- **Auto-scaling**: Handles 1-10,000+ concurrent requests automatically
+- **Zero maintenance**: No servers to manage
+- **Global reach**: Deploy to multiple regions for low latency
+
+See **[DEPLOY.md](DEPLOY.md)** for complete deployment instructions and **[ARCHITECTURE.md](ARCHITECTURE.md)** for detailed architecture documentation.
+
 ## Installation
 
 ### Prerequisites
