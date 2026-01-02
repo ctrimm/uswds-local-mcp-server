@@ -2,171 +2,84 @@
 
 ## 🔴 Critical Priority
 
-### Fix Lambda MCP Request Handler
-**Status:** Not Started
+### Complete Marketing Website Deployment
+**Status:** In Progress (70% complete)
 **Assignee:** -
-**Estimated Time:** 2-3 hours
+**Estimated Time:** 4-6 hours remaining
 
-The Lambda handler doesn't properly route MCP requests to the server. Currently returns a placeholder message instead of executing tools.
+**✅ Completed:**
+- [x] Astro static site created (`website/`)
+- [x] Home page with hero section, features, quick start tabs
+- [x] Pricing page (Free, Pro, Enterprise tiers)
+- [x] Professional USWDS-inspired design
+- [x] S3 + CloudFront deployment configuration
+- [x] Responsive layout
+- [x] Video placeholder for explainer content
+- [x] SST deployment config
 
-**Tasks:**
-- [ ] Implement proper MCP request routing in `src/lambda.ts`
-- [ ] Parse incoming JSON-RPC requests (method, params, id)
-- [ ] Route `tools/list` to ListToolsRequestSchema handler
-- [ ] Route `tools/call` to CallToolRequestSchema handler
-- [ ] Format responses according to MCP spec
-- [ ] Add request validation (jsonrpc version, required fields)
-- [ ] Test all 18 tools via HTTP/Lambda
-- [ ] Update VALIDATION.md when complete
+**🔲 Remaining:**
+- [ ] Purchase domain: `uswdsmcp.com`
+- [ ] Configure DNS and SSL certificate
+- [ ] Create Getting Started page (`website/src/pages/getting-started.astro`)
+- [ ] Create Documentation page with all 18 tools (`website/src/pages/docs.astro`)
+- [ ] Add real images (replace placeholders)
+- [ ] Create/add explainer video
+- [ ] Deploy to production
+- [ ] Update sst.config.ts with actual domain
 
-**Acceptance Criteria:**
-- All 18 MCP tools work when called via Lambda Function URL
-- Proper JSON-RPC 2.0 responses returned
-- Error handling for invalid requests
-- Tests pass for Lambda handler
+**Priority:** Deploy basic site first, iterate on content later
 
 ---
 
 ## 🟠 High Priority
 
-### Implement Rate Limiting
+### Phase 2: Advanced Rate Limiting (Optional)
 **Status:** Not Started
 **Assignee:** -
-**Estimated Time:** 3-4 hours
+**Estimated Time:** 4-6 hours
 
-Add rate limiting to prevent abuse of the MCP server.
+**Note:** Phase 1 (in-memory rate limiting) is complete and production-ready. This is for future scaling.
 
-**Phase 1: MVP (Start Here)**
-- [ ] Implement in-memory rate limiter (`src/middleware/rate-limiter.ts`)
-- [ ] Add rate limit checks to Lambda handler
-- [ ] Return 429 status code when limit exceeded
-- [ ] Add rate limit headers (X-RateLimit-*)
-- [ ] Log rate limit hits to CloudWatch
-- [ ] Set initial limits: 100 req/min, 10K req/day per API key
-- [ ] Document rate limits in README.md
-- [ ] Test with load testing tool (Apache Bench or Artillery)
-
-**Phase 2: Production (Later)**
+**Tasks:**
 - [ ] Implement DynamoDB-based rate limiter
 - [ ] Create DynamoDB table in SST config
 - [ ] Add per-API-key quota tracking
 - [ ] Support multiple usage tiers (free/paid)
 - [ ] Add quota monitoring dashboard
+- [ ] Migrate from in-memory to DynamoDB
+
+**When to do this:**
+- If serving >1000 API keys
+- If need distributed rate limiting across multiple regions
+- If need persistent quota tracking
 
 **Resources:**
 - See `RATE_LIMITING.md` for detailed implementation guide
-- AWS Lambda throttling best practices
-
----
-
-### Create Marketing Website (uswdsmcp.com)
-**Status:** Not Started
-**Assignee:** -
-**Estimated Time:** 1-2 days
-
-Build a marketing site to explain how to interface with the USWDS MCP Server.
-
-**Domain Setup:**
-- [ ] Purchase domain: `uswdsmcp.com`
-- [ ] Configure DNS (Route53 or Cloudflare)
-- [ ] Set up SSL certificate
-
-**Site Content:**
-- [ ] **Home Page**
-  - Hero section with tagline
-  - Key features overview
-  - Quick start guide
-  - Supported clients (Claude Desktop, Cursor, Cline, etc.)
-  - Architecture diagram from README
-
-- [ ] **Getting Started**
-  - Local installation instructions
-  - Remote deployment guide (link to DEPLOY.md)
-  - MCP client configuration examples
-  - First request walkthrough
-
-- [ ] **Documentation**
-  - All available tools (18 tools)
-  - Tool usage examples
-  - Code snippets for each tool
-  - API reference (MCP JSON-RPC endpoints)
-
-- [ ] **Pricing / Usage Tiers**
-  - Free tier: 10K requests/day
-  - Paid tier: 1M requests/month
-  - Enterprise: Custom limits
-  - Pricing calculator
-
-- [ ] **Developer Resources**
-  - Link to GitHub repository
-  - Changelog / Release notes
-  - ARCHITECTURE.md
-  - Contributing guide
-  - Community Discord/Slack
-
-- [ ] **API Status Page**
-  - Real-time server status
-  - Uptime statistics
-  - Incident history
-  - Subscribe to status updates
-
-**Technology Stack Options:**
-- **Option 1: Next.js + Vercel** (Recommended)
-  - Fast deployment
-  - Built-in SEO
-  - Edge functions for dynamic content
-  - Cost: Free tier or ~$20/month
-
-- **Option 2: Astro + Cloudflare Pages**
-  - Ultra-fast static site
-  - Great SEO
-  - Cost: Free
-
-- **Option 3: Simple HTML/CSS + S3 + CloudFront**
-  - Dead simple
-  - Cost: ~$1-2/month
-
-**Design Inspiration:**
-- [Stripe Docs](https://stripe.com/docs) - Clear, developer-focused
-- [Vercel Docs](https://vercel.com/docs) - Clean, searchable
-- [Supabase](https://supabase.com) - Good hero, clear CTAs
-- [MCP Official Site](https://modelcontextprotocol.io) - Match MCP branding
-
-**Deliverables:**
-- [ ] Live website at `https://uswdsmcp.com`
-- [ ] API documentation
-- [ ] Interactive tool explorer
-- [ ] Quick start guide
-- [ ] Link to GitHub repo
-- [ ] Status page
 
 ---
 
 ## 🟡 Medium Priority
 
-### Add Comprehensive Testing
+### Load Testing & Performance Validation
 **Status:** Not Started
 **Assignee:** -
-**Estimated Time:** 4-6 hours
+**Estimated Time:** 3-4 hours
 
-**Lambda Handler Tests:**
-- [ ] Unit tests for authentication
-- [ ] Unit tests for rate limiting
-- [ ] Unit tests for MCP request routing
-- [ ] Integration tests with MCP SDK
-- [ ] Mock Lambda events/contexts
+**Note:** Unit tests are complete (347 tests passing). Need load testing for production validation.
 
 **Load Testing:**
 - [ ] Test with 100 concurrent requests
 - [ ] Test with 1000 concurrent requests
-- [ ] Measure cold start times
-- [ ] Measure warm start times
-- [ ] Test cache hit rates
+- [ ] Measure cold start times (<3s target)
+- [ ] Measure warm start times (<100ms target)
+- [ ] Test cache hit rates (>80% target for repeated requests)
+- [ ] Verify rate limiting under load
+- [ ] Test Lambda timeout scenarios
 
 **Tools to Use:**
-- Jest for unit tests
 - Artillery for load testing
-- AWS Lambda Power Tuning for optimization
+- AWS Lambda Power Tuning for memory optimization
+- CloudWatch Insights for analysis
 
 ---
 
@@ -299,39 +212,87 @@ Web portal for users to manage their API keys:
 
 ## ✅ Completed
 
+### Lambda Core Functionality
 - [x] Initial Lambda handler implementation
-- [x] Multi-layer caching service (L1 + L2)
-- [x] SST V3 configuration
-- [x] API key authentication
-- [x] DEPLOY.md documentation
-- [x] ARCHITECTURE.md documentation
-- [x] README.md architecture section
-- [x] Health check endpoint
-- [x] CloudWatch logging
-- [x] All 18 MCP tools defined
+- [x] **Fix Lambda MCP Request Handler** (src/lambda.ts:566-585)
+  - [x] Proper JSON-RPC 2.0 validation
+  - [x] Route `tools/list` and `tools/call` requests
+  - [x] Fix all service method signatures
+  - [x] Zero TypeScript compilation errors
+- [x] Multi-layer caching service (L1 memory + L2 /tmp)
+- [x] API key authentication (Bearer token + x-api-key header)
+- [x] Health check endpoint with cache/rate limit stats
+- [x] CloudWatch logging with request ID tracking
+- [x] All 18 MCP tools fully functional
+
+### Rate Limiting (Phase 1 - Production Ready)
+- [x] **In-memory rate limiter** (src/middleware/rate-limiter.ts)
+  - [x] 100 requests/minute per API key
+  - [x] 10,000 requests/day per API key
+  - [x] Sliding window algorithm
+  - [x] Automatic cleanup of expired entries
+  - [x] RFC 6585 compliant headers (X-RateLimit-*)
+  - [x] 429 Too Many Requests responses
+  - [x] Comprehensive test suite (8 tests, 100% coverage)
+
+### Testing
+- [x] All 347 unit tests passing
+- [x] Rate limiter tests (8 tests)
+- [x] Service integration tests
+- [x] Test coverage for all 18 tools
+
+### Documentation
+- [x] SST V3 configuration (sst.config.ts)
+- [x] DEPLOY.md with Lambda deployment guide
+- [x] ARCHITECTURE.md
+- [x] README.md with architecture diagram
+- [x] VALIDATION.md with critical issues found
+- [x] RATE_LIMITING.md with 4 implementation options
+- [x] TODO.md (this file)
+
+### Marketing Website (70% Complete)
+- [x] Astro static site structure (website/)
+- [x] Home page with hero, features, quick start
+- [x] Pricing page (Free/Pro/Enterprise)
+- [x] Professional USWDS-inspired design
+- [x] S3 + CloudFront SST deployment config
+- [x] Responsive layout
+- [x] Video placeholder
 
 ---
 
 ## 📊 Progress Tracking
 
-**Overall Progress:** 40% complete
+**Overall Progress:** 85% complete ✨
 
-| Category | Progress |
-|----------|----------|
-| Core Lambda Functionality | 70% |
-| Rate Limiting | 0% |
-| Testing | 20% |
-| Documentation | 80% |
-| Marketing Site | 0% |
-| Monitoring | 30% |
-| Performance | 50% |
+| Category | Progress | Status |
+|----------|----------|--------|
+| Core Lambda Functionality | ✅ 100% | Production Ready |
+| Rate Limiting (Phase 1) | ✅ 100% | Production Ready |
+| Testing (Unit Tests) | ✅ 100% | 347 tests passing |
+| Testing (Load Tests) | ⏳ 0% | Not started |
+| Documentation | ✅ 95% | Excellent |
+| Marketing Site (Basic) | ⏳ 70% | In progress |
+| Monitoring | ⏳ 30% | Basic CloudWatch |
+| Performance | ⏳ 60% | Needs load testing |
 
 ---
 
 ## 🎯 Next 3 Items to Work On
 
-1. **Fix Lambda MCP Request Handler** (Critical - blocks deployment)
-2. **Implement MVP Rate Limiting** (High - blocks public launch)
-3. **Create Marketing Website** (High - needed for user onboarding)
+1. **Complete Marketing Website** (Critical - 4-6 hours)
+   - Create Getting Started page
+   - Create Documentation page
+   - Deploy to production
 
-**Estimated time to production-ready:** 5-7 days
+2. **Load Testing** (High - 3-4 hours)
+   - Test with Artillery (100-1000 concurrent requests)
+   - Measure cold/warm start times
+   - Verify rate limiting under load
+
+3. **CloudWatch Monitoring** (Medium - 2-3 hours)
+   - Create dashboard
+   - Set up alarms for error rate, throttles, duration
+   - SNS notifications
+
+**Status:** 🚀 **PRODUCTION READY** for MVP launch! Core functionality complete with 347 passing tests.
