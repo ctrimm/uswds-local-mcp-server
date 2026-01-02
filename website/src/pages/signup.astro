@@ -1,0 +1,457 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Sign Up - USWDS MCP Server">
+  <div class="container">
+    <div class="signup-wrapper">
+      <h1>Get Your API Key</h1>
+      <p class="lead">Start using the USWDS MCP Server in seconds. Enter your email to receive your free API key.</p>
+
+      <div class="benefits">
+        <h3>What you'll get:</h3>
+        <ul>
+          <li>✅ <strong>Free tier</strong>: 100 requests/minute, 10,000 requests/day</li>
+          <li>✅ Access to all 18 USWDS tools</li>
+          <li>✅ React-USWDS v11.0.0 + Tailwind support</li>
+          <li>✅ No credit card required</li>
+        </ul>
+      </div>
+
+      <form id="signup-form" class="signup-form">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+          Get Free API Key
+        </button>
+
+        <p class="disclaimer">
+          By signing up, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.
+        </p>
+      </form>
+
+      <div id="result" class="result" style="display: none;">
+        <!-- Success or error message will appear here -->
+      </div>
+
+      <div class="help-section">
+        <h3>Need Help?</h3>
+        <p>
+          <a href="/getting-started">View setup instructions →</a><br/>
+          <a href="/docs">Browse documentation →</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById('signup-form') as HTMLFormElement;
+  const emailInput = document.getElementById('email') as HTMLInputElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const resultDiv = document.getElementById('result') as HTMLDivElement;
+
+  // Get signup URL from environment or use placeholder
+  // In production, replace this with your actual API endpoint
+  const SIGNUP_URL = import.meta.env.PUBLIC_SIGNUP_URL || 'https://YOUR-SIGNUP-URL';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      showError('Please enter your email address');
+      return;
+    }
+
+    // Disable form during submission
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Generating...';
+    resultDiv.style.display = 'none';
+
+    try {
+      const response = await fetch(SIGNUP_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        showSuccess(data.apiKey, data.message, email);
+        form.style.display = 'none';
+      } else {
+        showError(data.error || 'Failed to generate API key. Please try again.');
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      showError('Network error. Please check your connection and try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Get Free API Key';
+    }
+  });
+
+  function showSuccess(apiKey: string, message: string, email: string) {
+    resultDiv.className = 'result success';
+    resultDiv.innerHTML = `
+      <h3>✅ Success!</h3>
+      <p>${message}</p>
+      <div class="api-key-box">
+        <label>Your API Key:</label>
+        <div class="api-key-display">
+          <code id="api-key">${apiKey}</code>
+          <button class="copy-btn" onclick="copyApiKey()">Copy</button>
+        </div>
+        <p class="warning">⚠️ Save this key securely! You won't be able to see it again.</p>
+      </div>
+      <div class="next-steps">
+        <h4>Next Steps:</h4>
+        <ol>
+          <li>Copy your API key above</li>
+          <li>Configure your MCP client with:
+            <div class="code-block">
+              <pre><code>{
+  "mcpServers": {
+    "uswds": {
+      "url": "https://uswdsmcp.com",
+      "headers": {
+        "x-api-key": "${apiKey}"
+      }
+    }
+  }
+}</code></pre>
+            </div>
+          </li>
+          <li><a href="/getting-started">View full setup instructions →</a></li>
+        </ol>
+      </div>
+    `;
+    resultDiv.style.display = 'block';
+  }
+
+  function showError(errorMessage: string) {
+    resultDiv.className = 'result error';
+    resultDiv.innerHTML = `
+      <h3>❌ Error</h3>
+      <p>${errorMessage}</p>
+    `;
+    resultDiv.style.display = 'block';
+  }
+
+  // Make copy function globally available
+  (window as any).copyApiKey = function() {
+    const apiKeyEl = document.getElementById('api-key');
+    if (apiKeyEl) {
+      const apiKey = apiKeyEl.textContent || '';
+      navigator.clipboard.writeText(apiKey).then(() => {
+        const copyBtn = document.querySelector('.copy-btn') as HTMLButtonElement;
+        if (copyBtn) {
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => {
+            copyBtn.textContent = 'Copy';
+          }, 2000);
+        }
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy. Please select and copy manually.');
+      });
+    }
+  };
+</script>
+
+<style>
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  .signup-wrapper {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 3rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    color: #71767a;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .benefits {
+    background: #f0f6fc;
+    border-left: 4px solid var(--primary);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 4px;
+  }
+
+  .benefits h3 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: var(--primary);
+  }
+
+  .benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  .benefits li {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .signup-form {
+    margin-top: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #1b1b1b;
+  }
+
+  input[type="email"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  input[type="email"]:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: #004b87;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 94, 162, 0.3);
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #71767a;
+    margin-top: 1rem;
+  }
+
+  .disclaimer a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  .disclaimer a:hover {
+    text-decoration: underline;
+  }
+
+  .result {
+    margin-top: 2rem;
+    padding: 2rem;
+    border-radius: 8px;
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result.success {
+    background: #d4edda;
+    border: 2px solid #28a745;
+  }
+
+  .result.error {
+    background: #f8d7da;
+    border: 2px solid #dc3545;
+  }
+
+  .result h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+  }
+
+  .api-key-box {
+    background: white;
+    border: 2px solid #28a745;
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .api-key-box label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #1b1b1b;
+  }
+
+  .api-key-display {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .api-key-display code {
+    flex: 1;
+    background: #f5f5f5;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+  }
+
+  .copy-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .copy-btn:hover {
+    background: #004b87;
+  }
+
+  .warning {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #856404;
+    font-weight: 600;
+  }
+
+  .next-steps {
+    margin-top: 1.5rem;
+  }
+
+  .next-steps h4 {
+    font-size: 1.25rem;
+    color: #1b1b1b;
+    margin-bottom: 1rem;
+  }
+
+  .next-steps ol {
+    margin-left: 1.5rem;
+  }
+
+  .next-steps li {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .code-block {
+    background: #1b1b1b;
+    color: #e8e8e8;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .code-block pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+  }
+
+  .help-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #ddd;
+    text-align: center;
+  }
+
+  .help-section h3 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+
+  .help-section a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .help-section a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .signup-wrapper {
+      padding: 2rem 1.5rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .api-key-display {
+      flex-direction: column;
+    }
+
+    .copy-btn {
+      width: 100%;
+    }
+  }
+</style>
