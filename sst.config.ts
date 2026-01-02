@@ -35,6 +35,100 @@ export default $config({
     // Create secrets for sensitive data (set via `npx sst secret set`)
     const apiKey = new sst.Secret('API_KEY');
 
+    // ===== DynamoDB Tables =====
+
+    // Users table: stores email → API key mappings
+    const usersTable = new sst.aws.Dynamo('UsersTable', {
+      fields: {
+        email: 'string',        // Partition key
+        apiKey: 'string',       // GSI key for lookups
+      },
+      primaryIndex: { hashKey: 'email' },
+      globalIndexes: {
+        apiKeyIndex: { hashKey: 'apiKey' },
+      },
+      stream: 'new-and-old-images', // Enable streams for analytics
+      transform: {
+        table: {
+          deletionProtection: $app.stage === 'production',
+        },
+      },
+    });
+
+    // Usage logs table: stores detailed request analytics
+    const usageTable = new sst.aws.Dynamo('UsageTable', {
+      fields: {
+        apiKey: 'string',       // Partition key
+        timestamp: 'string',    // Sort key (ISO8601 format)
+      },
+      primaryIndex: { hashKey: 'apiKey', rangeKey: 'timestamp' },
+      stream: 'new-and-old-images', // Enable streams for real-time dashboards
+      ttl: 'ttl', // Auto-delete old records (set to timestamp + 90 days)
+      transform: {
+        table: {
+          deletionProtection: $app.stage === 'production',
+        },
+      },
+    });
+
+    // ===== Sign-up Lambda Function =====
+    const signupFunction = new sst.aws.Function('SignupFunction', {
+      handler: 'src/functions/signup.handler',
+      runtime: 'nodejs20.x',
+      memory: '512 MB',
+      timeout: '30 seconds',
+
+      url: {
+        authorization: 'none', // Public signup
+        cors: {
+          allowOrigins: ['*'], // Restrict to your domain in production
+          allowMethods: ['POST', 'OPTIONS'],
+          allowHeaders: ['Content-Type'],
+          maxAge: '86400',
+        },
+      },
+
+      link: [usersTable],
+
+      environment: {
+        NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+        USERS_TABLE_NAME: usersTable.name,
+      },
+
+      logging: {
+        retention: $app.stage === 'production' ? '30 days' : '7 days',
+      },
+    });
+
+    // ===== Reset API Key Lambda Function =====
+    const resetFunction = new sst.aws.Function('ResetFunction', {
+      handler: 'src/functions/reset-key.handler',
+      runtime: 'nodejs20.x',
+      memory: '512 MB',
+      timeout: '30 seconds',
+
+      url: {
+        authorization: 'none', // Public reset
+        cors: {
+          allowOrigins: ['*'],
+          allowMethods: ['POST', 'OPTIONS'],
+          allowHeaders: ['Content-Type'],
+          maxAge: '86400',
+        },
+      },
+
+      link: [usersTable],
+
+      environment: {
+        NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+        USERS_TABLE_NAME: usersTable.name,
+      },
+
+      logging: {
+        retention: $app.stage === 'production' ? '30 days' : '7 days',
+      },
+    });
+
     // ===== Lambda Function =====
     const mcpServer = new sst.aws.Function('McpServer', {
       handler: 'src/lambda.handler',
@@ -61,14 +155,16 @@ export default $config({
         },
       },
 
-      // Link secrets
-      link: [apiKey],
+      // Link secrets and tables
+      link: [apiKey, usersTable, usageTable],
 
       // Environment variables
       environment: {
         NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
         LOG_LEVEL: $app.stage === 'production' ? 'info' : 'debug',
         USE_REACT_COMPONENTS: 'true', // Use React-USWDS by default
+        USERS_TABLE_NAME: usersTable.name,
+        USAGE_TABLE_NAME: usageTable.name,
       },
 
       // Node.js build configuration
@@ -127,17 +223,23 @@ export default $config({
 
     // ===== Outputs =====
     return {
-      // Lambda Function URL (primary endpoint)
-      url: mcpServer.url,
+      // MCP Server
+      mcpUrl: mcpServer.url,
+      mcpFunctionArn: mcpServer.arn,
+      mcpFunctionName: mcpServer.name,
+      mcpLogGroup: `/aws/lambda/${mcpServer.name}`,
 
-      // Function ARN
-      functionArn: mcpServer.arn,
+      // Sign-up API
+      signupUrl: signupFunction.url,
+      signupFunctionName: signupFunction.name,
 
-      // Function name
-      functionName: mcpServer.name,
+      // Reset API
+      resetUrl: resetFunction.url,
+      resetFunctionName: resetFunction.name,
 
-      // CloudWatch Logs
-      logGroup: `/aws/lambda/${mcpServer.name}`,
+      // DynamoDB Tables
+      usersTableName: usersTable.name,
+      usageTableName: usageTable.name,
 
       // CDN URL (if enabled)
       // cdnUrl: cdn?.url,
