@@ -1,3 +1,19 @@
+# ⚠️ FUTURE VISION DOCUMENT ⚠️
+
+> **IMPORTANT: THIS IS NOT CURRENT FUNCTIONALITY**
+>
+> This document describes a **future vision** for an advanced AI agent system with GPU-based fine-tuning and multi-server architecture. **This functionality does not currently exist** in this project.
+>
+> **Current Project:** Simple Node.js MCP server with 25 tools for USWDS development
+>
+> **This Document:** Complex agent system with OLLAMA, CUDA, Python, browser automation, etc.
+>
+> **Why keep this?** Aspirational roadmap for potential future development
+>
+> **For current setup:** See [README.md](../../README.md) or [SETUP.md](../../SETUP.md)
+
+---
+
 # USWDS Coding Agent: Technical Implementation Guide
 
 **Complete step-by-step instructions with executable code**

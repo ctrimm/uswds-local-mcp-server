@@ -1,3 +1,19 @@
+# ⚠️ FUTURE ARCHITECTURE DOCUMENT ⚠️
+
+> **IMPORTANT: THIS IS NOT THE CURRENT ARCHITECTURE**
+>
+> This document describes a **future vision** for a multi-server MCP architecture with separate servers for filesystem, browser automation, git operations, etc. **This architecture does not currently exist** in this project.
+>
+> **Current Project:** Single MCP server (`uswds-local-mcp-server`) with 25 tools built-in
+>
+> **This Document:** Multiple separate MCP servers working together
+>
+> **Why keep this?** Aspirational architecture for potential future expansion
+>
+> **For current tools:** See the tool list in [README.md](../../README.md)
+
+---
+
 # MCP Tools for USWDS Coding Agent
 
 **Comprehensive guide to tool calls and MCP server capabilities**
