@@ -1,0 +1,381 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="USWDS MCP Server - AI-Powered USWDS Development">
+  <section class="hero">
+    <div class="container">
+      <h1>Build Accessible Government Websites with AI</h1>
+      <p class="subtitle">
+        MCP server providing instant access to USWDS components, design tokens, and validation tools—directly in your AI assistant.
+      </p>
+      <div class="cta-buttons">
+        <a href="/getting-started" class="btn btn-primary">Get Started</a>
+        <a href="/docs" class="btn btn-secondary">View Docs</a>
+      </div>
+      <div class="hero-image">
+        <!-- Placeholder for explainer video or demo -->
+        <div class="video-placeholder">
+          <p>🎥 Explainer Video Coming Soon</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">See how USWDS MCP Server accelerates your workflow</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2>Why USWDS MCP Server?</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="icon">🎯</div>
+          <h3>18 Powerful Tools</h3>
+          <p>Component info, code generation, validation, accessibility checks, and more—all in one place.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">♿</div>
+          <h3>Accessibility First</h3>
+          <p>WCAG compliance guidance, color contrast checks, and validated patterns built-in.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">⚡</div>
+          <h3>Lightning Fast</h3>
+          <p>Multi-layer caching delivers <1ms response times. Works offline with local installation.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🎨</div>
+          <h3>React-USWDS v11.0.0</h3>
+          <p>Latest components, design tokens, and patterns from React-USWDS and USWDS 3.13.0.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔧</div>
+          <h3>Tailwind Support</h3>
+          <p>Access USWDS components built with Tailwind CSS from v2.uswds-tailwind.com.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">☁️</div>
+          <h3>Deploy Anywhere</h3>
+          <p>Run locally via stdio or deploy to AWS Lambda for team-wide access.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick-start">
+    <div class="container">
+      <h2>Quick Start</h2>
+      <div class="tabs">
+        <div class="tab-content">
+          <h3>Local Development</h3>
+          <pre><code># Clone the repository
+git clone https://github.com/ctrimm/uswds-local-mcp-server.git
+cd uswds-local-mcp-server
+
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Configure Claude Desktop
+# Add to ~/.config/claude-desktop/config.json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "node",
+      "args": ["/path/to/uswds-local-mcp-server/dist/index.js"]
+    }
+  }
+}</code></pre>
+        </div>
+
+        <div class="tab-content">
+          <h3>Remote Deployment (AWS Lambda)</h3>
+          <pre><code># Deploy to AWS
+npm run sst:deploy:prod
+
+# Set API key
+npx sst secret set API_KEY "your-key" --stage production
+
+# Configure your MCP client
+{
+  "mcpServers": {
+    "uswds": {
+      "url": "https://YOUR-FUNCTION-URL.lambda-url.us-east-1.on.aws",
+      "headers": {
+        "x-api-key": "your-key"
+      }
+    }
+  }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="features-list">
+        <h3>What You Get</h3>
+        <ul>
+          <li>✅ Component documentation for 40+ USWDS components</li>
+          <li>✅ AI-powered code generation</li>
+          <li>✅ Accessibility validation</li>
+          <li>✅ Design token reference</li>
+          <li>✅ Color contrast checker</li>
+          <li>✅ Icon browser (90+ icons)</li>
+          <li>✅ Layout patterns</li>
+          <li>✅ Form generation</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="supported-clients">
+    <div class="container">
+      <h2>Works With Your Favorite AI Tools</h2>
+      <div class="client-grid">
+        <div class="client">Claude Desktop</div>
+        <div class="client">Cursor</div>
+        <div class="client">Cline</div>
+        <div class="client">Windsurf</div>
+        <div class="client">Zed</div>
+        <div class="client">Any MCP Client</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to Build?</h2>
+      <p>Start building accessible government websites with AI assistance today.</p>
+      <div class="cta-buttons">
+        <a href="/getting-started" class="btn btn-primary">Get Started Free</a>
+        <a href="/pricing" class="btn btn-secondary">View Pricing</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero Section */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 4rem 0 6rem;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 800;
+  }
+
+  .hero .subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+  }
+
+  .hero-image {
+    margin-top: 3rem;
+  }
+
+  .video-placeholder {
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(255,255,255,0.3);
+    border-radius: 8px;
+    padding: 4rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .video-placeholder p {
+    font-size: 1.5rem;
+    opacity: 0.9;
+  }
+
+  /* Features Section */
+  .features {
+    padding: 4rem 0;
+    background: white;
+  }
+
+  .features h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: var(--primary);
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .feature {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 8px;
+    background: var(--light-bg);
+    transition: transform 0.2s;
+  }
+
+  .feature:hover {
+    transform: translateY(-4px);
+  }
+
+  .feature .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+  }
+
+  .feature p {
+    color: var(--text);
+  }
+
+  /* Quick Start Section */
+  .quick-start {
+    padding: 4rem 0;
+    background: var(--light-bg);
+  }
+
+  .quick-start h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--primary);
+  }
+
+  .tab-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .tab-content h3 {
+    margin-bottom: 1rem;
+    color: var(--primary);
+  }
+
+  pre {
+    background: #1b1b1b;
+    color: #f8f8f2;
+    padding: 1.5rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+
+  code {
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.9rem;
+  }
+
+  .features-list {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+
+  .features-list h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+
+  .features-list ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .features-list li {
+    padding: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+
+  /* Supported Clients */
+  .supported-clients {
+    padding: 4rem 0;
+    background: white;
+  }
+
+  .supported-clients h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--primary);
+  }
+
+  .client-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .client {
+    background: var(--light-bg);
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 4rem 0;
+    background: var(--primary);
+    color: white;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .cta-section p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    .hero .subtitle {
+      font-size: 1.1rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>

@@ -37,6 +37,7 @@ import { ComparisonService } from './services/comparison-service.js';
 import { CodeGeneratorService } from './services/code-generator-service.js';
 import { TailwindUSWDSService } from './services/tailwind-uswds-service.js';
 import { globalCache } from './services/lambda-cache-service.js';
+import { rateLimiter } from './middleware/rate-limiter.js';
 
 // Lambda types (simplified - add @types/aws-lambda for full types)
 interface LambdaEvent {
@@ -120,27 +121,8 @@ function initializeServices() {
 
 // ===== MCP Server Setup =====
 
-function getMCPServer(): Server {
-  if (mcpServer) {
-    return mcpServer;
-  }
-
-  initializeServices();
-
-  mcpServer = new Server(
-    {
-      name: 'uswds-mcp-server',
-      version: '0.2.0',
-    },
-    {
-      capabilities: {
-        tools: {},
-      },
-    }
-  );
-
-  // Define tools (same as stdio version)
-  const tools: Tool[] = [
+// Define tools (same as stdio version) - shared across all instances
+const tools: Tool[] = [
     {
       name: 'list_components',
       description: `List all available ${USE_REACT_COMPONENTS ? 'React-USWDS' : 'USWDS'} components with descriptions`,
@@ -309,6 +291,25 @@ function getMCPServer(): Server {
     },
   ];
 
+function getMCPServer(): Server {
+  if (mcpServer) {
+    return mcpServer;
+  }
+
+  initializeServices();
+
+  mcpServer = new Server(
+    {
+      name: 'uswds-mcp-server',
+      version: '0.2.0',
+    },
+    {
+      capabilities: {
+        tools: {},
+      },
+    }
+  );
+
   // Register tool handlers
   mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));
 
@@ -320,54 +321,66 @@ function getMCPServer(): Server {
     try {
       let result;
 
+      const toolArgs = args as any; // Type assertion for flexibility
+
       switch (name) {
         case 'list_components':
-          result = await componentService.listComponents(args?.category || 'all');
+          result = await componentService.listComponents(toolArgs?.category || 'all');
           break;
 
         case 'get_component_info':
           result = await componentService.getComponentInfo(
-            args?.component_name,
-            args?.include_examples !== false
+            toolArgs?.component_name as string,
+            toolArgs?.include_examples !== false
           );
           break;
 
         case 'get_design_tokens':
-          result = await designTokenService.getTokens(args?.category || 'all');
+          result = await designTokenService.getTokens(toolArgs?.category || 'all');
           break;
 
         case 'validate_uswds_code':
-          result = await validationService.validate(args?.code, args?.framework);
+          result = await validationService.validate(
+            toolArgs?.code as string,
+            toolArgs?.framework === 'react',
+            true // checkAccessibility
+          );
           break;
 
         case 'check_color_contrast':
           result = await colorContrastService.checkContrast(
-            args?.foreground,
-            args?.background
+            toolArgs?.foreground as string,
+            toolArgs?.background as string
           );
           break;
 
         case 'search_icons':
-          result = await iconService.searchIcons(args?.query);
+          result = await iconService.getIcons(undefined, toolArgs?.query as string);
           break;
 
         case 'suggest_layout':
-          result = await layoutService.suggestLayout(args?.page_type);
+          result = await layoutService.suggestLayout(toolArgs?.page_type as string);
           break;
 
         case 'suggest_components':
-          result = await suggestionService.suggestComponents(args?.use_case);
+          result = await suggestionService.suggestComponents(toolArgs?.use_case as string);
           break;
 
         case 'compare_components':
-          result = await comparisonService.compareComponents(args?.components);
+          const components = toolArgs?.components as string[];
+          result = await comparisonService.compareComponents(
+            components?.[0] || '',
+            components?.[1] || ''
+          );
           break;
 
         case 'generate_component_code':
-          result = await codeGeneratorService.generateCode(
-            args?.component_name,
-            args?.props,
-            args?.framework
+          result = await codeGeneratorService.generateComponent(
+            toolArgs?.component_name as string,
+            {
+              props: toolArgs?.props,
+              framework: toolArgs?.framework as string,
+            }
           );
           break;
 
@@ -377,7 +390,7 @@ function getMCPServer(): Server {
           break;
 
         case 'get_tailwind_uswds_component':
-          result = await tailwindUSWDSService.getComponentDocs(args?.component_name);
+          result = await tailwindUSWDSService.getComponentDocs(toolArgs?.component_name as string);
           break;
 
         case 'get_tailwind_uswds_javascript':
@@ -397,7 +410,7 @@ function getMCPServer(): Server {
           break;
 
         case 'search_tailwind_uswds_docs':
-          result = await tailwindUSWDSService.searchDocs(args?.query);
+          result = await tailwindUSWDSService.searchDocs(toolArgs?.query as string);
           break;
 
         default:
@@ -431,11 +444,11 @@ function getMCPServer(): Server {
 
 // ===== Authentication =====
 
-function authenticate(event: LambdaEvent): boolean {
+function authenticate(event: LambdaEvent): { authenticated: boolean; apiKey?: string } {
   // If no API_KEY is configured, allow all requests
   if (!API_KEY) {
     logger.debug('No API key configured - allowing request');
-    return true;
+    return { authenticated: true, apiKey: 'anonymous' };
   }
 
   // Check Authorization header
@@ -444,7 +457,7 @@ function authenticate(event: LambdaEvent): boolean {
     const token = authHeader.substring(7);
     if (token === API_KEY) {
       logger.debug('API key authentication successful');
-      return true;
+      return { authenticated: true, apiKey: token };
     }
   }
 
@@ -452,11 +465,11 @@ function authenticate(event: LambdaEvent): boolean {
   const apiKeyHeader = event.headers['x-api-key'] || event.headers['X-Api-Key'];
   if (apiKeyHeader === API_KEY) {
     logger.debug('API key authentication successful');
-    return true;
+    return { authenticated: true, apiKey: apiKeyHeader };
   }
 
   logger.warn('Authentication failed');
-  return false;
+  return { authenticated: false };
 }
 
 // ===== Lambda Handler =====
@@ -483,12 +496,14 @@ export const handler = async (
         version: '0.2.0',
         timestamp: new Date().toISOString(),
         cache: globalCache.getStats(),
+        rateLimit: rateLimiter.getStats(),
       }),
     };
   }
 
   // Authentication
-  if (!authenticate(event)) {
+  const auth = authenticate(event);
+  if (!auth.authenticated) {
     return {
       statusCode: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -496,55 +511,158 @@ export const handler = async (
     };
   }
 
+  const apiKey = auth.apiKey!;
+
+  // Rate limiting
+  const rateLimit = rateLimiter.check(apiKey);
+  if (!rateLimit.allowed) {
+    logger.warn(`Rate limit exceeded for API key: ${apiKey.substring(0, 8)}...`, {
+      limitType: rateLimit.limitType,
+      retryAfter: rateLimit.retryAfter,
+    });
+
+    return {
+      statusCode: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-RateLimit-Limit': rateLimit.limitType === 'minute' ? '100' : '10000',
+        'X-RateLimit-Remaining': '0',
+        'X-RateLimit-Reset': String(rateLimit.retryAfter),
+        'Retry-After': String(rateLimit.retryAfter),
+      },
+      body: JSON.stringify({
+        error: 'Too Many Requests',
+        message: `Rate limit exceeded. You can make ${rateLimit.limitType === 'minute' ? '100 requests per minute' : '10,000 requests per day'}. Try again in ${rateLimit.retryAfter} seconds.`,
+        retryAfter: rateLimit.retryAfter,
+      }),
+    };
+  }
+
   // Handle MCP request
+  let body: any;
   try {
-    const body = event.body ? JSON.parse(event.body) : {};
+    body = event.body ? JSON.parse(event.body) : {};
+
+    // Validate JSON-RPC request
+    if (body.jsonrpc !== '2.0') {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: body.id || null,
+          error: {
+            code: -32600,
+            message: 'Invalid Request: jsonrpc must be "2.0"',
+          },
+        }),
+      };
+    }
+
+    if (!body.method || typeof body.method !== 'string') {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: body.id || null,
+          error: {
+            code: -32600,
+            message: 'Invalid Request: method is required',
+          },
+        }),
+      };
+    }
+
     const server = getMCPServer();
+    let result;
 
-    // Process MCP request
-    // Note: For now, we'll handle it synchronously
-    // In future, we can add proper streaming with streamifyResponse
+    // Route to appropriate MCP handler
+    if (body.method === 'tools/list') {
+      // List available tools
+      const handler = (server as any)._requestHandlers?.get(ListToolsRequestSchema);
+      if (handler) {
+        result = await handler(body);
+      } else {
+        result = { tools };
+      }
+    } else if (body.method === 'tools/call') {
+      // Call a specific tool
+      const handler = (server as any)._requestHandlers?.get(CallToolRequestSchema);
+      if (handler) {
+        result = await handler(body);
+      } else {
+        throw new Error('Tool call handler not found');
+      }
+    } else {
+      // Unsupported method
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: body.id,
+          error: {
+            code: -32601,
+            message: `Method not found: ${body.method}`,
+          },
+        }),
+      };
+    }
 
-    // This is a simplified handler - the MCP SDK would normally handle this
-    // For production, you'd integrate with the StreamableHTTPServerTransport
+    const duration = Date.now() - startTime;
+    logger.info(`Response: ${requestId}`, {
+      statusCode: 200,
+      duration,
+      method: body.method,
+    });
 
-    const response = {
+    return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'X-Request-Id': requestId,
-        'X-Processing-Time': `${Date.now() - startTime}ms`,
+        'X-Processing-Time': `${duration}ms`,
+        'X-RateLimit-Limit': '100',
+        'X-RateLimit-Remaining': String(rateLimit.remaining),
+        'X-RateLimit-Reset': String(Math.ceil(rateLimit.resetIn / 1000)),
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
         id: body.id,
-        result: {
-          content: [
-            {
-              type: 'text',
-              text: 'MCP Server is running. Use stdio transport for full MCP functionality, or connect via HTTP for basic queries.',
-            },
-          ],
-        },
+        result: result,
       }),
     };
-
-    logger.info(`Response: ${requestId}`, {
-      statusCode: response.statusCode,
-      duration: Date.now() - startTime,
-    });
-
-    return response;
   } catch (error) {
     logger.error(`Request failed: ${requestId}`, error);
 
+    // Distinguish between different error types
+    let statusCode = 500;
+    let errorCode = -32603; // Internal error
+    let errorMessage = 'Internal Server Error';
+
+    if (error instanceof SyntaxError) {
+      statusCode = 400;
+      errorCode = -32700;
+      errorMessage = 'Parse error: Invalid JSON';
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return {
-      statusCode: 500,
+      statusCode,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        error: 'Internal Server Error',
-        message: error instanceof Error ? error.message : String(error),
-        requestId,
+        jsonrpc: '2.0',
+        id: body?.id || null,
+        error: {
+          code: errorCode,
+          message: errorMessage,
+          data: {
+            requestId,
+            stack: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined,
+          },
+        },
       }),
     };
   }
