@@ -14,12 +14,25 @@ import Layout from '../layouts/Layout.astro';
 
       <h3>Prerequisites</h3>
       <ul>
-        <li>Node.js 18 or higher</li>
+        <li>Node.js 20 or higher (required by MCP SDK)</li>
         <li>npm or yarn package manager</li>
         <li>MCP-compatible client (Claude Desktop, Cursor, Cline, etc.)</li>
       </ul>
 
-      <h3>Installation</h3>
+      <h3>Installation Methods</h3>
+
+      <h4>Option 1: Install via NPM (Recommended)</h4>
+      <p>Install globally for easy access:</p>
+      <div class="code-block">
+        <pre><code># Install globally
+npm install -g uswds-local-mcp-server
+
+# The command 'uswds-mcp' is now available
+uswds-mcp --version</code></pre>
+      </div>
+
+      <h4>Option 2: Clone from GitHub</h4>
+      <p>For development or customization:</p>
       <div class="code-block">
         <pre><code># Clone the repository
 git clone https://github.com/ctrimm/uswds-local-mcp-server.git
@@ -37,12 +50,28 @@ npm run build</code></pre>
 
       <h4>Claude Desktop</h4>
       <p>Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) or <code>%APPDATA%/Claude/claude_desktop_config.json</code> (Windows):</p>
+
+      <p><strong>If installed via NPM:</strong></p>
+      <div class="code-block">
+        <pre><code>{
+  "mcpServers": {
+    "uswds": {
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}</code></pre>
+      </div>
+
+      <p><strong>If cloned from GitHub:</strong></p>
       <div class="code-block">
         <pre><code>{
   "mcpServers": {
     "uswds": {
       "command": "node",
-      "args": ["/absolute/path/to/uswds-local-mcp-server/build/index.js"],
+      "args": ["/absolute/path/to/uswds-local-mcp-server/dist/index.js"],
       "env": {
         "USE_REACT_COMPONENTS": "true"
       }
@@ -52,13 +81,28 @@ npm run build</code></pre>
       </div>
 
       <h4>Cursor / Cline</h4>
-      <p>Add to your MCP settings configuration:</p>
+
+      <p><strong>If installed via NPM:</strong></p>
+      <div class="code-block">
+        <pre><code>{
+  "mcpServers": {
+    "uswds": {
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}</code></pre>
+      </div>
+
+      <p><strong>If cloned from GitHub:</strong></p>
       <div class="code-block">
         <pre><code>{
   "mcpServers": {
     "uswds": {
       "command": "node",
-      "args": ["/absolute/path/to/uswds-local-mcp-server/build/index.js"],
+      "args": ["/absolute/path/to/uswds-local-mcp-server/dist/index.js"],
       "env": {
         "USE_REACT_COMPONENTS": "true"
       }

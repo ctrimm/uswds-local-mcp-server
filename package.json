@@ -64,7 +64,7 @@
   "bugs": {
     "url": "https://github.com/ctrimm/uswds-local-mcp-server/issues"
   },
-  "homepage": "https://github.com/ctrimm/uswds-local-mcp-server#readme",
+  "homepage": "https://uswdsmcp.com",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0",
     "axios": "^1.7.0",

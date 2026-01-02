@@ -379,10 +379,30 @@ Returns relevant documentation sections matching the query.
 
 ## Usage Examples
 
+### Installation
+
+**Install via NPM (Recommended):**
+```bash
+npm install -g uswds-local-mcp-server
+```
+
 ### In Claude Desktop
 
-Configure in `claude_desktop_config.json`:
+**If installed via NPM:**
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
+```
 
+**If cloned from GitHub:**
 ```json
 {
   "mcpServers": {

@@ -67,26 +67,25 @@ import Layout from '../layouts/Layout.astro';
       <div class="tabs">
         <div class="tab-content">
           <h3>Local Development</h3>
-          <pre><code># Clone the repository
-git clone https://github.com/ctrimm/uswds-local-mcp-server.git
-cd uswds-local-mcp-server
+          <pre><code># Install via NPM (recommended)
+npm install -g uswds-local-mcp-server
 
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Configure Claude Desktop
-# Add to ~/.config/claude-desktop/config.json
+# Configure Claude Desktop (claude_desktop_config.json)
 {
   "mcpServers": {
     "uswds": {
-      "command": "node",
-      "args": ["/path/to/uswds-local-mcp-server/dist/index.js"]
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
     }
   }
-}</code></pre>
+}
+
+# Alternative: Clone from GitHub
+git clone https://github.com/ctrimm/uswds-local-mcp-server.git
+cd uswds-local-mcp-server
+npm install && npm run build</code></pre>
         </div>
 
         <div class="tab-content">

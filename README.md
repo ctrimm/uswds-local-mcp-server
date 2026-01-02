@@ -230,7 +230,43 @@ nvm alias default 20
 node --version  # Should show v20.x.x
 ```
 
-### Option 1: From Source with Wrapper Script (Recommended for Development)
+### Option 1: Install via NPM (Recommended)
+
+**Best for:** Quick setup and easy updates.
+
+```bash
+# Install globally
+npm install -g uswds-local-mcp-server
+
+# Verify installation
+uswds-mcp --version
+```
+
+**Configure your MCP client:**
+
+For Claude Desktop, edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%/Claude/claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
+```
+
+**Updating:**
+```bash
+npm update -g uswds-local-mcp-server
+```
+
+---
+
+### Option 2: From Source with Wrapper Script (For Development)
 
 **Best for:** Users managing Node versions with nvm who want automatic version switching.
 
@@ -282,31 +318,7 @@ echo "$(pwd)/start-mcp-server.sh"
 
 See **[CLAUDE_DESKTOP_CONFIG.md](CLAUDE_DESKTOP_CONFIG.md)** for detailed configuration instructions.
 
-### Option 2: NPM Install (Future - Once Published)
-
-Once published to NPM, users can install globally:
-
-```bash
-# Global installation
-npm install -g uswds-mcp-server
-
-# Or use npx (no installation required)
-npx uswds-mcp-server
-```
-
-**Claude Desktop configuration:**
-```json
-{
-  "mcpServers": {
-    "uswds": {
-      "command": "uswds-mcp",
-      "env": {
-        "USE_REACT_COMPONENTS": "false"
-      }
-    }
-  }
-}
-```
+---
 
 ### Option 3: Direct Node Path (Alternative)
 
