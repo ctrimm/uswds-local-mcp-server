@@ -8,6 +8,7 @@ tsconfig.json
 **/*.test.js
 jest.config.js
 coverage/
+test-mcp-tools.js
 
 # Development files
 .git/
@@ -15,8 +16,19 @@ coverage/
 *.log
 *.tmp
 
-# Documentation (keep README.md)
+# Documentation (keep README.md, TOOLS.md, LICENSE)
 docs/
+SETUP.md
+NVM_SETUP.md
+CLAUDE_DESKTOP_CONFIG.md
+USWDS_AGENT_IMPLEMENTATION.md
+MCP_TOOLS_GUIDE.md
+TROUBLESHOOTING.md
+DEPLOY.md
+ARCHITECTURE.md
+VALIDATION.md
+RATE_LIMITING.md
+TODO.md
 
 # Editor files
 .vscode/
@@ -42,3 +54,13 @@ yarn-error.log*
 
 # Build artifacts (keep dist/)
 *.tsbuildinfo
+
+# Marketing website
+website/
+
+# SST (serverless deployment)
+sst.config.ts
+.sst/
+
+# Scripts
+start-mcp-server.sh

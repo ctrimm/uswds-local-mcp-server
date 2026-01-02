@@ -1,0 +1,854 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Documentation - USWDS MCP Server">
+  <div class="container">
+    <h1>API Documentation</h1>
+    <p class="lead">Complete reference for all 18 USWDS MCP tools</p>
+
+    <!-- Table of Contents -->
+    <nav class="toc">
+      <h2>Quick Navigation</h2>
+      <ul>
+        <li><a href="#component-tools">Component Tools</a></li>
+        <li><a href="#design-tokens">Design Tokens</a></li>
+        <li><a href="#validation">Validation Tools</a></li>
+        <li><a href="#accessibility">Accessibility Tools</a></li>
+        <li><a href="#icons">Icon Tools</a></li>
+        <li><a href="#layout">Layout Tools</a></li>
+        <li><a href="#code-generation">Code Generation</a></li>
+        <li><a href="#tailwind">Tailwind + USWDS Tools</a></li>
+      </ul>
+    </nav>
+
+    <!-- Component Tools -->
+    <section id="component-tools" class="section">
+      <h2>Component Tools</h2>
+
+      <div class="tool">
+        <h3><code>list_components</code></h3>
+        <p>List all available USWDS or React-USWDS components with descriptions.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>category</code></td>
+              <td>string</td>
+              <td>No</td>
+              <td>Filter by category: "all", "forms", "navigation", "layout", "content", "ui"</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"List all USWDS components in the forms category"
+
+// Response includes:
+// - Button, TextInput, Select, Checkbox, Radio, etc.</code></pre>
+        </div>
+      </div>
+
+      <div class="tool">
+        <h3><code>get_component_info</code></h3>
+        <p>Get detailed information about a specific USWDS component including props, variants, and usage examples.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>component_name</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Name of the component (e.g., "Button", "Alert")</td>
+            </tr>
+            <tr>
+              <td><code>include_examples</code></td>
+              <td>boolean</td>
+              <td>No</td>
+              <td>Include code examples (default: true)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Show me how to use the USWDS Button component"
+
+// Response includes:
+// - All button variants (primary, secondary, accent, outline, etc.)
+// - Props documentation
+// - Code examples for React-USWDS and vanilla USWDS</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Design Tokens -->
+    <section id="design-tokens" class="section">
+      <h2>Design Tokens</h2>
+
+      <div class="tool">
+        <h3><code>get_design_tokens</code></h3>
+        <p>Get USWDS design tokens for colors, spacing, typography, and breakpoints.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>category</code></td>
+              <td>string</td>
+              <td>No</td>
+              <td>Filter by: "all", "color", "spacing", "typography", "breakpoints"</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"What are the USWDS color tokens?"
+
+// Response includes:
+// - Primary colors (blue-60v, red-warm-50v, etc.)
+// - Semantic colors (success, error, warning, info)
+// - Theme colors with hex values</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Validation -->
+    <section id="validation" class="section">
+      <h2>Validation Tools</h2>
+
+      <div class="tool">
+        <h3><code>validate_uswds_code</code></h3>
+        <p>Validate HTML or JSX code for USWDS patterns, class usage, and accessibility issues.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>code</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>HTML or JSX code to validate</td>
+            </tr>
+            <tr>
+              <td><code>framework</code></td>
+              <td>string</td>
+              <td>No</td>
+              <td>"html" or "react" (default: "html")</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Validate this USWDS code: &lt;button class='usa-button'&gt;Click me&lt;/button&gt;"
+
+// Response includes:
+// - Valid USWDS class usage
+// - Accessibility suggestions
+// - Best practices recommendations</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accessibility -->
+    <section id="accessibility" class="section">
+      <h2>Accessibility Tools</h2>
+
+      <div class="tool">
+        <h3><code>check_color_contrast</code></h3>
+        <p>Check WCAG color contrast ratios between foreground and background colors.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>foreground</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Foreground color (hex, rgb, or USWDS token)</td>
+            </tr>
+            <tr>
+              <td><code>background</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Background color (hex, rgb, or USWDS token)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Check color contrast between #005ea2 and #ffffff"
+
+// Response includes:
+// - Contrast ratio (e.g., 7.1:1)
+// - WCAG AA/AAA compliance for normal and large text
+// - Pass/fail status</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Icons -->
+    <section id="icons" class="section">
+      <h2>Icon Tools</h2>
+
+      <div class="tool">
+        <h3><code>search_icons</code></h3>
+        <p>Search through all available USWDS icons by keyword.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>query</code></td>
+              <td>string</td>
+              <td>No</td>
+              <td>Search term (empty returns all icons)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Find USWDS icons related to navigation"
+
+// Response includes:
+// - arrow-forward, arrow-back, menu, close, etc.
+// - Icon names and usage instructions</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout -->
+    <section id="layout" class="section">
+      <h2>Layout Tools</h2>
+
+      <div class="tool">
+        <h3><code>suggest_layout</code></h3>
+        <p>Get USWDS layout pattern suggestions for different page types.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>page_type</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Type of page (e.g., "dashboard", "landing", "form")</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Suggest a USWDS layout for a landing page"
+
+// Response includes:
+// - Grid structure recommendations
+// - Component suggestions
+// - Code examples</code></pre>
+        </div>
+      </div>
+
+      <div class="tool">
+        <h3><code>suggest_components</code></h3>
+        <p>Get component recommendations for specific use cases.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>use_case</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Description of what you're building</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"What USWDS components should I use for a user registration form?"
+
+// Response includes:
+// - Form, TextInput, Select, Button, Alert
+// - Usage recommendations
+// - Accessibility considerations</code></pre>
+        </div>
+      </div>
+
+      <div class="tool">
+        <h3><code>compare_components</code></h3>
+        <p>Compare two similar USWDS components to understand their differences.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>components</code></td>
+              <td>array</td>
+              <td>Yes</td>
+              <td>Array of 2 component names to compare</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Compare USWDS Alert and Banner components"
+
+// Response includes:
+// - Key differences
+// - When to use each
+// - Props comparison</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Code Generation -->
+    <section id="code-generation" class="section">
+      <h2>Code Generation</h2>
+
+      <div class="tool">
+        <h3><code>generate_component_code</code></h3>
+        <p>Generate ready-to-use code for USWDS components with specified props.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>component_name</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Component to generate</td>
+            </tr>
+            <tr>
+              <td><code>props</code></td>
+              <td>object</td>
+              <td>No</td>
+              <td>Component props</td>
+            </tr>
+            <tr>
+              <td><code>framework</code></td>
+              <td>string</td>
+              <td>No</td>
+              <td>"html" or "react"</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Generate code for a primary Button that says 'Submit'"
+
+// Response includes:
+// - Complete React-USWDS code
+// - Imports needed
+// - Props configured</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tailwind Tools -->
+    <section id="tailwind" class="section">
+      <h2>Tailwind + USWDS Tools</h2>
+
+      <div class="tool">
+        <h3><code>get_tailwind_uswds_getting_started</code></h3>
+        <p>Get the complete Tailwind + USWDS integration guide.</p>
+
+        <h4>Parameters</h4>
+        <p>No parameters required.</p>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"How do I integrate Tailwind CSS with USWDS?"
+
+// Response includes:
+// - Installation steps
+// - Configuration guide
+// - Usage examples</code></pre>
+        </div>
+      </div>
+
+      <div class="tool">
+        <h3><code>get_tailwind_uswds_component</code></h3>
+        <p>Get Tailwind class mappings for USWDS components.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>component_name</code></td>
+              <td>string</td>
+              <td>No</td>
+              <td>Component to get Tailwind classes for</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Show me Tailwind classes for USWDS Button"
+
+// Response includes:
+// - Tailwind class equivalents for USWDS button styles
+// - Variant mappings
+// - Usage examples</code></pre>
+        </div>
+      </div>
+
+      <div class="tool">
+        <h3><code>get_tailwind_uswds_javascript</code></h3>
+        <p>Get JavaScript integration guide for Tailwind + USWDS.</p>
+
+        <h4>Parameters</h4>
+        <p>No parameters required.</p>
+      </div>
+
+      <div class="tool">
+        <h3><code>get_tailwind_uswds_colors</code></h3>
+        <p>Get Tailwind color utility classes for USWDS colors.</p>
+
+        <h4>Parameters</h4>
+        <p>No parameters required.</p>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"What are the Tailwind color classes for USWDS?"
+
+// Response includes:
+// - text-primary-darker, bg-secondary-light, etc.
+// - Complete color palette
+// - Usage examples</code></pre>
+        </div>
+      </div>
+
+      <div class="tool">
+        <h3><code>get_tailwind_uswds_icons</code></h3>
+        <p>Get icon integration guide for Tailwind + USWDS.</p>
+
+        <h4>Parameters</h4>
+        <p>No parameters required.</p>
+      </div>
+
+      <div class="tool">
+        <h3><code>get_tailwind_uswds_typography</code></h3>
+        <p>Get Tailwind typography utilities for USWDS.</p>
+
+        <h4>Parameters</h4>
+        <p>No parameters required.</p>
+      </div>
+
+      <div class="tool">
+        <h3><code>search_tailwind_uswds_docs</code></h3>
+        <p>Search Tailwind + USWDS documentation.</p>
+
+        <h4>Parameters</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>query</code></td>
+              <td>string</td>
+              <td>Yes</td>
+              <td>Search term</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Example</h4>
+        <div class="code-block">
+          <pre><code>// In Claude Desktop
+"Search Tailwind USWDS docs for spacing utilities"
+
+// Response includes relevant documentation sections</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- HTTP API Reference -->
+    <section class="section">
+      <h2>HTTP API Reference</h2>
+      <p>When using the remote Lambda deployment, all tools are accessible via JSON-RPC 2.0 over HTTP.</p>
+
+      <h3>Endpoint</h3>
+      <div class="code-block">
+        <pre><code>POST https://your-function-url.lambda-url.us-east-1.on.aws</code></pre>
+      </div>
+
+      <h3>Request Format</h3>
+      <div class="code-block">
+        <pre><code>{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "list_components",
+    "arguments": {
+      "category": "forms"
+    }
+  }
+}</code></pre>
+      </div>
+
+      <h3>Response Format</h3>
+      <div class="code-block">
+        <pre><code>{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "..."
+      }
+    ]
+  }
+}</code></pre>
+      </div>
+
+      <h3>Rate Limit Headers</h3>
+      <div class="code-block">
+        <pre><code>X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 99
+X-RateLimit-Reset: 60
+X-Request-Id: abc-123
+X-Processing-Time: 45ms</code></pre>
+      </div>
+    </section>
+
+    <!-- Support -->
+    <section class="section">
+      <h2>Need Help?</h2>
+      <div class="card-grid">
+        <a href="/getting-started" class="card">
+          <h3>🚀 Getting Started</h3>
+          <p>Setup instructions for local and remote deployment</p>
+        </a>
+        <a href="https://github.com/ctrimm/uswds-local-mcp-server/issues" class="card">
+          <h3>🐛 Report an Issue</h3>
+          <p>Found a bug or have a feature request?</p>
+        </a>
+        <a href="https://github.com/ctrimm/uswds-local-mcp-server" class="card">
+          <h3>📚 View Source</h3>
+          <p>Explore the codebase on GitHub</p>
+        </a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .lead {
+    font-size: 1.25rem;
+    color: #71767a;
+    margin-bottom: 2rem;
+  }
+
+  .toc {
+    background: #f0f6fc;
+    border-left: 4px solid var(--primary);
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    border-radius: 8px;
+  }
+
+  .toc h2 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin: 0 0 1rem;
+    border: none;
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .toc a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .toc a:hover {
+    text-decoration: underline;
+  }
+
+  .section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 2rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .tool {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .tool h3 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin: 0 0 1rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .tool h4 {
+    font-size: 1.125rem;
+    color: #1b1b1b;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool > p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: #3d4551;
+  }
+
+  .code-block {
+    background: #1b1b1b;
+    color: #e8e8e8;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+
+  .code-block pre {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  code {
+    background: #f0f0f0;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  .code-block code {
+    background: transparent;
+    padding: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+  }
+
+  th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .card {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 94, 162, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .card h3 {
+    margin-top: 0;
+    color: var(--primary);
+  }
+
+  .card p {
+    margin: 0;
+    color: #71767a;
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+    }
+
+    .tool {
+      padding: 1.5rem;
+    }
+
+    .toc ul {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

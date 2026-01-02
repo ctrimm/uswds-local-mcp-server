@@ -1,6 +1,10 @@
 /**
  * Comprehensive React-USWDS component database
  * Based on https://github.com/trussworks/react-uswds
+ *
+ * @version React-USWDS v11.0.0 (December 2025)
+ * @uswdsVersion USWDS 3.13.0
+ * @see https://github.com/trussworks/react-uswds/releases/tag/11.0.0
  */
 
 export interface ComponentData {
@@ -21,6 +25,8 @@ export interface PropDefinition {
   required: boolean;
   default?: string;
   description: string;
+  since?: string; // Version when prop was added (e.g., "v10.1.0", "USWDS 3.9.0")
+  deprecated?: string; // Version when deprecated, with migration note
 }
 
 export interface CodeExample {
@@ -40,7 +46,7 @@ export const REACT_COMPONENTS: Record<string, ComponentData> = {
   Button: {
     name: 'Button',
     category: 'forms',
-    description: 'Buttons signal actions and direct users through key moments in an experience',
+    description: 'Buttons signal actions and direct users through key moments in an experience. USWDS 3.9.0+ updates unstyled buttons to have width: auto at narrow screen widths.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-button--docs',
     props: [
@@ -121,7 +127,7 @@ export function Example() {
   ButtonGroup: {
     name: 'ButtonGroup',
     category: 'forms',
-    description: 'Group related buttons together',
+    description: 'Group related buttons together. USWDS 3.13.0+ improves nested button group styles to match parent height.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-button-group--docs',
     props: [
@@ -154,7 +160,7 @@ export function Example() {
   TextInput: {
     name: 'TextInput',
     category: 'forms',
-    description: 'A text input allows users to enter any combination of letters, numbers, or symbols',
+    description: 'A text input allows users to enter any combination of letters, numbers, or symbols. v9.1.0+ has improved ref forwarding.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-text-input--docs',
     props: [
@@ -166,7 +172,7 @@ export function Example() {
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable the input' },
       { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state' },
       { name: 'inputSize', type: "'small' | 'medium'", required: false, description: 'Input size variant' },
-      { name: 'inputRef', type: 'React.RefObject<HTMLInputElement>', required: false, description: 'Ref for the input element' },
+      { name: 'inputRef', type: 'React.RefObject<HTMLInputElement>', required: false, description: 'Ref for the input element (improved forwarding in v9.1.0+)', since: 'v9.1.0: improved' },
     ],
     examples: [
       {
@@ -405,14 +411,14 @@ export function Example() {
   Select: {
     name: 'Select',
     category: 'forms',
-    description: 'A select component allows users to choose one option from a dropdown list',
+    description: 'A select component allows users to choose one option from a dropdown list. Note: Deprecated Dropdown component was removed in v6.0.0 - use Select instead.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-select--docs',
     props: [
       { name: 'id', type: 'string', required: true, description: 'Select ID' },
       { name: 'name', type: 'string', required: true, description: 'Select name' },
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable the select' },
-      { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state' },
+      { name: 'validationStatus', type: "'error' | 'success'", required: false, description: 'Validation state', since: 'v5.0.0 (originally on Dropdown)' },
     ],
     examples: [
       {
@@ -449,13 +455,13 @@ export function Example() {
   ComboBox: {
     name: 'ComboBox',
     category: 'forms',
-    description: 'A combo box combines a text input with a dropdown list, allowing users to type or select',
+    description: 'A combo box combines a text input with a dropdown list, allowing users to type or select. v10.0.2+ correctly passes down className props. USWDS 3.10.0+ prioritizes options starting with query in search results.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-combo-box--docs',
     props: [
       { name: 'id', type: 'string', required: true, description: 'ComboBox ID' },
       { name: 'name', type: 'string', required: true, description: 'ComboBox name' },
-      { name: 'options', type: 'ComboBoxOption[]', required: true, description: 'Array of options' },
+      { name: 'options', type: 'ComboBoxOption[]', required: true, description: 'Array of options (search results ordered: starts-with first, then contains - USWDS 3.10.0+)' },
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable the combo box' },
     ],
     examples: [
@@ -503,7 +509,7 @@ export function Example() {
   DatePicker: {
     name: 'DatePicker',
     category: 'forms',
-    description: 'A date picker helps users select a single date',
+    description: 'A date picker helps users select a single date with customizable format support. USWDS 3.9.0+ supports aria-disabled attribute and disables toggle when present.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-picker--docs',
     props: [
@@ -513,6 +519,7 @@ export function Example() {
       { name: 'minDate', type: 'string', required: false, description: 'Minimum selectable date (YYYY-MM-DD)' },
       { name: 'maxDate', type: 'string', required: false, description: 'Maximum selectable date (YYYY-MM-DD)' },
       { name: 'defaultValue', type: 'string', required: false, description: 'Default date value' },
+      { name: 'dateFormat', type: 'string', required: false, description: 'Custom date format string (e.g., "MM/DD/YYYY")', since: 'v10.2.0' },
     ],
     examples: [
       {
@@ -548,7 +555,7 @@ export function Example() {
   Alert: {
     name: 'Alert',
     category: 'ui',
-    description: 'Alerts keep users informed of important and sometimes time-sensitive changes',
+    description: 'Alerts keep users informed of important and sometimes time-sensitive changes. USWDS 3.9.0+ fixed alignment bug with theme-site-margins-width.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-alert--docs',
     props: [
@@ -557,7 +564,7 @@ export function Example() {
       { name: 'headingLevel', type: "'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'", required: false, default: 'h4', description: 'Heading level for accessibility' },
       { name: 'slim', type: 'boolean', required: false, description: 'Use slim variant' },
       { name: 'noIcon', type: 'boolean', required: false, description: 'Hide alert icon' },
-      { name: 'validation', type: 'boolean', required: false, description: 'Use for form validation' },
+      { name: 'validation', type: 'boolean', required: false, description: 'Use for form validation', since: 'v5.2.0' },
       { name: 'cta', type: 'React.ReactNode', required: false, description: 'Call-to-action element' },
     ],
     examples: [
@@ -619,13 +626,13 @@ export function Example() {
   Accordion: {
     name: 'Accordion',
     category: 'ui',
-    description: 'An accordion is a list of collapsible sections used to organize content',
+    description: 'An accordion is a list of collapsible sections used to organize content. v10.2.0 updated expansion behavior, v9.1.0 added custom onClick support.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-accordion--docs',
     props: [
-      { name: 'items', type: 'AccordionItemProps[]', required: true, description: 'Array of accordion items' },
+      { name: 'items', type: 'AccordionItemProps[]', required: true, description: 'Array of accordion items. Each item can have: title, content, expanded, id, headingLevel, onClick (v9.1.0+)' },
       { name: 'bordered', type: 'boolean', required: false, description: 'Add borders to accordion' },
-      { name: 'multiselectable', type: 'boolean', required: false, description: 'Allow multiple items open' },
+      { name: 'multiselectable', type: 'boolean', required: false, description: 'Allow multiple items open simultaneously' },
     ],
     examples: [
       {
@@ -748,7 +755,7 @@ export function Example() {
   Card: {
     name: 'Card',
     category: 'ui',
-    description: 'Cards contain content and actions about a single subject',
+    description: 'Cards contain content and actions about a single subject. v8.0.0+ uses link instead of button for card actions. USWDS 3.9.0+ fixed theme-card-font-family setting.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-card--docs',
     props: [
@@ -828,7 +835,7 @@ export function Example() {
   Table: {
     name: 'Table',
     category: 'ui',
-    description: 'A table organizes complex information in a grid',
+    description: 'A table organizes complex information in a grid. USWDS 3.11.0+ has consistent header styles across thead/tbody/tfoot th elements.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-table--docs',
     props: [
@@ -838,6 +845,7 @@ export function Example() {
       { name: 'fullWidth', type: 'boolean', required: false, description: 'Make table full width' },
       { name: 'scrollable', type: 'boolean', required: false, description: 'Enable horizontal scrolling' },
       { name: 'caption', type: 'string', required: false, description: 'Table caption' },
+      { name: 'className', type: 'string', required: false, description: 'Additional CSS classes', since: 'v4.2.0' },
     ],
     examples: [
       {
@@ -892,7 +900,7 @@ export function Example() {
   Header: {
     name: 'Header',
     category: 'navigation',
-    description: 'The header provides consistent structure for branding and navigation',
+    description: 'The header provides consistent structure for branding and navigation. v7.0.0+ includes overlay element within header component.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-header--docs',
     props: [
@@ -1014,13 +1022,14 @@ export function Example() {
   StepIndicator: {
     name: 'StepIndicator',
     category: 'navigation',
-    description: 'A step indicator shows progress through a multi-step process',
+    description: 'A step indicator shows progress through a multi-step process with i18n support',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-step-indicator--docs',
     props: [
       { name: 'headingLevel', type: "'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'", required: false, default: 'h4', description: 'Heading level' },
-      { name: 'ofText', type: 'string', required: false, default: 'of', description: 'Text for "of"' },
-      { name: 'stepText', type: 'string', required: false, default: 'Step', description: 'Text for "Step"' },
+      { name: 'ofText', type: 'string', required: false, default: 'of', description: 'Text for "of" (for i18n)' },
+      { name: 'stepText', type: 'string', required: false, default: 'Step', description: 'Text for "Step" (for i18n)' },
+      { name: 'statusText', type: 'string', required: false, description: 'Custom text for sr-only status element (for i18n)', since: 'v9.1.0' },
     ],
     examples: [
       {
@@ -1139,7 +1148,7 @@ export function Example() {
   Banner: {
     name: 'Banner',
     category: 'ui',
-    description: 'The banner identifies official U.S. government websites',
+    description: 'The banner identifies official U.S. government websites. v6.2.0+ removed image role from BannerIcon. USWDS 3.13.0 introduced Web Component variant.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-banner--docs',
     props: [
@@ -1174,7 +1183,7 @@ export function Example() {
   Footer: {
     name: 'Footer',
     category: 'navigation',
-    description: 'The footer provides consistent structure for footer content across government websites',
+    description: 'The footer provides consistent structure for footer content across government websites. v11.0.0+ applies consistent USWDS classes in slim variant. USWDS 3.13.0+ restores usa-layout-grid dependency to prevent visual regressions.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-footer--docs',
     props: [
@@ -1214,7 +1223,7 @@ export function Example() {
   Pagination: {
     name: 'Pagination',
     category: 'navigation',
-    description: 'Pagination helps users navigate through pages of content',
+    description: 'Pagination helps users navigate through pages of content. USWDS 3.9.0+ adds text underline styles to pagination links for visual consistency.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-pagination--docs',
     props: [
@@ -1260,13 +1269,14 @@ export function Example() {
   Search: {
     name: 'Search',
     category: 'forms',
-    description: 'Search allows users to search for specific content',
+    description: 'Search allows users to search for specific content. v7.0.0+ has improved accessible naming for submit button. v4.1.0+ is extendable.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-search--docs',
     props: [
       { name: 'size', type: "'big' | 'small'", required: false, description: 'Search input size' },
       { name: 'onSubmit', type: 'function', required: true, description: 'Form submit handler' },
       { name: 'placeholder', type: 'string', required: false, description: 'Search input placeholder' },
+      { name: 'defaultValue', type: 'string', required: false, description: 'Default search input value', since: 'v4.1.0' },
     ],
     examples: [
       {
@@ -1303,11 +1313,11 @@ export function Example() {
   Tooltip: {
     name: 'Tooltip',
     category: 'ui',
-    description: 'A tooltip provides additional information on hover or focus',
+    description: 'A tooltip provides additional information on hover or focus. Note: v10.1.0+ does not set title attribute on trigger element. USWDS 3.13.0+ closes active tooltips when Escape key is pressed (WCAG 1.4.13 dismissible requirement).',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-tooltip--docs',
     props: [
-      { name: 'label', type: 'string', required: true, description: 'Tooltip text content' },
+      { name: 'label', type: 'string | React.ReactNode', required: true, description: 'Tooltip content (string or React component)', since: 'v5.5.0: ReactNode support' },
       { name: 'position', type: "'top' | 'bottom' | 'left' | 'right'", required: false, default: 'top', description: 'Tooltip position' },
       { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' },
     ],
@@ -1385,7 +1395,7 @@ export function Example() {
   SiteAlert: {
     name: 'SiteAlert',
     category: 'ui',
-    description: 'A site alert communicates urgent sitewide information',
+    description: 'A site alert communicates urgent sitewide information. USWDS 3.9.0+ fixed alignment bug with theme-site-margins-width. USWDS 3.12.0+ removed top margin.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-site-alert--docs',
     props: [
@@ -1634,13 +1644,13 @@ export function Example() {
   CharacterCount: {
     name: 'CharacterCount',
     category: 'forms',
-    description: 'Character count helps users know how much text they can enter',
+    description: 'Character count helps users know how much text they can enter. USWDS 3.9.0+ uses enhanced error styles when maxlength is exceeded.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-character-count--docs',
     props: [
       { name: 'id', type: 'string', required: true, description: 'Input ID' },
       { name: 'name', type: 'string', required: true, description: 'Input name' },
-      { name: 'maxLength', type: 'number', required: true, description: 'Maximum character count' },
+      { name: 'maxLength', type: 'number', required: true, description: 'Maximum character count (shows enhanced error visual when exceeded in USWDS 3.9.0+)' },
       { name: 'defaultValue', type: 'string', required: false, description: 'Default input value' },
       { name: 'isTextArea', type: 'boolean', required: false, description: 'Use textarea instead of input' },
     ],
@@ -1682,7 +1692,7 @@ export function Example() {
   DateInput: {
     name: 'DateInput',
     category: 'forms',
-    description: 'Date input allows users to enter a date using three text fields',
+    description: 'Date input allows users to enter a date using three text fields. v10.1.0+ examples include aria-describedby for USWDS compliance.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-input--docs',
     props: [
@@ -1723,7 +1733,7 @@ export function Example() {
   RangeInput: {
     name: 'RangeInput',
     category: 'forms',
-    description: 'Range input allows users to select from a range of values',
+    description: 'Range input allows users to select from a range of values with visible value display (USWDS 3.13.0+)',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-range-input--docs',
     props: [
@@ -1733,6 +1743,8 @@ export function Example() {
       { name: 'max', type: 'number', required: true, description: 'Maximum value' },
       { name: 'step', type: 'number', required: false, description: 'Step increment' },
       { name: 'defaultValue', type: 'number', required: false, description: 'Default value' },
+      { name: 'data-text-unit', type: 'string', required: false, description: 'Unit type for value display (e.g., "stars", "dollars")', since: 'USWDS 3.12.0' },
+      { name: 'data-text-preposition', type: 'string', required: false, description: 'Preposition for unit (e.g., "of")', since: 'USWDS 3.12.0' },
     ],
     examples: [
       {
@@ -1811,12 +1823,13 @@ export function Example() {
   LanguageSelector: {
     name: 'LanguageSelector',
     category: 'navigation',
-    description: 'Language selector allows users to change the site language',
+    description: 'Language selector allows users to change the site language. Added in v5.2.0.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-language-selector--docs',
     props: [
-      { name: 'langs', type: 'LanguageDefinition[]', required: true, description: 'Available languages' },
+      { name: 'langs', type: 'LanguageDefinition[]', required: true, description: 'Available languages (LanguageDefinition exported in v5.5.0+)' },
       { name: 'onLanguageChange', type: 'function', required: false, description: 'Language change callback' },
+      { name: 'displayLang', type: 'string', required: false, description: 'Display language for button label', since: 'v5.5.0' },
     ],
     examples: [
       {
@@ -1896,7 +1909,7 @@ export function Example() {
   DateRangePicker: {
     name: 'DateRangePicker',
     category: 'forms',
-    description: 'Date range picker for selecting a start and end date',
+    description: 'Date range picker for selecting a start and end date. USWDS 3.9.0+ supports aria-disabled attribute and disables toggle when present.',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-date-range-picker--docs',
     props: [
@@ -1964,7 +1977,7 @@ export default function Example() {
   FileInput: {
     name: 'FileInput',
     category: 'forms',
-    description: 'File input component for uploading files',
+    description: 'File input component for uploading files with customizable text and drag-and-drop support',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-file-input--docs',
     props: [
@@ -1974,6 +1987,9 @@ export default function Example() {
       { name: 'multiple', type: 'boolean', required: false, default: 'false', description: 'Allow multiple file selection' },
       { name: 'onChange', type: 'function', required: false, description: 'Callback when files are selected' },
       { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the input' },
+      { name: 'chooseText', type: 'string', required: false, description: 'Custom text for the "Choose file" button', since: 'v10.1.0' },
+      { name: 'dragText', type: 'string', required: false, description: 'Custom text for the drag-and-drop area', since: 'v10.1.0' },
+      { name: 'selectedText', type: 'string', required: false, description: 'Custom text shown after files are selected', since: 'v10.1.0' },
       { name: 'className', type: 'string', required: false, description: 'Additional CSS classes' }
     ],
     examples: [
@@ -2032,7 +2048,7 @@ export default function Example() {
   TimePicker: {
     name: 'TimePicker',
     category: 'forms',
-    description: 'Time picker component for selecting times',
+    description: 'Time picker component for selecting times. USWDS 3.10.0+ uses improved hint text: "Select a time from the dropdown" (WCAG 3.3.2).',
     importPath: '@trussworks/react-uswds',
     url: 'https://trussworks.github.io/react-uswds/?path=/docs/components-time-picker--docs',
     props: [
@@ -2043,7 +2059,8 @@ export default function Example() {
       { name: 'maxTime', type: 'string', required: false, description: 'Maximum selectable time' },
       { name: 'step', type: 'number', required: false, default: '30', description: 'Minute interval steps' },
       { name: 'onChange', type: 'function', required: false, description: 'Callback when time changes' },
-      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the picker' }
+      { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disable the picker' },
+      { name: 'label', type: 'string', required: true, description: 'Label for the time picker (required for accessibility)', since: 'v6.0.0+' }
     ],
     examples: [
       {

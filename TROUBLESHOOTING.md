@@ -88,160 +88,129 @@ rm -rf node_modules package-lock.json
 # Reinstall dependencies with the new Node.js version
 npm install
 
-# Restart the MCP server
-# (Usually through Claude Desktop or your configured method)
+# Rebuild the project
+npm run build
+
+# Restart Claude Desktop
 ```
 
 #### Verification:
 After upgrading and reinstalling, check your Claude Desktop logs. You should see:
 ```
-[uswds] [info] Server started and connected successfully
+USWDS MCP Server running in Vanilla/React mode
+Available tools: list_components, get_component_info, ...
 ```
 
 Instead of the `ReferenceError: File is not defined` error.
 
 ---
 
-## Other Common Issues
+## Configuration Issues
 
-### Issue: Port Already in Use
+### Server Not Showing Up in Claude Desktop
 
-**Error Message:**
-```
-Error: listen EADDRINUSE: address already in use :::3000
-```
+**Possible Causes:**
+1. Incorrect path in configuration
+2. JSON syntax error
+3. Project not built
+4. Claude Desktop not restarted properly
 
-**Solution:**
+**Solutions:**
+
+#### 1. Verify Configuration File Location
+
+**macOS:**
 ```bash
-# Find process using port
-lsof -i :3000  # Replace 3000 with your port
-
-# Kill process
-kill -9 <PID>
-
-# Or change port in .env file
-nano .env
-# Edit: MCP_PREVIEW_PORT=3001
+cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
 
-### Issue: USWDS Repository Not Found
-
-**Error Message:**
-```
-Error: USWDS repository not found at ./data/uswds-repo
-```
-
-**Solution:**
+**Linux:**
 ```bash
-# Re-clone USWDS repository
-rm -rf data/uswds-repo
-mkdir -p data
-git clone https://github.com/uswds/uswds.git data/uswds-repo
-
-# Verify
-ls data/uswds-repo/packages/
+cat ~/.config/Claude/claude_desktop_config.json
 ```
 
-### Issue: Chrome/Chromium Not Found
-
-**Error Message:**
-```
-Error: Could not find Chrome executable
-```
-
-**Solution:**
+**Windows (WSL):**
 ```bash
-# Find Chrome installation
-which google-chrome
-which chromium-browser
-
-# Update chrome_path in config/mcp-config.json
-# Or install Chrome:
-# Ubuntu: sudo apt install google-chrome-stable
-# macOS: brew install --cask google-chrome
+cat ~/.config/Claude/claude_desktop_config.json
 ```
 
-### Issue: Python Module Not Found
+#### 2. Check Configuration Format
 
-**Error Message:**
-```
-ModuleNotFoundError: No module named 'langgraph'
+Recommended configuration (using wrapper script):
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "/absolute/path/to/uswds-local-mcp-server/start-mcp-server.sh",
+      "args": [],
+      "env": {
+        "USE_REACT_COMPONENTS": "false"
+      }
+    }
+  }
+}
 ```
 
-**Solution:**
+**Important:**
+- ✅ Use absolute paths (starts with `/`)
+- ✅ Use forward slashes even on Windows
+- ✅ Verify JSON is valid (use a JSON validator)
+- ✅ No trailing commas
+
+#### 3. Ensure Project is Built
+
 ```bash
-# Ensure virtual environment is activated
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Reinstall requirements
-pip install -r requirements.txt
-pip install -r agent/requirements.txt
-```
-
-### Issue: Permission Denied Errors
-
-**Error Message:**
-```
-Error: EACCES: permission denied
-```
-
-**Solution:**
-```bash
-# Fix workspace permissions
-sudo chown -R $USER:$USER workspace
-chmod -R 755 workspace
-
-# Fix data directory permissions
-sudo chown -R $USER:$USER data
-chmod -R 755 data
-```
-
-### Issue: MCP Servers Won't Start
-
-**Error Message:**
-```
-Server disconnected. For troubleshooting guidance...
-```
-
-**Solution:**
-```bash
-# Check server logs (in Claude Desktop logs or your configured log location)
-# Look for specific error messages
-
-# Test server individually
 cd /path/to/uswds-local-mcp-server
-node index.js  # or your main server file
 
-# Check Node version
-node --version  # Must be 20+
+# Check if dist/ exists
+ls dist/
 
-# Verify all dependencies are installed
-npm install
+# If not, build the project
+npm run build
+
+# Verify dist/index.js exists
+ls dist/index.js
 ```
 
-### Issue: Agent Can't Connect to OLLAMA
+#### 4. Restart Claude Desktop Completely
+
+1. **Quit Claude Desktop** (don't just close the window)
+   - macOS: Cmd+Q or Claude → Quit
+   - Windows: File → Exit
+   - Linux: File → Quit
+2. Wait 5 seconds
+3. Relaunch Claude Desktop
+4. Look for the 🔌 icon
+
+---
+
+## Build & Installation Issues
+
+### Cannot Find Module Error
 
 **Error Message:**
 ```
-Error: Could not connect to OLLAMA at http://localhost:11434
+Error: Cannot find module '/path/to/dist/index.js'
 ```
 
-**Solution:**
+**Solutions:**
+
 ```bash
-# Verify OLLAMA is running
-ollama list
+# Navigate to project directory
+cd /path/to/uswds-local-mcp-server
 
-# Check OLLAMA URL in .env
-cat .env | grep OLLAMA_BASE_URL
+# Build the project
+npm run build
 
-# Test connection
-curl http://localhost:11434/api/tags
+# Verify dist/index.js exists
+ls dist/index.js
 
-# Start OLLAMA if not running
-ollama serve
+# If still failing, clean and rebuild
+rm -rf dist/
+npm run build
 ```
 
-### Issue: Module 'undici' Not Found
+### Module 'undici' Not Found
 
 **Error Message:**
 ```
@@ -260,67 +229,30 @@ npm install
 npm cache clean --force
 rm -rf node_modules package-lock.json
 npm install
+
+# Rebuild
+npm run build
+```
+
+### Permission Denied Error
+
+**Error Message:**
+```bash
+bash: ./start-mcp-server.sh: Permission denied
+```
+
+**Solution:**
+```bash
+chmod +x start-mcp-server.sh
 ```
 
 ---
 
-## Debugging Tips
+## Runtime Issues
 
-### Enable Verbose Logging
+### Server Crashes Immediately
 
-In your `.env` file:
-```bash
-LOG_LEVEL=debug
-```
-
-Or in Claude Desktop config:
-```json
-{
-  "mcpServers": {
-    "uswds": {
-      "command": "/path/to/start-mcp-server.sh",
-      "env": {
-        "LOG_LEVEL": "debug"
-      }
-    }
-  }
-}
-```
-
-### Check MCP Server Configuration
-
-For detailed Claude Desktop configuration instructions, see **[CLAUDE_DESKTOP_CONFIG.md](CLAUDE_DESKTOP_CONFIG.md)**.
-
-Quick check of your configuration file:
-
-**macOS:**
-```bash
-cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
-```
-
-**Linux:**
-```bash
-cat ~/.config/Claude/claude_desktop_config.json
-```
-
-**Windows (WSL):**
-```bash
-cat ~/.config/Claude/claude_desktop_config.json
-```
-
-Recommended configuration (using wrapper script):
-```json
-{
-  "mcpServers": {
-    "uswds": {
-      "command": "/absolute/path/to/uswds-local-mcp-server/start-mcp-server.sh",
-      "args": []
-    }
-  }
-}
-```
-
-### Check Claude Desktop Logs
+**Check Logs:**
 
 **macOS:**
 ```bash
@@ -332,20 +264,139 @@ tail -f ~/Library/Logs/Claude/mcp*.log
 tail -f ~/.local/share/Claude/logs/mcp*.log
 ```
 
-### Test Dependencies Manually
+**Common Causes:**
+
+1. **Wrong Node version** - Upgrade to Node 20+
+2. **Missing dependencies** - Run `npm install`
+3. **Syntax error in config** - Validate JSON
+4. **File not executable** - Run `chmod +x start-mcp-server.sh`
+
+### Tools Not Working in Claude
+
+**Symptom:** Server connects but tools don't work
+
+**Verification:**
+```bash
+# Test the server directly
+node dist/index.js
+
+# Should output available tools
+# Press Ctrl+C to exit
+```
+
+**Test with MCP Inspector:**
+```bash
+npm run inspector
+```
+
+This opens a web interface where you can test each tool individually.
+
+---
+
+## Environment Variable Issues
+
+### Wrong Component Mode
+
+**Problem:** Getting React components when you want vanilla USWDS (or vice versa)
+
+**Solution:**
+
+Check your Claude Desktop configuration:
+
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "/path/to/start-mcp-server.sh",
+      "env": {
+        "USE_REACT_COMPONENTS": "false"  // <- Check this value
+      }
+    }
+  }
+}
+```
+
+- `"false"` = Vanilla USWDS (HTML/CSS)
+- `"true"` = React-USWDS (React components)
+
+After changing, restart Claude Desktop.
+
+---
+
+## Path Issues
+
+### Path Not Found
+
+**Error:** Can't find the start script or dist/index.js
+
+**Solution - Get Absolute Path:**
+```bash
+# Navigate to project directory
+cd /path/to/uswds-local-mcp-server
+
+# Get absolute path
+pwd
+
+# Copy this path and use it in your config
+# Example output: /Users/yourname/projects/uswds-local-mcp-server
+```
+
+Use this path in your Claude Desktop config:
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "/Users/yourname/projects/uswds-local-mcp-server/start-mcp-server.sh",
+      "args": []
+    }
+  }
+}
+```
+
+---
+
+## Testing & Debugging
+
+### Test Without Claude Desktop
 
 ```bash
-# Test Node.js
+# Test the server directly
+cd /path/to/uswds-local-mcp-server
+node dist/index.js
+
+# Should show:
+# USWDS MCP Server running in Vanilla/React mode
+# Available tools: list_components, get_component_info, ...
+```
+
+### Use MCP Inspector
+
+The MCP Inspector lets you test tools in your browser:
+
+```bash
+npm run inspector
+```
+
+Opens at `http://localhost:6274` (or similar) where you can:
+- See all available tools
+- Test each tool with custom inputs
+- View request/response JSON
+- Debug issues
+
+### Verify Dependencies
+
+```bash
+# Check Node version (must be 20+)
 node --version
 
-# Test npm
+# Check npm version
 npm --version
 
-# Test Python (if using agent)
-python3 --version
+# Check if dependencies are installed
+ls node_modules/@modelcontextprotocol/sdk
 
-# Test Chrome (if using browser server)
-google-chrome --version
+# Check if project is built
+ls dist/index.js
 ```
 
 ---
@@ -354,16 +405,46 @@ google-chrome --version
 
 If you encounter issues not covered here:
 
-1. Check the [SETUP.md](SETUP.md) documentation
-2. Review Claude Desktop logs for specific error messages
-3. Search [GitHub Issues](https://github.com/yourusername/uswds-mcp-server/issues)
-4. Create a new issue with:
+1. **Check the Documentation:**
+   - [README.md](README.md) - Project overview
+   - [SETUP.md](SETUP.md) - Installation guide
+   - [QUICK_START.md](QUICK_START.md) - Quick start
+   - [CLAUDE_DESKTOP_CONFIG.md](CLAUDE_DESKTOP_CONFIG.md) - Configuration details
+   - [NVM_SETUP.md](NVM_SETUP.md) - Node version management
+
+2. **Check Logs:**
+   - Claude Desktop logs contain detailed error messages
+   - Look for the specific error message in this guide
+
+3. **Search GitHub Issues:**
+   - [GitHub Issues](https://github.com/ctrimm/uswds-local-mcp-server/issues)
+   - Search for your error message
+
+4. **Create a New Issue:**
+   Include:
    - Your operating system and version
    - Node.js version (`node --version`)
    - Complete error message
    - Steps to reproduce
-   - Claude Desktop logs (if applicable)
+   - Claude Desktop logs (relevant portions)
+   - Your configuration (with sensitive paths redacted)
 
 ---
 
-**Last Updated:** 2025-11-18
+## Quick Checklist
+
+When troubleshooting, verify:
+
+- [ ] Node.js 20+ installed (`node --version`)
+- [ ] Project dependencies installed (`npm install`)
+- [ ] Project built (`npm run build`)
+- [ ] `dist/index.js` exists
+- [ ] Absolute path used in config (not relative)
+- [ ] JSON config is valid (no syntax errors)
+- [ ] Script is executable (`chmod +x start-mcp-server.sh`)
+- [ ] Claude Desktop completely restarted
+- [ ] Logs checked for specific errors
+
+---
+
+**Last Updated:** 2025-12-12

@@ -1,0 +1,17 @@
+{
+  "name": "uswdsmcp-website",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "npm run build && npx sst deploy --stage production"
+  },
+  "dependencies": {
+    "astro": "^4.0.0"
+  },
+  "devDependencies": {
+    "sst": "^3.3.43"
+  }
+}

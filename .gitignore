@@ -37,3 +37,9 @@ Thumbs.db
 # Temporary files
 *.tmp
 .cache/
+
+# SST (Serverless Stack)
+.sst/
+.open-next/
+.build/
+sst-env.d.ts

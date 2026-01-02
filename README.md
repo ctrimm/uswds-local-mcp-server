@@ -7,7 +7,43 @@
 
 A Model Context Protocol (MCP) server that provides tools for working with the U.S. Web Design System (USWDS) and React-USWDS components. This server helps developers build accessible, compliant government websites faster by providing component information, design tokens, and validation tools.
 
+**Supported Versions:**
+- **React-USWDS**: v11.0.0 (December 2025)
+- **USWDS**: 3.13.0
+- **React**: 16.x, 17.x, 18.x, 19.x
+
 > **⚠️ Important**: This server requires **Node.js 20+** due to the File API requirement in the MCP SDK. See [troubleshooting](#node-version-requirement) for details.
+
+## What's New
+
+### React-USWDS v11.0.0 Support (December 2025)
+
+Updated to support the latest React-USWDS v11.0.0, which includes:
+
+**USWDS 3.13.0 Features:**
+- ✨ First Web Component in USWDS (banner variant)
+- ♿ Enhanced accessibility with reduced motion preference support
+- 🎨 Improved range slider with visible values
+- 🔍 Better combo box search result ordering
+- 📊 Enhanced character count visual cues
+
+**Breaking Changes:**
+- Visual updates from USWDS 3.9.0 - see [USWDS 3.9.0 release notes](https://github.com/uswds/uswds/releases/tag/v3.9.0)
+
+**Additional Updates:**
+- Node 24 LTS support (v10.1.0)
+- React 19 support (v10.0.0)
+- Improved TypeScript type exports
+- Various accessibility and bug fixes
+
+### Tailwind USWDS Integration (December 2025)
+
+Added comprehensive support for USWDS components built with Tailwind CSS:
+
+- 🎨 Access Tailwind USWDS component documentation
+- 📖 Getting started guide with installation steps
+- 🔧 JavaScript, colors, icons, and typography utilities
+- 🔍 Search across all Tailwind USWDS documentation
 
 ## Features
 
@@ -51,6 +87,126 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 - `get_tailwind_uswds_typography` - Get typography utilities and styles
 - `search_tailwind_uswds_docs` - Search all Tailwind USWDS documentation
 
+## Architecture & How It Works
+
+### Dual-Mode Deployment
+
+This MCP server supports two deployment modes:
+
+1. **Local Mode** (stdio): For development and local use
+2. **Remote Mode** (AWS Lambda): For production serverless deployment
+
+### MCP Tool Call Flow
+
+When a client (like Claude Desktop) requests component information, here's what happens:
+
+```
+┌─────────────┐
+│   Client    │ (Claude Desktop, Cursor, etc.)
+│  (MCP SDK)  │
+└──────┬──────┘
+       │ 1. HTTP POST to Lambda Function URL (or stdio locally)
+       │    Content-Type: application/json
+       │    Body: {"jsonrpc":"2.0","method":"tools/call",
+       │           "params":{"name":"get_component_info","arguments":{"component_name":"Button"}}}
+       │
+┌──────▼───────────────────────────────────────────┐
+│         AWS Lambda Function URL / stdio          │
+│         (Streamable HTTP Transport)              │
+└──────┬───────────────────────────────────────────┘
+       │ 2. Lambda invokes handler / stdio processes request
+       │
+┌──────▼───────────────────────────────────────────┐
+│         Lambda Execution Environment             │
+│  ┌─────────────────────────────────────────┐    │
+│  │  Container (Warm or Cold)               │    │
+│  │  ┌───────────────────────────────────┐  │    │
+│  │  │ L1: In-Memory Cache               │  │    │
+│  │  │ - Component data: Map<>           │  │    │
+│  │  │ - Tailwind docs: Map<>            │  │    │
+│  │  │ - TTL: 1 hour                     │  │    │
+│  │  └───────────────────────────────────┘  │    │
+│  │  ┌───────────────────────────────────┐  │    │
+│  │  │ L2: /tmp Directory Cache          │  │    │
+│  │  │ - File system cache               │  │    │
+│  │  │ - Survives warm starts            │  │    │
+│  │  │ - Up to 10GB available            │  │    │
+│  │  └───────────────────────────────────┘  │    │
+│  │                                          │    │
+│  │  Handler receives MCP request           │    │
+│  │  ↓                                       │    │
+│  │  Parse: method="tools/call"             │    │
+│  │         name="get_component_info"       │    │
+│  │         args={component_name:"Button"}  │    │
+│  │  ↓                                       │    │
+│  │  Route to Tool Handler                  │    │
+│  │  ↓                                       │    │
+│  │  ┌─────────────────────────────┐        │    │
+│  │  │ ComponentService            │        │    │
+│  │  │ getComponentInfo("Button")  │        │    │
+│  │  │   ↓                          │        │    │
+│  │  │   Check L1 cache (memory)   │        │    │
+│  │  │   ↓                          │        │    │
+│  │  │   If HIT: return cached     │        │    │
+│  │  │   If MISS:                  │        │    │
+│  │  │     Check L2 cache (/tmp)   │        │    │
+│  │  │     If HIT: return cached   │        │    │
+│  │  │     If MISS:                │        │    │
+│  │  │       Load from data file   │        │    │
+│  │  │       Cache in L1 + L2      │        │    │
+│  │  │       Return                │        │    │
+│  │  └─────────────────────────────┘        │    │
+│  │  ↓                                       │    │
+│  │  Format MCP Response:                   │    │
+│  │  {                                       │    │
+│  │    "jsonrpc": "2.0",                    │    │
+│  │    "id": 1,                             │    │
+│  │    "result": {                          │    │
+│  │      "content": [{                      │    │
+│  │        "type": "text",                  │    │
+│  │        "text": "Button component..."   │    │
+│  │      }]                                 │    │
+│  │    }                                    │    │
+│  │  }                                      │    │
+│  └──────────────────────────────────────────┘    │
+└──────┬───────────────────────────────────────────┘
+       │ 3. Stream response back
+       │
+┌──────▼───────────────────────────────────────────┐
+│         Response Streaming                       │
+│         (Lambda Function URL / stdio)            │
+└──────┬───────────────────────────────────────────┘
+       │ 4. HTTP 200 OK / stdio output
+       │    Content-Type: application/json
+       │    Body: {result with component data}
+       │
+┌──────▼──────┐
+│   Client    │ Receives component data
+│  (MCP SDK)  │ Displays to user
+└─────────────┘
+```
+
+### Multi-Layer Caching Strategy
+
+The server uses a sophisticated caching approach optimized for both local and Lambda deployments:
+
+- **L1: Memory Cache** - In-process cache (<1ms latency), survives warm starts
+- **L2: /tmp Directory** - File system cache (1-5ms latency), up to 10GB in Lambda
+- **L3: Embedded Data** - Static JSON bundled with code, always available
+
+This ensures fast responses even on Lambda cold starts while minimizing external dependencies.
+
+### Serverless Deployment
+
+For production use, deploy to AWS Lambda with SST V3:
+
+- **Cost-effective**: ~$2-5/month for typical usage (vs ~$100/month for containers)
+- **Auto-scaling**: Handles 1-10,000+ concurrent requests automatically
+- **Zero maintenance**: No servers to manage
+- **Global reach**: Deploy to multiple regions for low latency
+
+See **[DEPLOY.md](DEPLOY.md)** for complete deployment instructions and **[ARCHITECTURE.md](ARCHITECTURE.md)** for detailed architecture documentation.
+
 ## Installation
 
 ### Prerequisites
@@ -74,7 +230,43 @@ nvm alias default 20
 node --version  # Should show v20.x.x
 ```
 
-### Option 1: From Source with Wrapper Script (Recommended for Development)
+### Option 1: Install via NPM (Recommended)
+
+**Best for:** Quick setup and easy updates.
+
+```bash
+# Install globally
+npm install -g uswds-local-mcp-server
+
+# Verify installation
+uswds-mcp --version
+```
+
+**Configure your MCP client:**
+
+For Claude Desktop, edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%/Claude/claude_desktop_config.json` (Windows):
+
+```json
+{
+  "mcpServers": {
+    "uswds": {
+      "command": "uswds-mcp",
+      "env": {
+        "USE_REACT_COMPONENTS": "true"
+      }
+    }
+  }
+}
+```
+
+**Updating:**
+```bash
+npm update -g uswds-local-mcp-server
+```
+
+---
+
+### Option 2: From Source with Wrapper Script (For Development)
 
 **Best for:** Users managing Node versions with nvm who want automatic version switching.
 
@@ -126,31 +318,7 @@ echo "$(pwd)/start-mcp-server.sh"
 
 See **[CLAUDE_DESKTOP_CONFIG.md](CLAUDE_DESKTOP_CONFIG.md)** for detailed configuration instructions.
 
-### Option 2: NPM Install (Future - Once Published)
-
-Once published to NPM, users can install globally:
-
-```bash
-# Global installation
-npm install -g uswds-mcp-server
-
-# Or use npx (no installation required)
-npx uswds-mcp-server
-```
-
-**Claude Desktop configuration:**
-```json
-{
-  "mcpServers": {
-    "uswds": {
-      "command": "uswds-mcp",
-      "env": {
-        "USE_REACT_COMPONENTS": "false"
-      }
-    }
-  }
-}
-```
+---
 
 ### Option 3: Direct Node Path (Alternative)
 
@@ -207,6 +375,14 @@ npm run inspector
 
 - **[USWDS_AGENT_IMPLEMENTATION.md](USWDS_AGENT_IMPLEMENTATION.md)** - Agent implementation details
 - **[MCP_TOOLS_GUIDE.md](MCP_TOOLS_GUIDE.md)** - MCP tools reference
+- **[TOOLS.md](TOOLS.md)** - Complete tool reference with all 18 tools documented ⭐
+
+### Deployment
+
+- **[DEPLOY.md](DEPLOY.md)** - AWS Lambda deployment guide
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture and design
+- **[VALIDATION.md](VALIDATION.md)** - Lambda implementation validation
+- **[RATE_LIMITING.md](RATE_LIMITING.md)** - Rate limiting implementation guide
 
 ### Troubleshooting
 

@@ -1,7 +1,7 @@
 {
-  "name": "@cdt5058/uswds-mcp-server",
-  "version": "0.1.0",
-  "description": "MCP server for USWDS development with React component support",
+  "name": "uswds-local-mcp-server",
+  "version": "0.2.0",
+  "description": "MCP server for USWDS development with React-USWDS v11.0.0 and Tailwind support",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -27,7 +27,12 @@
     "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "lint": "tsc --noEmit",
     "prepublishOnly": "npm run lint && npm test && npm run build",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "sst:dev": "sst dev",
+    "sst:deploy": "sst deploy",
+    "sst:deploy:prod": "sst deploy --stage production",
+    "sst:remove": "sst remove",
+    "sst:shell": "sst shell"
   },
   "keywords": [
     "mcp",
@@ -59,7 +64,7 @@
   "bugs": {
     "url": "https://github.com/ctrimm/uswds-local-mcp-server/issues"
   },
-  "homepage": "https://github.com/ctrimm/uswds-local-mcp-server#readme",
+  "homepage": "https://uswdsmcp.com",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0",
     "axios": "^1.7.0",
@@ -68,9 +73,11 @@
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",
+    "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.10.0",
     "jest": "^30.2.0",
+    "sst": "^3.3.43",
     "ts-jest": "^29.4.5",
     "typescript": "^5.3.3"
   }
