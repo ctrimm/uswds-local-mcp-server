@@ -592,7 +592,7 @@ import Layout from '../layouts/Layout.astro';
 
       <h3>Request Format</h3>
       <div class="code-block">
-        <pre><code>{
+        <pre><code>{`{
   "jsonrpc": "2.0",
   "id": 1,
   "method": "tools/call",
@@ -602,12 +602,12 @@ import Layout from '../layouts/Layout.astro';
       "category": "forms"
     }
   }
-}</code></pre>
+}`}</code></pre>
       </div>
 
       <h3>Response Format</h3>
       <div class="code-block">
-        <pre><code>{
+        <pre><code>{`{
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
@@ -618,7 +618,7 @@ import Layout from '../layouts/Layout.astro';
       }
     ]
   }
-}</code></pre>
+}`}</code></pre>
       </div>
 
       <h3>Rate Limit Headers</h3>

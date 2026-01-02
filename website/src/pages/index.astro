@@ -9,15 +9,22 @@ import Layout from '../layouts/Layout.astro';
       <p class="subtitle">
         MCP server providing instant access to USWDS components, design tokens, and validation tools—directly in your AI assistant.
       </p>
+
+      <div class="announcement-banner">
+        <div class="announcement-badge">Limited Time Offer</div>
+        <h3>Free Hosted Instance Available</h3>
+        <p>Get instant access to our hosted MCP server—no setup required. Just your email address to start building.</p>
+      </div>
+
       <div class="cta-buttons">
-        <a href="/getting-started" class="btn btn-primary">Get Started</a>
+        <a href="/getting-started" class="btn btn-primary">Get Started Free</a>
         <a href="/docs" class="btn btn-secondary">View Docs</a>
       </div>
       <div class="hero-image">
         <!-- Placeholder for explainer video or demo -->
         <div class="video-placeholder">
           <p>🎥 Explainer Video Coming Soon</p>
-          <p style="font-size: 0.9rem; margin-top: 0.5rem;">See how USWDS MCP Server accelerates your workflow</p>
+          <p class="video-subtitle">See how USWDS MCP Server accelerates your workflow</p>
         </div>
       </div>
     </div>
@@ -40,7 +47,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="feature">
           <div class="icon">⚡</div>
           <h3>Lightning Fast</h3>
-          <p>Multi-layer caching delivers <1ms response times. Works offline with local installation.</p>
+          <p>Multi-layer caching delivers &lt;1ms response times. Works offline with local installation.</p>
         </div>
         <div class="feature">
           <div class="icon">🎨</div>
@@ -67,7 +74,7 @@ import Layout from '../layouts/Layout.astro';
       <div class="tabs">
         <div class="tab-content">
           <h3>Local Development</h3>
-          <pre><code># Install via NPM (recommended)
+          <pre><code>{`# Install via NPM (recommended)
 npm install -g uswds-local-mcp-server
 
 # Configure Claude Desktop (claude_desktop_config.json)
@@ -85,12 +92,12 @@ npm install -g uswds-local-mcp-server
 # Alternative: Clone from GitHub
 git clone https://github.com/ctrimm/uswds-local-mcp-server.git
 cd uswds-local-mcp-server
-npm install && npm run build</code></pre>
+npm install && npm run build`}</code></pre>
         </div>
 
         <div class="tab-content">
           <h3>Remote Deployment (AWS Lambda)</h3>
-          <pre><code># Deploy to AWS
+          <pre><code>{`# Deploy to AWS
 npm run sst:deploy:prod
 
 # Set API key
@@ -106,7 +113,7 @@ npx sst secret set API_KEY "your-key" --stage production
       }
     }
   }
-}</code></pre>
+}`}</code></pre>
         </div>
       </div>
 
@@ -174,6 +181,42 @@ npx sst secret set API_KEY "your-key" --stage production
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .announcement-banner {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    position: relative;
+  }
+
+  .announcement-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+  }
+
+  .announcement-banner h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+
+  .announcement-banner p {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.95;
   }
 
   .cta-buttons {
@@ -365,6 +408,19 @@ npx sst secret set API_KEY "your-key" --stage production
 
     .hero .subtitle {
       font-size: 1.1rem;
+    }
+
+    .announcement-banner {
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 1rem;
+    }
+
+    .announcement-banner h3 {
+      font-size: 1.25rem;
+    }
+
+    .announcement-banner p {
+      font-size: 0.95rem;
     }
 
     .cta-buttons {
