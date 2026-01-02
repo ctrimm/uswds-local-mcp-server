@@ -38,6 +38,7 @@ import { CodeGeneratorService } from './services/code-generator-service.js';
 import { TailwindUSWDSService } from './services/tailwind-uswds-service.js';
 import { globalCache } from './services/lambda-cache-service.js';
 import { rateLimiter } from './middleware/rate-limiter.js';
+import { getUserByApiKey, updateUserStats, logUsage, type User } from './services/dynamodb-service.js';
 
 // Lambda types (simplified - add @types/aws-lambda for full types)
 interface LambdaEvent {
@@ -444,32 +445,88 @@ function getMCPServer(): Server {
 
 // ===== Authentication =====
 
-function authenticate(event: LambdaEvent): { authenticated: boolean; apiKey?: string } {
-  // If no API_KEY is configured, allow all requests
-  if (!API_KEY) {
-    logger.debug('No API key configured - allowing request');
-    return { authenticated: true, apiKey: 'anonymous' };
-  }
+interface AuthResult {
+  authenticated: boolean;
+  user?: User;
+  apiKey?: string;
+  error?: string;
+}
 
-  // Check Authorization header
+/**
+ * Extract API key from request headers
+ */
+function extractApiKey(event: LambdaEvent): string | null {
+  // Check Authorization header (Bearer token)
   const authHeader = event.headers['authorization'] || event.headers['Authorization'];
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7);
-    if (token === API_KEY) {
-      logger.debug('API key authentication successful');
-      return { authenticated: true, apiKey: token };
-    }
+    return authHeader.substring(7);
   }
 
   // Check x-api-key header
   const apiKeyHeader = event.headers['x-api-key'] || event.headers['X-Api-Key'];
-  if (apiKeyHeader === API_KEY) {
-    logger.debug('API key authentication successful');
-    return { authenticated: true, apiKey: apiKeyHeader };
+  if (apiKeyHeader) {
+    return apiKeyHeader;
   }
 
-  logger.warn('Authentication failed');
-  return { authenticated: false };
+  return null;
+}
+
+/**
+ * Authenticate request using DynamoDB
+ */
+async function authenticate(event: LambdaEvent): Promise<AuthResult> {
+  const apiKey = extractApiKey(event);
+
+  if (!apiKey) {
+    return {
+      authenticated: false,
+      error: 'No API key provided. Include your API key in the Authorization header (Bearer token) or x-api-key header.',
+    };
+  }
+
+  try {
+    // Look up user by API key in DynamoDB
+    const user = await getUserByApiKey(apiKey);
+
+    if (!user) {
+      logger.warn('Invalid API key:', apiKey.substring(0, 12) + '...');
+      return {
+        authenticated: false,
+        error: 'Invalid API key. Sign up at https://uswdsmcp.com to get your API key.',
+      };
+    }
+
+    // Check if user is blocked
+    if (user.status === 'blocked') {
+      logger.warn('Blocked user attempted access:', user.email);
+      return {
+        authenticated: false,
+        error: 'Your account has been blocked. Contact support for assistance.',
+      };
+    }
+
+    if (user.status === 'suspended') {
+      logger.warn('Suspended user attempted access:', user.email);
+      return {
+        authenticated: false,
+        error: 'Your account has been suspended. Contact support for assistance.',
+      };
+    }
+
+    logger.debug('Authentication successful:', user.email);
+
+    return {
+      authenticated: true,
+      user,
+      apiKey,
+    };
+  } catch (error) {
+    logger.error('Authentication error:', error);
+    return {
+      authenticated: false,
+      error: 'Authentication service temporarily unavailable. Please try again.',
+    };
+  }
 }
 
 // ===== Lambda Handler =====
@@ -502,15 +559,19 @@ export const handler = async (
   }
 
   // Authentication
-  const auth = authenticate(event);
+  const auth = await authenticate(event);
   if (!auth.authenticated) {
     return {
       statusCode: 401,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: 'Unauthorized' }),
+      body: JSON.stringify({
+        error: 'Unauthorized',
+        message: auth.error || 'Authentication failed',
+      }),
     };
   }
 
+  const user = auth.user!;
   const apiKey = auth.apiKey!;
 
   // Rate limiting
@@ -611,14 +672,34 @@ export const handler = async (
     }
 
     const duration = Date.now() - startTime;
+    const statusCode = 200;
+
     logger.info(`Response: ${requestId}`, {
-      statusCode: 200,
+      statusCode,
       duration,
       method: body.method,
+      email: user.email,
     });
 
+    // Update user stats and log usage to DynamoDB (fire and forget)
+    updateUserStats(user.email, apiKey).catch(err =>
+      logger.error('Failed to update user stats:', err)
+    );
+
+    logUsage({
+      apiKey,
+      timestamp: new Date().toISOString(),
+      email: user.email,
+      method: body.method,
+      toolName: body.method === 'tools/call' ? body.params?.name : undefined,
+      statusCode,
+      duration,
+    }).catch(err =>
+      logger.error('Failed to log usage:', err)
+    );
+
     return {
-      statusCode: 200,
+      statusCode,
       headers: {
         'Content-Type': 'application/json',
         'X-Request-Id': requestId,
