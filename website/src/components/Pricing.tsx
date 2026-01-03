@@ -11,19 +11,36 @@ import {
 export default function Pricing() {
   const tiers = [
     {
-      name: 'Free',
+      name: 'Self-Hosted',
+      price: '$0',
+      period: 'forever',
+      badge: 'Open Source',
+      features: [
+        'Unlimited requests',
+        'Deploy anywhere (AWS, local, etc.)',
+        'Add custom MCP tools',
+        'Integrate into agentic systems',
+        'Full control over data',
+        'AGPL-3.0 license',
+      ],
+      cta: 'View on GitHub',
+      ctaLink: 'https://github.com/ctrimm/uswds-local-mcp-server',
+      featured: false,
+    },
+    {
+      name: 'Free Hosted',
       price: '$0',
       period: '/month',
       features: [
         '1 requests/minute',
         '100 requests/day',
         'All 18 MCP tools',
-        'Local or remote deployment',
+        'No setup required',
         'Community support',
-        'Open source (AGPL-3.0)',
+        'Perfect for testing',
       ],
-      cta: 'Get Started',
-      ctaLink: '/getting-started',
+      cta: 'Get Free API Key',
+      ctaLink: '/signup',
       featured: false,
     },
     {
@@ -63,16 +80,24 @@ export default function Pricing() {
 
   const faqs = [
     {
-      question: 'Is the free tier really free forever?',
-      answer: 'Yes! The free tier is completely free with no time limit. Perfect for individual developers and small projects.',
+      question: 'Why is this open source under AGPL-3.0?',
+      answer: 'We chose AGPL to build a strong community around government digital services. It ensures that improvements made by organizations are shared back with everyone, strengthening the ecosystem. You can freely use, modify, and deploy it—just share improvements if you offer it as a service.',
     },
     {
-      question: 'Can I self-host?',
-      answer: 'Absolutely! The code is open source (AGPL-3.0). Deploy to AWS Lambda for ~$2-50/month depending on usage.',
+      question: 'Can I add custom tools and integrate into agentic systems?',
+      answer: 'Absolutely! When self-hosted, you have complete control. Add custom MCP tools, extend functionality, integrate into multi-agent workflows, or embed in larger systems. The AGPL license permits this—just share improvements if you run it as a public service.',
     },
     {
-      question: 'What happens if I exceed my limits?',
-      answer: "You'll receive a 429 Too Many Requests response with a Retry-After header. Your service won't be interrupted, just rate-limited.",
+      question: 'What are the benefits of self-hosting vs. using hosted infrastructure?',
+      answer: 'Self-hosting gives you unlimited requests, full control over data and infrastructure, and the ability to customize everything. Hosted infrastructure offers zero setup, automatic updates, and we handle all scaling and maintenance. Choose based on your needs!',
+    },
+    {
+      question: 'Is the free hosted tier really free forever?',
+      answer: 'Yes! The free hosted tier is completely free with no time limit, perfect for testing and small projects. For production workloads, consider self-hosting (unlimited, ~$2-50/month AWS costs) or our paid hosted plans.',
+    },
+    {
+      question: 'What happens if I exceed my hosted tier limits?',
+      answer: "You'll receive a 429 Too Many Requests response with a Retry-After header. Your service won't be interrupted, just rate-limited. Consider upgrading to Pro or self-hosting for unlimited access.",
     },
     {
       question: 'Do you offer discounts for government agencies?',
@@ -170,11 +195,23 @@ export default function Pricing() {
             ))}
           </div>
 
-          {/* Self-Hosted Note */}
-          <div className="bg-base-lightest text-center padding-3 radius-md">
-            <p className="margin-0">
-              <strong>Self-Hosted?</strong> Deploy your own instance to AWS Lambda. Typical costs: $2-5/month for low usage, $20-50/month for high usage.
-            </p>
+          {/* Open Source Note */}
+          <div className="bg-accent-cool-lighter border-accent-cool border-2px padding-4 radius-md">
+            <div className="grid-row grid-gap-4">
+              <div className="tablet:grid-col-8">
+                <h3 className="font-heading-lg text-primary margin-top-0 margin-bottom-1">
+                  💡 Want unlimited access? Self-host for free!
+                </h3>
+                <p className="font-body-md margin-bottom-0">
+                  USWDS MCP Server is <strong>fully open source (AGPL-3.0)</strong>. Deploy to your own infrastructure with no rate limits, add custom tools, and integrate into agentic systems. Typical AWS Lambda costs: $2-5/month for low usage, $20-50/month for high usage.
+                </p>
+              </div>
+              <div className="tablet:grid-col-4 display-flex flex-align-center flex-justify-center">
+                <a href="https://github.com/ctrimm/uswds-local-mcp-server" className="usa-button">
+                  View on GitHub
+                </a>
+              </div>
+            </div>
           </div>
         </GridContainer>
       </section>
