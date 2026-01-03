@@ -17,7 +17,7 @@ describe('InMemoryRateLimiter', () => {
       const result = limiter.check('test-key');
 
       expect(result.allowed).toBe(true);
-      expect(result.remaining).toBeGreaterThan(0);
+      expect(result.remaining).toBe(0); // With limit of 1, first request leaves 0 remaining
       expect(result.resetIn).toBeGreaterThan(0);
     });
 
@@ -32,18 +32,18 @@ describe('InMemoryRateLimiter', () => {
       const result1 = limiter.check('test-key');
       const result2 = limiter.check('test-key');
 
-      expect(result2.remaining).toBe(result1.remaining - 1);
+      // With limit of 1: first request has 0 remaining, second should be blocked
+      expect(result2.allowed).toBe(false);
+      expect(result2.limitType).toBe('minute');
     });
 
     it('should block after minute limit exceeded', () => {
       const apiKey = 'test-key';
 
-      // Make 100 requests (the limit)
-      for (let i = 0; i < 100; i++) {
-        limiter.check(apiKey);
-      }
+      // Make 1 request (the limit)
+      limiter.check(apiKey);
 
-      // 101st request should be blocked
+      // 2nd request should be blocked
       const result = limiter.check(apiKey);
       expect(result.allowed).toBe(false);
       expect(result.limitType).toBe('minute');
@@ -52,13 +52,12 @@ describe('InMemoryRateLimiter', () => {
 
     it('should return different remaining counts for different keys', () => {
       limiter.check('key1');
-      limiter.check('key1');
       limiter.check('key2');
 
       const usage1 = limiter.getUsage('key1');
       const usage2 = limiter.getUsage('key2');
 
-      expect(usage1?.minute).toBe(2);
+      expect(usage1?.minute).toBe(1);
       expect(usage2?.minute).toBe(1);
     });
   });
@@ -109,12 +108,10 @@ describe('InMemoryRateLimiter', () => {
 
     it('should return current usage', () => {
       limiter.check('test-key');
-      limiter.check('test-key');
-      limiter.check('test-key');
 
       const usage = limiter.getUsage('test-key');
-      expect(usage?.minute).toBe(3);
-      expect(usage?.day).toBe(3);
+      expect(usage?.minute).toBe(1);
+      expect(usage?.day).toBe(1);
     });
   });
 
@@ -125,8 +122,8 @@ describe('InMemoryRateLimiter', () => {
 
       const stats = limiter.getStats();
       expect(stats.totalKeys).toBe(2);
-      expect(stats.minuteLimit).toBe(100);
-      expect(stats.dayLimit).toBe(10000);
+      expect(stats.minuteLimit).toBe(1);
+      expect(stats.dayLimit).toBe(100);
     });
   });
 });

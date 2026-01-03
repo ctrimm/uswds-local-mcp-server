@@ -1,8 +1,7 @@
 /**
- * MCP Server Initialization
+ * Stdio MCP Server
  *
- * Creates and configures the MCP server instance with tool handlers.
- * Server instance is cached across Lambda warm starts for performance.
+ * Creates and configures the MCP server for stdio transport.
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -20,30 +19,20 @@ import { SuggestionService } from '../services/suggestion-service.js';
 import { ComparisonService } from '../services/comparison-service.js';
 import { CodeGeneratorService } from '../services/code-generator/index.js';
 import { TailwindUSWDSService } from '../services/tailwind-uswds-service.js';
+import { tools } from '../shared/tools/definitions.js';
+import { handleToolCall, Services } from '../shared/tools/handlers.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
-import { tools } from './tools/definitions.js';
-import { handleToolCall, Services } from './tools/handlers.js';
-
-// Global state (persists across Lambda warm starts)
-let servicesInitialized = false;
-let services: Services;
-let mcpServer: Server;
 
 /**
- * Initialize services (cached across warm starts)
+ * Initialize all services
  */
 function initializeServices(): Services {
-  if (servicesInitialized && services) {
-    logger.debug('Services already initialized (warm start)');
-    return services;
-  }
-
   logger.info('Initializing services...');
 
   const useReact = config.useReactComponents;
 
-  services = {
+  const services: Services = {
     componentService: new ComponentService(useReact),
     designTokenService: new DesignTokenService(),
     validationService: new ValidationService(),
@@ -56,25 +45,17 @@ function initializeServices(): Services {
     tailwindUSWDSService: new TailwindUSWDSService(),
   };
 
-  servicesInitialized = true;
   logger.info('Services initialized successfully');
-
   return services;
 }
 
 /**
- * Get or create MCP server instance (cached across warm starts)
+ * Create MCP server for stdio transport
  */
-export function getMCPServer(): Server {
-  if (mcpServer) {
-    return mcpServer;
-  }
+export function createMCPServer(): Server {
+  const services = initializeServices();
 
-  // Initialize services
-  const svc = initializeServices();
-
-  // Create MCP server
-  mcpServer = new Server(
+  const server = new Server(
     {
       name: 'uswds-mcp-server',
       version: config.serverVersion,
@@ -86,16 +67,22 @@ export function getMCPServer(): Server {
     }
   );
 
-  // Register handlers
-  mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({ tools }));
+  // Register tool handlers
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    logger.debug('Listing tools');
+    return { tools };
+  });
 
-  mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
-    logger.info(`Tool called: ${name}`, args);
+    logger.info(`Tool called: ${name}`);
+    logger.debug('Tool arguments:', args);
 
     try {
-      const result = await handleToolCall(name, args, svc);
+      const result = await handleToolCall(name, args, services);
+
+      logger.debug(`Tool ${name} completed successfully`);
 
       return {
         content: [
@@ -119,5 +106,5 @@ export function getMCPServer(): Server {
     }
   });
 
-  return mcpServer;
+  return server;
 }

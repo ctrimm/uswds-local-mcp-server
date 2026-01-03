@@ -13,7 +13,7 @@ import { IconService } from '../../services/icon-service.js';
 import { LayoutService } from '../../services/layout-service.js';
 import { SuggestionService } from '../../services/suggestion-service.js';
 import { ComparisonService } from '../../services/comparison-service.js';
-import { CodeGeneratorService } from '../../services/code-generator-service.js';
+import { CodeGeneratorService } from '../../services/code-generator/index.js';
 import { TailwindUSWDSService } from '../../services/tailwind-uswds-service.js';
 
 export interface Services {
