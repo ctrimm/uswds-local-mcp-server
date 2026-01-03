@@ -45,8 +45,9 @@ export class SuggestionService {
     // Vanilla mode provides general guidance
     if (useVanilla) {
       return {
+        error: 'Component suggestions work best with React mode',
         mode: 'vanilla-uswds',
-        message: 'Component suggestions work best with React-USWDS. For vanilla USWDS, see general guidance below.',
+        message: 'Component suggestions work best with React-USWDS. Set USE_REACT_COMPONENTS=true for detailed suggestions. For vanilla USWDS, see general guidance below.',
         generalGuidance: this.getGeneralGuidance(useCase),
         suggestedAction: 'Use list_components with framework="vanilla" to browse all available components'
       };

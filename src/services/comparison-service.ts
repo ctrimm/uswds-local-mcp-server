@@ -31,8 +31,9 @@ export class ComparisonService {
 
     if (useVanilla) {
       return {
+        error: 'Component comparison is only available in React mode',
         mode: 'vanilla-uswds',
-        message: 'Component comparison is only available in React mode',
+        message: 'Component comparison is only available in React mode. Set USE_REACT_COMPONENTS=true to enable comparisons.',
         suggestion: 'Use framework="react" to compare React components'
       };
     }
