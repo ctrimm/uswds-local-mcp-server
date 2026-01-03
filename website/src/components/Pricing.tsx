@@ -15,8 +15,8 @@ export default function Pricing() {
       price: '$0',
       period: '/month',
       features: [
-        '100 requests/minute',
-        '10,000 requests/day',
+        '1 requests/minute',
+        '100 requests/day',
         'All 18 MCP tools',
         'Local or remote deployment',
         'Community support',

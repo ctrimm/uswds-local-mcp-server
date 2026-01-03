@@ -22,56 +22,65 @@ export default function Footer() {
     </div>
   );
 
-  const primaryLinks = {
-    resources: [
-      <a key="docs" href="/docs" className="usa-footer__primary-link">
-        Documentation
-      </a>,
-      <a key="getting-started" href="/getting-started" className="usa-footer__primary-link">
-        Getting Started
-      </a>,
-      <a key="github" href="https://github.com/ctrimm/uswds-local-mcp-server" className="usa-footer__primary-link">
-        GitHub
-      </a>,
-    ],
-    community: [
-      <a key="issues" href="https://github.com/ctrimm/uswds-local-mcp-server/issues" className="usa-footer__primary-link">
-        Report Issue
-      </a>,
-      <a key="discussions" href="https://github.com/ctrimm/uswds-local-mcp-server/discussions" className="usa-footer__primary-link">
-        Discussions
-      </a>,
-    ],
-  };
-
   return (
     <USWDSFooter
       returnToTop={returnToTop}
-      size="medium"
+      size="big"
       primary={
-        <div className="usa-footer__primary-container grid-row">
-          <div className="mobile-lg:grid-col-8">
-            <FooterNav
-              aria-label="Footer navigation"
-              size="medium"
-              links={[
-                ...primaryLinks.resources,
-                ...primaryLinks.community,
-              ]}
-            />
+        <GridContainer className="usa-footer__primary-section">
+          <div className="grid-row grid-gap">
+            <div className="mobile-lg:grid-col-8">
+              <nav className="usa-footer__nav" aria-label="Footer navigation">
+                <div className="grid-row grid-gap-4">
+                  <div className="mobile-lg:grid-col-6 desktop:grid-col-4">
+                    <section className="usa-footer__primary-content usa-footer__primary-content--collapsible">
+                      <h4 className="usa-footer__primary-heading">Documentation</h4>
+                      <ul className="usa-list usa-list--unstyled">
+                        <li className="usa-footer__secondary-link">
+                          <a href="/getting-started">Getting Started</a>
+                        </li>
+                        <li className="usa-footer__secondary-link">
+                          <a href="/docs">Documentation</a>
+                        </li>
+                        <li className="usa-footer__secondary-link">
+                          <a href="https://github.com/ctrimm/uswds-local-mcp-server">GitHub</a>
+                        </li>
+                      </ul>
+                    </section>
+                  </div>
+                  <div className="mobile-lg:grid-col-6 desktop:grid-col-4">
+                    <section className="usa-footer__primary-content usa-footer__primary-content--collapsible">
+                      <h4 className="usa-footer__primary-heading">Community</h4>
+                      <ul className="usa-list usa-list--unstyled">
+                        <li className="usa-footer__secondary-link">
+                          <a href="https://github.com/ctrimm/uswds-local-mcp-server/issues">Report Issue</a>
+                        </li>
+                        <li className="usa-footer__secondary-link">
+                          <a href="https://github.com/ctrimm/uswds-local-mcp-server/discussions">Discussions</a>
+                        </li>
+                      </ul>
+                    </section>
+                  </div>
+                </div>
+              </nav>
+            </div>
+            <div className="mobile-lg:grid-col-4">
+              <div className="usa-footer__primary-content">
+                <h4 className="usa-footer__primary-heading">USWDS MCP Server</h4>
+                <p className="usa-footer__contact-info">
+                  AI-powered development with the U.S. Web Design System
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="mobile-lg:grid-col-4">
-            <h3 className="usa-footer__primary-heading">USWDS MCP Server</h3>
-            <p>AI-powered development with the U.S. Web Design System</p>
-          </div>
-        </div>
+        </GridContainer>
       }
       secondary={
         <GridContainer className="usa-footer__secondary-section">
           <div className="grid-row grid-gap">
             <div className="usa-footer__logo grid-row mobile-lg:grid-col-6 mobile-lg:grid-gap-2">
               <div className="mobile-lg:grid-col-auto">
-                <h3 className="usa-footer__logo-heading">USWDS MCP</h3>
+                <p className="usa-footer__logo-heading">USWDS MCP</p>
               </div>
             </div>
             <div className="usa-footer__contact-links mobile-lg:grid-col-6">

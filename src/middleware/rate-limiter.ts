@@ -30,8 +30,8 @@ export class InMemoryRateLimiter {
   private limits = new Map<string, RateLimitEntry>();
 
   // Configuration
-  private readonly MINUTE_LIMIT = 100; // requests per minute
-  private readonly DAY_LIMIT = 10000; // requests per day
+  private readonly MINUTE_LIMIT = 1; // requests per minute
+  private readonly DAY_LIMIT = 100; // requests per day
   private readonly MINUTE_WINDOW = 60000; // 1 minute in ms
   private readonly DAY_WINDOW = 86400000; // 24 hours in ms
   private readonly CLEANUP_INTERVAL = 300000; // 5 minutes

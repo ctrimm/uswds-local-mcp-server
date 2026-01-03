@@ -61,38 +61,32 @@ export default function Homepage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="usa-hero" style={{ backgroundImage: 'linear-gradient(135deg, #005ea2 0%, #1a4480 100%)', padding: '4rem 0' }}>
+      <section className="usa-hero bg-primary-darker">
         <GridContainer>
-          <div style={{ maxWidth: '100%', backgroundColor: 'rgba(0, 0, 0, 0.2)', backdropFilter: 'blur(10px)', padding: '3rem', borderRadius: '0.5rem' }}>
-            <h1 className="usa-hero__heading text-white margin-top-0">
-              Build Accessible Government Websites with AI
+          <div className="usa-hero__callout bg-accent-warm-lighter">
+            <h1 className="usa-hero__heading">
+              <span className="usa-hero__heading--alt">Build Accessible Government Websites with AI</span>
             </h1>
-            <p className="margin-top-2 font-body-lg text-white" style={{ maxWidth: '60rem' }}>
+            <p>
               MCP server providing instant access to USWDS components, design tokens, and validation tools—directly in your AI assistant.
             </p>
 
             {/* Announcement Banner */}
-            <div className="bg-accent-warm-lighter border-accent-warm border-2px radius-md padding-3 margin-top-3 margin-bottom-3" style={{ maxWidth: '50rem' }}>
-              <div className="display-flex flex-align-center gap-2 flex-wrap">
-                <span className="usa-tag usa-tag--big bg-accent-warm">Limited Time</span>
-                <strong className="text-ink font-body-md">Free Hosted Instance Available</strong>
+            <div className="bg-white border-accent-warm border-2px radius-md padding-2 margin-top-2 margin-bottom-2">
+              <div className="display-flex flex-align-center gap-1 flex-wrap">
+                <span className="usa-tag bg-accent-warm">LIMITED TIME</span>
+                <strong className="text-ink">Free Hosted Instance Available</strong>
               </div>
-              <p className="text-ink margin-top-1 margin-bottom-0 font-body-sm">
+              <p className="text-ink margin-top-1 margin-bottom-0 font-body-2xs">
                 Get instant access to our hosted MCP server—no setup required. Just your email address to start building.
               </p>
             </div>
 
             {/* CTA Buttons */}
-            <div className="display-flex gap-2 flex-wrap margin-top-3">
-              <a href="/signup">
-                <Button type="button" size="big">Get Free API Key</Button>
-              </a>
-              <a href="/getting-started">
-                <Button type="button" unstyled className="usa-button usa-button--outline usa-button--inverse usa-button--big">Get Started</Button>
-              </a>
-              <a href="/docs">
-                <Button type="button" unstyled className="usa-button usa-button--outline usa-button--inverse usa-button--big">View Docs</Button>
-              </a>
+            <div className="display-flex gap-1 flex-wrap margin-top-2">
+              <a href="/signup" className="usa-button">Get Free API Key</a>
+              <a href="/getting-started" className="usa-button usa-button--outline">Get Started</a>
+              <a href="/docs" className="usa-button usa-button--outline">View Docs</a>
             </div>
           </div>
         </GridContainer>
