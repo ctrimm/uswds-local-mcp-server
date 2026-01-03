@@ -632,14 +632,14 @@ export const handler = async (
       statusCode: 429,
       headers: {
         'Content-Type': 'application/json',
-        'X-RateLimit-Limit': rateLimit.limitType === 'minute' ? '100' : '10000',
+        'X-RateLimit-Limit': rateLimit.limitType === 'minute' ? '1' : '100',
         'X-RateLimit-Remaining': '0',
         'X-RateLimit-Reset': String(rateLimit.retryAfter),
         'Retry-After': String(rateLimit.retryAfter),
       },
       body: JSON.stringify({
         error: 'Too Many Requests',
-        message: `Rate limit exceeded. You can make ${rateLimit.limitType === 'minute' ? '100 requests per minute' : '10,000 requests per day'}. Try again in ${rateLimit.retryAfter} seconds.`,
+        message: `Rate limit exceeded. You can make ${rateLimit.limitType === 'minute' ? '1 request per minute' : '100 requests per day'}. Try again in ${rateLimit.retryAfter} seconds.`,
         retryAfter: rateLimit.retryAfter,
       }),
     };
@@ -750,7 +750,7 @@ export const handler = async (
         'Content-Type': 'application/json',
         'X-Request-Id': requestId,
         'X-Processing-Time': `${duration}ms`,
-        'X-RateLimit-Limit': '100',
+        'X-RateLimit-Limit': '1',
         'X-RateLimit-Remaining': String(rateLimit.remaining),
         'X-RateLimit-Reset': String(Math.ceil(rateLimit.resetIn / 1000)),
       },
