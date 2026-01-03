@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
 
 export default defineConfig({
   site: 'https://uswdsmcp.com',
@@ -6,4 +7,5 @@ export default defineConfig({
   build: {
     assets: 'assets',
   },
+  integrations: [react()],
 });

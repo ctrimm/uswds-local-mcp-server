@@ -33,8 +33,11 @@ export class ComponentService {
     this.baseUrl = useReact ? this.reactBaseUrl : this.uswdsBaseUrl;
   }
 
-  async listComponents(category: string = 'all'): Promise<any> {
-    if (this.useReact) {
+  async listComponents(category: string = 'all', framework?: 'react' | 'vanilla'): Promise<any> {
+    // Determine which framework to use: parameter takes precedence over constructor setting
+    const useReact = framework === 'react' || (framework === undefined && this.useReact);
+
+    if (useReact) {
       return this.listReactComponents(category);
     } else {
       return this.listUSWDSComponents(category);
@@ -212,8 +215,11 @@ export class ComponentService {
     };
   }
 
-  async getComponentInfo(componentName: string, includeExamples: boolean = true): Promise<any> {
-    if (this.useReact) {
+  async getComponentInfo(componentName: string, includeExamples: boolean = true, framework?: 'react' | 'vanilla'): Promise<any> {
+    // Determine which framework to use: parameter takes precedence over constructor setting
+    const useReact = framework === 'react' || (framework === undefined && this.useReact);
+
+    if (useReact) {
       return this.getReactComponentInfo(componentName, includeExamples);
     } else {
       return this.getUSWDSComponentInfo(componentName, includeExamples);

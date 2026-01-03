@@ -142,6 +142,15 @@ export class TailwindUSWDSService {
   }
 
   /**
+   * List all available Tailwind USWDS components
+   */
+  async listComponents(category: string = 'all'): Promise<any> {
+    // Tailwind USWDS doesn't have categories yet, so we list all components
+    // In the future, we could add category filtering
+    return this.getComponentDocs();
+  }
+
+  /**
    * Get component documentation
    */
   async getComponentDocs(componentName?: string): Promise<any> {

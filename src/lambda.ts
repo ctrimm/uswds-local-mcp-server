@@ -126,7 +126,7 @@ function initializeServices() {
 const tools: Tool[] = [
     {
       name: 'list_components',
-      description: `List all available ${USE_REACT_COMPONENTS ? 'React-USWDS' : 'USWDS'} components with descriptions`,
+      description: 'List all available USWDS components with descriptions. Supports React-USWDS, vanilla USWDS, and Tailwind USWDS.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -135,17 +135,27 @@ const tools: Tool[] = [
             description: 'Filter by category (e.g., "forms", "navigation", "all")',
             enum: ['all', 'forms', 'navigation', 'layout', 'content', 'ui'],
           },
+          framework: {
+            type: 'string',
+            description: 'Component framework: "react" for React-USWDS, "vanilla" for standard USWDS HTML, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+            enum: ['react', 'vanilla', 'tailwind'],
+          },
         },
       },
     },
     {
       name: 'get_component_info',
-      description: `Get detailed information about a specific ${USE_REACT_COMPONENTS ? 'React-USWDS' : 'USWDS'} component`,
+      description: 'Get detailed information about a specific USWDS component. Supports React-USWDS, vanilla USWDS, and Tailwind USWDS.',
       inputSchema: {
         type: 'object',
         properties: {
           component_name: { type: 'string', description: 'Component name' },
           include_examples: { type: 'boolean', default: true },
+          framework: {
+            type: 'string',
+            description: 'Component framework: "react" for React-USWDS, "vanilla" for standard USWDS HTML, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+            enum: ['react', 'vanilla', 'tailwind'],
+          },
         },
         required: ['component_name'],
       },
@@ -204,6 +214,11 @@ const tools: Tool[] = [
         type: 'object',
         properties: {
           page_type: { type: 'string', description: 'Page type' },
+          framework: {
+            type: 'string',
+            description: 'Framework/syntax: "react" for React, "vanilla" for HTML, "tailwind" for Tailwind. Defaults to server configuration if not specified.',
+            enum: ['react', 'vanilla', 'tailwind']
+          },
         },
         required: ['page_type'],
       },
@@ -215,6 +230,11 @@ const tools: Tool[] = [
         type: 'object',
         properties: {
           use_case: { type: 'string', description: 'Use case description' },
+          framework: {
+            type: 'string',
+            description: 'Framework/syntax: "react" for React-USWDS, "vanilla" for vanilla USWDS, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+            enum: ['react', 'vanilla', 'tailwind']
+          },
         },
         required: ['use_case'],
       },
@@ -226,19 +246,28 @@ const tools: Tool[] = [
         type: 'object',
         properties: {
           components: { type: 'array', items: { type: 'string' } },
+          framework: {
+            type: 'string',
+            description: 'Framework/syntax: "react" for React-USWDS, "vanilla" for vanilla USWDS, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+            enum: ['react', 'vanilla', 'tailwind']
+          },
         },
         required: ['components'],
       },
     },
     {
       name: 'generate_component_code',
-      description: 'Generate component code',
+      description: 'Generate component code for USWDS components. Supports React, vanilla HTML, and Tailwind CSS.',
       inputSchema: {
         type: 'object',
         properties: {
-          component_name: { type: 'string' },
-          props: { type: 'object' },
-          framework: { type: 'string', enum: ['html', 'react'] },
+          component_name: { type: 'string', description: 'Name of the component to generate' },
+          props: { type: 'object', description: 'Component properties/configuration' },
+          framework: {
+            type: 'string',
+            description: 'Framework/syntax: "react" for React-USWDS, "html" for vanilla USWDS HTML, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+            enum: ['html', 'react', 'tailwind'],
+          },
         },
         required: ['component_name'],
       },
@@ -325,16 +354,26 @@ function getMCPServer(): Server {
       const toolArgs = args as any; // Type assertion for flexibility
 
       switch (name) {
-        case 'list_components':
-          result = await componentService.listComponents(toolArgs?.category || 'all');
-          break;
+        case 'list_components': {
+          const framework = toolArgs?.framework as 'react' | 'vanilla' | 'tailwind' | undefined;
+          const category = toolArgs?.category || 'all';
 
-        case 'get_component_info':
-          result = await componentService.getComponentInfo(
-            toolArgs?.component_name as string,
-            toolArgs?.include_examples !== false
-          );
+          result = framework === 'tailwind'
+            ? await tailwindUSWDSService.listComponents(category)
+            : await componentService.listComponents(category, framework);
           break;
+        }
+
+        case 'get_component_info': {
+          const framework = toolArgs?.framework as 'react' | 'vanilla' | 'tailwind' | undefined;
+          const componentName = toolArgs?.component_name as string;
+          const includeExamples = toolArgs?.include_examples !== false;
+
+          result = framework === 'tailwind'
+            ? await tailwindUSWDSService.getComponentDocs(componentName)
+            : await componentService.getComponentInfo(componentName, includeExamples, framework);
+          break;
+        }
 
         case 'get_design_tokens':
           result = await designTokenService.getTokens(toolArgs?.category || 'all');
@@ -360,18 +399,25 @@ function getMCPServer(): Server {
           break;
 
         case 'suggest_layout':
-          result = await layoutService.suggestLayout(toolArgs?.page_type as string);
+          result = await layoutService.suggestLayout(
+            toolArgs?.page_type as string,
+            toolArgs?.framework as 'react' | 'vanilla' | 'tailwind' | undefined
+          );
           break;
 
         case 'suggest_components':
-          result = await suggestionService.suggestComponents(toolArgs?.use_case as string);
+          result = await suggestionService.suggestComponents(
+            toolArgs?.use_case as string,
+            toolArgs?.framework as 'react' | 'vanilla' | 'tailwind' | undefined
+          );
           break;
 
         case 'compare_components':
           const components = toolArgs?.components as string[];
           result = await comparisonService.compareComponents(
             components?.[0] || '',
-            components?.[1] || ''
+            components?.[1] || '',
+            toolArgs?.framework as 'react' | 'vanilla' | 'tailwind' | undefined
           );
           break;
 

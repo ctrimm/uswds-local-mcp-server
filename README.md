@@ -357,6 +357,29 @@ Simply change `USE_REACT_COMPONENTS` to `"true"` in any of the above configurati
 }
 ```
 
+### Dynamic Framework Selection (New!)
+
+**You no longer need to hardcode the framework in your environment configuration!**
+
+All component tools now support an optional `framework` parameter that lets Claude choose the right framework based on your conversation context:
+
+- **`framework: "react"`** - Get React-USWDS components
+- **`framework: "vanilla"`** - Get vanilla USWDS (HTML/CSS)
+- **`framework: "tailwind"`** - Get Tailwind USWDS components
+
+**Example:** When you ask Claude "show me a button in React", it will automatically use `framework: "react"`. Ask for "a button in Tailwind" and it uses `framework: "tailwind"`.
+
+The `USE_REACT_COMPONENTS` environment variable now serves as a **default fallback** when no framework is specified. This means:
+- ✅ Full backward compatibility - existing configurations work unchanged
+- ✅ No need to reconfigure when switching frameworks
+- ✅ Mix frameworks in the same conversation
+- ✅ Let Claude intelligently choose based on context
+
+**Supported Tools with Framework Parameter:**
+- `list_components`
+- `get_component_info`
+- `generate_component_code`
+
 ### Testing with MCP Inspector
 
 ```bash

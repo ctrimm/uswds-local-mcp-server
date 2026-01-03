@@ -15,12 +15,25 @@ export class ComparisonService {
   /**
    * Compare two components
    */
-  async compareComponents(component1: string, component2: string): Promise<any> {
-    if (!this.useReact) {
+  async compareComponents(component1: string, component2: string, framework?: 'react' | 'vanilla' | 'tailwind'): Promise<any> {
+    // Determine which framework to use: parameter takes precedence over constructor setting
+    const useReact = framework === 'react' || (framework === undefined && this.useReact);
+    const useTailwind = framework === 'tailwind';
+    const useVanilla = framework === 'vanilla' || (!useReact && !useTailwind);
+
+    if (useTailwind) {
       return {
-        error: 'Component comparison is only available in React mode',
+        mode: 'tailwind-uswds',
+        message: 'Component comparison is not yet available for Tailwind USWDS',
+        suggestion: 'Use get_tailwind_uswds_component to view individual components'
+      };
+    }
+
+    if (useVanilla) {
+      return {
         mode: 'vanilla-uswds',
-        message: 'Set USE_REACT_COMPONENTS=true to compare components'
+        message: 'Component comparison is only available in React mode',
+        suggestion: 'Use framework="react" to compare React components'
       };
     }
 

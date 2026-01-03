@@ -15,7 +15,12 @@ export class LayoutService {
   /**
    * Get all layout patterns
    */
-  async getLayouts(): Promise<any> {
+  async getLayouts(framework?: 'react' | 'vanilla' | 'tailwind'): Promise<any> {
+    // Determine which framework to use: parameter takes precedence over constructor setting
+    const useReact = framework === 'react' || (framework === undefined && this.useReact);
+    const useTailwind = framework === 'tailwind';
+    const useVanilla = framework === 'vanilla' || (!useReact && !useTailwind);
+
     const layouts = Object.entries(LAYOUT_PATTERNS).map(([key, pattern]) => ({
       key,
       name: pattern.name,
@@ -26,7 +31,7 @@ export class LayoutService {
 
     return {
       total: layouts.length,
-      mode: this.useReact ? 'react' : 'html',
+      mode: useTailwind ? 'tailwind' : (useReact ? 'react' : 'html'),
       layouts,
       gridDocs: 'https://designsystem.digital.gov/utilities/layout-grid/',
       note: 'All layouts are responsive and follow USWDS Grid system'
@@ -36,7 +41,12 @@ export class LayoutService {
   /**
    * Get a specific layout pattern with code
    */
-  async getLayout(layoutKey: string): Promise<any> {
+  async getLayout(layoutKey: string, framework?: 'react' | 'vanilla' | 'tailwind'): Promise<any> {
+    // Determine which framework to use: parameter takes precedence over constructor setting
+    const useReact = framework === 'react' || (framework === undefined && this.useReact);
+    const useTailwind = framework === 'tailwind';
+    const useVanilla = framework === 'vanilla' || (!useReact && !useTailwind);
+
     // Normalize key
     const normalizedKey = layoutKey.toLowerCase().replace(/\s+/g, '-');
     const pattern = LAYOUT_PATTERNS[normalizedKey];
@@ -55,8 +65,8 @@ export class LayoutService {
       description: pattern.description,
       useCase: pattern.useCase,
       responsive: pattern.responsive,
-      code: this.useReact ? pattern.code.react : pattern.code.html,
-      mode: this.useReact ? 'react' : 'html',
+      code: useReact ? pattern.code.react : pattern.code.html,
+      mode: useTailwind ? 'tailwind' : (useReact ? 'react' : 'html'),
       breakpoints: {
         mobile: '0px - 639px (grid-col-*)',
         tablet: '640px - 1023px (tablet:grid-col-*)',
@@ -85,7 +95,7 @@ export class LayoutService {
   /**
    * Suggest layouts based on use case
    */
-  async suggestLayout(useCase: string): Promise<any> {
+  async suggestLayout(useCase: string, framework?: 'react' | 'vanilla' | 'tailwind'): Promise<any> {
     const useCaseLower = useCase.toLowerCase();
     const suggestions: any[] = [];
 

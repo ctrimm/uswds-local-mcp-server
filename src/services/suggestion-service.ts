@@ -22,13 +22,33 @@ export class SuggestionService {
   /**
    * Suggest components based on use case description
    */
-  async suggestComponents(useCase: string): Promise<any> {
-    if (!this.useReact) {
+  async suggestComponents(useCase: string, framework?: 'react' | 'vanilla' | 'tailwind'): Promise<any> {
+    // Determine which framework to use: parameter takes precedence over constructor setting
+    const useReact = framework === 'react' || (framework === undefined && this.useReact);
+    const useTailwind = framework === 'tailwind';
+    const useVanilla = framework === 'vanilla' || (!useReact && !useTailwind);
+
+    // Tailwind support is limited (no component database yet)
+    if (useTailwind) {
       return {
-        error: 'Component suggestions are optimized for React mode',
+        mode: 'tailwind-uswds',
+        message: 'Tailwind USWDS suggestions are limited. Use search_tailwind_uswds_docs or get_tailwind_uswds_component for specific components.',
+        generalGuidance: this.getGeneralGuidance(useCase),
+        suggestedTools: [
+          'search_tailwind_uswds_docs',
+          'get_tailwind_uswds_component',
+          'get_tailwind_uswds_getting_started'
+        ]
+      };
+    }
+
+    // Vanilla mode provides general guidance
+    if (useVanilla) {
+      return {
         mode: 'vanilla-uswds',
-        message: 'Set USE_REACT_COMPONENTS=true for detailed suggestions',
-        generalGuidance: this.getGeneralGuidance(useCase)
+        message: 'Component suggestions work best with React-USWDS. For vanilla USWDS, see general guidance below.',
+        generalGuidance: this.getGeneralGuidance(useCase),
+        suggestedAction: 'Use list_components with framework="vanilla" to browse all available components'
       };
     }
 

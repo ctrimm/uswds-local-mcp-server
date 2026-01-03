@@ -50,7 +50,7 @@ const server = new Server(
 const tools: Tool[] = [
   {
     name: 'list_components',
-    description: `List all available ${USE_REACT_COMPONENTS ? 'React-USWDS' : 'USWDS'} components with descriptions`,
+    description: 'List all available USWDS components with descriptions. Supports React-USWDS, vanilla USWDS, and Tailwind USWDS.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -59,12 +59,17 @@ const tools: Tool[] = [
           description: 'Filter by category (e.g., "forms", "navigation", "all")',
           enum: ['all', 'forms', 'navigation', 'layout', 'content', 'ui'],
         },
+        framework: {
+          type: 'string',
+          description: 'Component framework: "react" for React-USWDS, "vanilla" for standard USWDS HTML, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+          enum: ['react', 'vanilla', 'tailwind'],
+        },
       },
     },
   },
   {
     name: 'get_component_info',
-    description: `Get detailed information about a specific ${USE_REACT_COMPONENTS ? 'React-USWDS' : 'USWDS'} component including props, examples, and accessibility guidance`,
+    description: 'Get detailed information about a specific USWDS component including props, examples, and accessibility guidance. Supports React-USWDS, vanilla USWDS, and Tailwind USWDS.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -76,6 +81,11 @@ const tools: Tool[] = [
           type: 'boolean',
           description: 'Include code examples',
           default: true,
+        },
+        framework: {
+          type: 'string',
+          description: 'Component framework: "react" for React-USWDS, "vanilla" for standard USWDS HTML, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+          enum: ['react', 'vanilla', 'tailwind'],
         },
       },
       required: ['component_name'],
@@ -242,6 +252,11 @@ const tools: Tool[] = [
           type: 'string',
           description: 'Describe what you want to build (e.g., "show a success message", "collect user email")',
         },
+        framework: {
+          type: 'string',
+          description: 'Framework/syntax: "react" for React-USWDS, "vanilla" for vanilla USWDS, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+          enum: ['react', 'vanilla', 'tailwind']
+        },
       },
       required: ['use_case'],
     },
@@ -260,23 +275,33 @@ const tools: Tool[] = [
           type: 'string',
           description: 'Second component name',
         },
+        framework: {
+          type: 'string',
+          description: 'Framework/syntax: "react" for React-USWDS, "vanilla" for vanilla USWDS, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+          enum: ['react', 'vanilla', 'tailwind']
+        },
       },
       required: ['component1', 'component2'],
     },
   },
   {
     name: 'generate_component_code',
-    description: 'Generate working code for a component based on requirements',
+    description: 'Generate component code for USWDS components. Supports React, vanilla HTML, and Tailwind CSS.',
     inputSchema: {
       type: 'object',
       properties: {
         component_name: {
           type: 'string',
-          description: 'Component to generate (e.g., "Button", "Alert")',
+          description: 'Name of the component to generate',
         },
-        requirements: {
+        props: {
           type: 'object',
-          description: 'Component requirements as key-value pairs (e.g., {"type": "submit", "disabled": true})',
+          description: 'Component properties/configuration',
+        },
+        framework: {
+          type: 'string',
+          description: 'Framework/syntax: "react" for React-USWDS, "html" for vanilla USWDS HTML, "tailwind" for Tailwind USWDS. Defaults to server configuration if not specified.',
+          enum: ['html', 'react', 'tailwind'],
         },
       },
       required: ['component_name'],
@@ -461,8 +486,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case 'list_components': {
+        const framework = args?.framework as 'react' | 'vanilla' | 'tailwind' | undefined;
         const category = (args?.category as string) || 'all';
-        const result = await componentService.listComponents(category);
+
+        const result = framework === 'tailwind'
+          ? await tailwindUSWDSService.listComponents(category)
+          : await componentService.listComponents(category, framework);
+
         return {
           content: [
             {
@@ -474,9 +504,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_component_info': {
+        const framework = args?.framework as 'react' | 'vanilla' | 'tailwind' | undefined;
         const componentName = args?.component_name as string;
         const includeExamples = args?.include_examples !== false;
-        const result = await componentService.getComponentInfo(componentName, includeExamples);
+
+        const result = framework === 'tailwind'
+          ? await tailwindUSWDSService.getComponentDocs(componentName)
+          : await componentService.getComponentInfo(componentName, includeExamples, framework);
+
         return {
           content: [
             {
@@ -614,7 +649,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'suggest_components': {
         const useCase = args?.use_case as string;
-        const result = await suggestionService.suggestComponents(useCase);
+        const framework = args?.framework as 'react' | 'vanilla' | 'tailwind' | undefined;
+        const result = await suggestionService.suggestComponents(useCase, framework);
         return {
           content: [
             {
@@ -628,7 +664,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'compare_components': {
         const component1 = args?.component1 as string;
         const component2 = args?.component2 as string;
-        const result = await comparisonService.compareComponents(component1, component2);
+        const framework = args?.framework as 'react' | 'vanilla' | 'tailwind' | undefined;
+        const result = await comparisonService.compareComponents(component1, component2, framework);
         return {
           content: [
             {
@@ -641,8 +678,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'generate_component_code': {
         const componentName = args?.component_name as string;
-        const requirements = (args?.requirements as any) || {};
-        const result = await codeGeneratorService.generateComponent(componentName, requirements);
+        const result = await codeGeneratorService.generateComponent(componentName, {
+          props: args?.props,
+          framework: args?.framework as string,
+        });
         return {
           content: [
             {

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__uswds-local__suggest_components",
+      "mcp__uswds-local__get_layout_patterns",
+      "mcp__uswds-local__get_component_info",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_take_screenshot"
+    ]
+  }
+}
