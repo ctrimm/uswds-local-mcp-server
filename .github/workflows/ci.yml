@@ -45,26 +45,12 @@ jobs:
         fi
         echo "Build successful"
 
-    - name: Install lcov (Node 20 only)
-      if: matrix.node-version == '20.x'
-      run: sudo apt-get update && sudo apt-get install -y lcov
-
-    - name: Report coverage summary (Node 20 only)
-      if: matrix.node-version == '20.x'
-      uses: zgosalvez/github-actions-report-lcov@v4
-      with:
-        coverage-files: ./coverage/lcov.info
-        minimum-coverage: 70
-        artifact-name: code-coverage-report
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        update-comment: true
-
-    - name: Upload HTML coverage report (Node 20 only)
+    - name: Upload coverage reports (Node 20 only)
       if: matrix.node-version == '20.x'
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report-html
-        path: coverage/lcov-report/
+        name: coverage-report
+        path: coverage/
         retention-days: 30
 
   lint:
