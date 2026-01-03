@@ -32,9 +32,9 @@ export default function Homepage() {
       description: 'Access USWDS components built with Tailwind CSS from v2.uswds-tailwind.com.'
     },
     {
-      icon: '☁️',
-      title: 'Deploy Anywhere',
-      description: 'Run locally via stdio or deploy to AWS Lambda for team-wide access.'
+      icon: '🔓',
+      title: 'Fully Open Source',
+      description: 'AGPL-3.0 licensed. Deploy to your own infrastructure, add custom tools, integrate into agentic systems—no limits.'
     }
   ];
 
@@ -61,38 +61,32 @@ export default function Homepage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="usa-hero" style={{ backgroundImage: 'linear-gradient(135deg, #005ea2 0%, #1a4480 100%)', padding: '4rem 0' }}>
+      <section className="usa-hero bg-primary-darker">
         <GridContainer>
-          <div style={{ maxWidth: '100%', backgroundColor: 'rgba(0, 0, 0, 0.2)', backdropFilter: 'blur(10px)', padding: '3rem', borderRadius: '0.5rem' }}>
-            <h1 className="usa-hero__heading text-white margin-top-0">
-              Build Accessible Government Websites with AI
+          <div className="usa-hero__callout bg-accent-warm-lighter">
+            <h1 className="usa-hero__heading">
+              <span className="usa-hero__heading--alt">Build Accessible Government Websites with AI</span>
             </h1>
-            <p className="margin-top-2 font-body-lg text-white" style={{ maxWidth: '60rem' }}>
+            <p>
               MCP server providing instant access to USWDS components, design tokens, and validation tools—directly in your AI assistant.
             </p>
 
             {/* Announcement Banner */}
-            <div className="bg-accent-warm-lighter border-accent-warm border-2px radius-md padding-3 margin-top-3 margin-bottom-3" style={{ maxWidth: '50rem' }}>
-              <div className="display-flex flex-align-center gap-2 flex-wrap">
-                <span className="usa-tag usa-tag--big bg-accent-warm">Limited Time</span>
-                <strong className="text-ink font-body-md">Free Hosted Instance Available</strong>
+            <div className="bg-white border-accent-warm border-2px radius-md padding-2 margin-top-2 margin-bottom-2">
+              <div className="display-flex flex-align-center gap-1 flex-wrap">
+                <span className="usa-tag bg-accent-warm">LIMITED TIME</span>
+                <strong className="text-ink">Free Hosted Instance Available</strong>
               </div>
-              <p className="text-ink margin-top-1 margin-bottom-0 font-body-sm">
+              <p className="text-ink margin-top-1 margin-bottom-0 font-body-2xs">
                 Get instant access to our hosted MCP server—no setup required. Just your email address to start building.
               </p>
             </div>
 
             {/* CTA Buttons */}
-            <div className="display-flex gap-2 flex-wrap margin-top-3">
-              <a href="/signup">
-                <Button type="button" size="big">Get Free API Key</Button>
-              </a>
-              <a href="/getting-started">
-                <Button type="button" unstyled className="usa-button usa-button--outline usa-button--inverse usa-button--big">Get Started</Button>
-              </a>
-              <a href="/docs">
-                <Button type="button" unstyled className="usa-button usa-button--outline usa-button--inverse usa-button--big">View Docs</Button>
-              </a>
+            <div className="display-flex gap-1 flex-wrap margin-top-2">
+              <a href="/signup" className="usa-button">Get Free API Key</a>
+              <a href="/getting-started" className="usa-button usa-button--outline">Get Started</a>
+              <a href="/docs" className="usa-button usa-button--outline">View Docs</a>
             </div>
           </div>
         </GridContainer>
@@ -240,6 +234,73 @@ export default function Homepage() {
                 <span className="text-bold">{client}</span>
               </div>
             ))}
+          </div>
+        </GridContainer>
+      </section>
+
+      {/* Open Source Section */}
+      <section className="usa-section bg-base-lightest">
+        <GridContainer>
+          <div className="grid-row grid-gap-6">
+            <div className="tablet:grid-col-7">
+              <h2 className="font-heading-2xl text-primary margin-bottom-2">
+                Open Source. Extensible. Community-Driven.
+              </h2>
+              <p className="font-body-lg text-base-dark margin-bottom-3">
+                USWDS MCP Server is fully open source under AGPL-3.0, ensuring improvements benefit the entire community.
+              </p>
+
+              <div className="margin-bottom-3">
+                <h3 className="font-heading-lg text-primary margin-bottom-1">Deploy Without Limits</h3>
+                <ul className="usa-list">
+                  <li>Host on your own infrastructure (AWS Lambda, local, anywhere)</li>
+                  <li>No rate limits when self-hosted</li>
+                  <li>Add custom MCP tools tailored to your needs</li>
+                  <li>Integrate into agentic systems and workflows</li>
+                  <li>Full control over data and performance</li>
+                </ul>
+              </div>
+
+              <div className="margin-bottom-3">
+                <h3 className="font-heading-lg text-primary margin-bottom-1">Or Use Our Hosted Infrastructure</h3>
+                <ul className="usa-list">
+                  <li><strong>Free tier:</strong> Get started immediately with our hosted API</li>
+                  <li><strong>Paid plans:</strong> Higher limits, priority support, SLA guarantees</li>
+                  <li>No setup or maintenance required</li>
+                  <li>We handle scaling, caching, and updates</li>
+                </ul>
+              </div>
+
+              <a href="https://github.com/ctrimm/uswds-local-mcp-server" className="usa-button usa-button--outline">
+                View on GitHub
+              </a>
+            </div>
+
+            <div className="tablet:grid-col-5">
+              <div className="bg-white border-base-light border-2px radius-md padding-3">
+                <h3 className="font-heading-md text-primary margin-bottom-2">Why AGPL-3.0?</h3>
+                <p className="font-body-sm text-base-dark margin-bottom-2">
+                  We chose the <strong>GNU Affero General Public License v3.0</strong> to ensure that improvements to USWDS MCP Server benefit everyone, not just proprietary systems.
+                </p>
+
+                <div className="margin-bottom-2">
+                  <h4 className="font-body-md text-bold text-primary margin-bottom-05">What this means for you:</h4>
+                  <ul className="usa-list font-body-2xs">
+                    <li>✓ Free to use, modify, and distribute</li>
+                    <li>✓ Deploy to your own infrastructure</li>
+                    <li>✓ Add custom tools and integrations</li>
+                    <li>✓ Use in commercial projects</li>
+                    <li>⚠️ Share improvements if you offer it as a service</li>
+                  </ul>
+                </div>
+
+                <div className="bg-accent-cool-lighter padding-2 radius-md">
+                  <p className="font-body-2xs text-base-darkest margin-bottom-0">
+                    <strong>Building a community:</strong> AGPL ensures that when organizations improve the server, those enhancements come back to the community—strengthening the ecosystem for government digital services.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </GridContainer>
       </section>
