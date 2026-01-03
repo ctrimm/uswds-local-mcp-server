@@ -184,11 +184,12 @@ npx sst deploy --stage production`}
           </pre>
 
           <h3 className="font-heading-lg margin-top-3 margin-bottom-2">Rate Limits</h3>
-          <p className="margin-bottom-2">The remote server includes rate limiting to prevent abuse:</p>
+          <p className="margin-bottom-2">The hosted server includes rate limiting:</p>
           <ul className="usa-list margin-bottom-2">
-            <li><strong>Free tier:</strong> 100 requests/minute, 10,000 requests/day</li>
+            <li><strong>Free hosted tier:</strong> 1 request/minute, 100 requests/day</li>
             <li><strong>Pro tier:</strong> 1,000 requests/minute, 1,000,000 requests/month</li>
             <li><strong>Enterprise:</strong> Custom limits and dedicated support</li>
+            <li><strong>Self-hosted:</strong> Unlimited (deploy to your own AWS infrastructure)</li>
           </ul>
           <p><a href="/pricing" className="usa-link">View pricing details →</a></p>
         </section>

@@ -86,7 +86,7 @@ export default function Signup() {
             <h3 className="margin-top-0 font-heading-md text-primary">What you'll get:</h3>
             <div className="margin-bottom-0">
               <div className="margin-bottom-1">
-                ✓ <strong>Free tier:</strong> 100 requests/minute, 10,000 requests/day
+                ✓ <strong>Free tier:</strong> 1 request/minute, 100 requests/day
               </div>
               <div className="margin-bottom-1">
                 ✓ Access to all 18 USWDS tools
@@ -94,8 +94,11 @@ export default function Signup() {
               <div className="margin-bottom-1">
                 ✓ React-USWDS v11.0.0 + Tailwind support
               </div>
-              <div className="margin-bottom-0">
+              <div className="margin-bottom-1">
                 ✓ No credit card required
+              </div>
+              <div className="margin-bottom-0">
+                💡 Need more? <a href="https://github.com/ctrimm/uswds-local-mcp-server" className="usa-link">Self-host for unlimited</a>
               </div>
             </div>
           </div>

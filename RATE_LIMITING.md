@@ -159,7 +159,7 @@ headers['X-RateLimit-Reset'] = String(Math.ceil(resetIn / 1000));
 ```
 
 **Suggested Limits:**
-- **Free tier**: 100 requests/minute, 10,000 requests/day
+- **Free tier**: 1 request/minute, 100 requests/day
 - **Paid tier**: 1,000 requests/minute, 1,000,000 requests/day
 
 ---
