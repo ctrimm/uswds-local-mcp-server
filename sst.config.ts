@@ -238,9 +238,8 @@ export default $config({
       },
     });
 
-    // ===== Optional: CloudFront CDN + Custom Domain =====
-    // Uncomment and configure for production custom domain
-    /*
+    // ===== CloudFront CDN + Custom Domain =====
+    // Custom domain for production MCP server
     const cdn = new sst.aws.Router('McpRouter', {
       routes: {
         '/*': mcpServer.url,
@@ -255,7 +254,6 @@ export default $config({
         }),
       },
     });
-    */
 
     // ===== Outputs =====
     return {
@@ -281,8 +279,9 @@ export default $config({
       usersTableName: usersTable.name,
       usageTableName: usageTable.name,
 
-      // CDN URL (if enabled)
-      // cdnUrl: cdn?.url,
+      // Custom Domain (CDN)
+      cdnUrl: cdn.url,
+      cdnDomain: cdn.domain,
     };
   },
 });

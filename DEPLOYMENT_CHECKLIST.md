@@ -53,11 +53,29 @@ This checklist covers everything needed for a production deployment of the USWDS
 
 ## ⚠️ Required Before First Deploy
 
-### 1. Set Up Resend Account
+### 1. Set Up Cloudflare DNS
+```bash
+# 1. Log in to Cloudflare
+# 2. Add your domain: uswdsmcp.com
+# 3. Update nameservers at your registrar
+# 4. Get Zone ID from Cloudflare dashboard (Overview page)
+# 5. Create API Token:
+#    - Go to "My Profile" > "API Tokens"
+#    - Create token with "Zone:DNS:Edit" permissions
+# 6. Set environment variable (in your shell or .env):
+export CLOUDFLARE_ZONE_ID="your_zone_id_here"
+
+# 7. Set secret:
+npx sst secret set CLOUDFLARE_API_TOKEN "your_token_here" --stage production
+```
+
+**Status:** 🔴 **REQUIRED** - Custom domain (api.uswdsmcp.com) won't work without this
+
+### 2. Set Up Resend Account
 ```bash
 # 1. Sign up at https://resend.com
 # 2. Add domain: mail.uswdsmcp.com
-# 3. Verify domain ownership (add DNS records)
+# 3. Verify domain ownership (add DNS records to Cloudflare)
 # 4. Get API key from dashboard
 # 5. Set secret:
 npx sst secret set RESEND_API_KEY "re_your_key_here" --stage production
@@ -65,17 +83,20 @@ npx sst secret set RESEND_API_KEY "re_your_key_here" --stage production
 
 **Status:** 🔴 **REQUIRED** - Email notifications won't work without this
 
-### 2. Configure Environment Variables
+### 3. Configure Environment Variables
 Update these in `sst.config.ts` or via environment:
 ```bash
 # Required for email
 EMAIL_FROM="USWDS MCP <noreply@mail.uswdsmcp.com>"
 EMAIL_ENABLED="true"
+
+# Required for custom domain
+CLOUDFLARE_ZONE_ID="your_zone_id"
 ```
 
-**Status:** ✅ Already configured in code
+**Status:** ✅ Already configured in code (EMAIL_*), ⚠️ Need to set CLOUDFLARE_ZONE_ID
 
-### 3. Create First Admin User
+### 4. Create First Admin User
 After first deployment:
 ```bash
 # 1. Deploy the stack
@@ -99,14 +120,17 @@ Update these in the website code:
 
 ---
 
-## 🔵 Optional (Can Add Later)
+## ✅ Enabled - Custom Domain
 
 ### Domain & DNS
-- [ ] **Custom Domain** - Configure api.uswdsmcp.com
-- [ ] **Cloudflare DNS** - Set up CLOUDFLARE_ZONE_ID and API token
-- [ ] **SSL Certificate** - CloudFront automatically provisions
+- [x] **Custom Domain** - api.uswdsmcp.com (production) / {stage}-api.uswdsmcp.com (dev)
+- [x] **Cloudflare DNS** - Configured in sst.config.ts
+- [x] **SSL Certificate** - CloudFront automatically provisions
+- [x] **CloudFront CDN** - Enabled for custom domain
 
-**Status:** Optional - Function URLs work without custom domain
+**Status:** ✅ Enabled and configured - Requires Cloudflare setup before deploy
+
+## 🔵 Optional (Can Add Later)
 
 ### Monitoring & Alerts
 - [ ] **CloudWatch Alarms** - Alert on errors, high latency, rate limit hits
@@ -137,29 +161,50 @@ Update these in the website code:
 ### Initial Production Deployment
 
 ```bash
-# 1. Set secrets (REQUIRED)
+# 1. Set up Cloudflare (REQUIRED)
+# - Add uswdsmcp.com to Cloudflare
+# - Update nameservers at registrar
+# - Get Zone ID from dashboard
+# - Create API token with Zone:DNS:Edit permissions
+
+# 2. Set environment variable for Zone ID
+export CLOUDFLARE_ZONE_ID="your_zone_id_here"
+
+# 3. Set secrets (REQUIRED)
+npx sst secret set CLOUDFLARE_API_TOKEN "your_token" --stage production
 npx sst secret set RESEND_API_KEY "re_your_key_here" --stage production
 
-# 2. Deploy infrastructure
+# 4. Deploy infrastructure
 npx sst deploy --stage production
 
-# 3. Save the outputs (you'll need these URLs):
-# - signupUrl: For user registration
-# - mcpUrl: For MCP server endpoint
+# 5. Save the outputs (you'll need these URLs):
+# - cdnUrl: https://api.uswdsmcp.com (custom domain)
+# - cdnDomain: api.uswdsmcp.com
+# - signupUrl: Direct Lambda URL (backup)
+# - mcpUrl: Direct Lambda URL (backup)
 # - adminUrl: For admin operations
 # - resetUrl: For API key reset
 
-# 4. Test signup flow
-curl -X POST [signupUrl] \
+# 6. Wait for DNS propagation (1-5 minutes)
+# CloudFront will automatically:
+# - Create DNS records in Cloudflare
+# - Provision SSL certificate
+# - Route traffic to Lambda
+
+# 7. Test signup flow (use custom domain)
+curl -X POST https://api.uswdsmcp.com/signup \
   -H "Content-Type: application/json" \
   -d '{"email":"your-email@example.com"}'
 
-# 5. Make yourself admin (AWS Console → DynamoDB)
+# 8. Make yourself admin (AWS Console → DynamoDB)
 # Find your user record and set: "isAdmin": true
 
-# 6. Test admin access
-curl [adminUrl]/admin/stats \
+# 9. Test admin access
+curl https://api.uswdsmcp.com/admin/stats \
   -H "Authorization: Bearer your-api-key"
+
+# 10. Update website PUBLIC_SIGNUP_URL to:
+# https://api.uswdsmcp.com
 ```
 
 ### Website Deployment
@@ -169,7 +214,9 @@ cd website
 npm run build
 
 # Deploy to your hosting (Vercel, Netlify, S3, etc.)
-# Update PUBLIC_SIGNUP_URL in website/.env to point to signupUrl
+# Update PUBLIC_SIGNUP_URL in website/.env to:
+# https://api.uswdsmcp.com (production)
+# or use your custom domain
 ```
 
 ---
@@ -220,19 +267,26 @@ npm run build
 ✅ Admin functionality complete
 ✅ Tests passing (406/420)
 ✅ Documentation complete
+✅ Custom domain configured (api.uswdsmcp.com)
+✅ CloudFront CDN enabled
 
 ### Before Deployment:
-1. Set RESEND_API_KEY secret
-2. Verify domain in Resend
-3. Review CORS settings (restrict `*` to your domain)
-4. Update website URLs to production values
+1. **Set up Cloudflare** (add domain, get Zone ID, create API token)
+2. Set CLOUDFLARE_ZONE_ID environment variable
+3. Set CLOUDFLARE_API_TOKEN secret
+4. Set RESEND_API_KEY secret
+5. Verify mail.uswdsmcp.com domain in Resend (add DNS records to Cloudflare)
+6. Review CORS settings (restrict `*` to your domain)
+7. Update website URLs to production values
 
 ### After Deployment:
-1. Create admin account (manual DynamoDB edit)
-2. Test signup flow
-3. Test email delivery
-4. Monitor CloudWatch logs
-5. Set up alarms (recommended)
+1. Wait for DNS propagation (1-5 minutes)
+2. Verify SSL certificate provisioned
+3. Create admin account (manual DynamoDB edit)
+4. Test signup flow via https://api.uswdsmcp.com
+5. Test email delivery
+6. Monitor CloudWatch logs
+7. Set up alarms (recommended)
 
 ---
 
