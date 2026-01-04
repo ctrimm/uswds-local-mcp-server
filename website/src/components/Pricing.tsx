@@ -31,6 +31,7 @@ export default function Pricing() {
       name: 'Free Hosted',
       price: '$0',
       period: '/month',
+      badge: 'No Setup Required',
       features: [
         '1 requests/minute',
         '100 requests/day',
@@ -41,8 +42,11 @@ export default function Pricing() {
       ],
       cta: 'Get Free API Key',
       ctaLink: '/signup',
-      featured: false,
+      featured: true,
     },
+    // PAID TIERS - Commented out for initial launch
+    // Uncomment when payment integration is ready
+    /*
     {
       name: 'Pro',
       price: '$29',
@@ -76,6 +80,7 @@ export default function Pricing() {
       ctaLink: 'mailto:support@uswdsmcp.com?subject=Enterprise%20Plan',
       featured: false,
     },
+    */
   ];
 
   const faqs = [
@@ -93,16 +98,19 @@ export default function Pricing() {
     },
     {
       question: 'Is the free hosted tier really free forever?',
-      answer: 'Yes! The free hosted tier is completely free with no time limit, perfect for testing and small projects. For production workloads, consider self-hosting (unlimited, ~$2-50/month AWS costs) or our paid hosted plans.',
+      answer: 'Yes! The free hosted tier is completely free with no time limit, perfect for testing and small projects. For production workloads with higher volume, we recommend self-hosting (unlimited, ~$2-50/month AWS costs depending on usage).',
     },
     {
-      question: 'What happens if I exceed my hosted tier limits?',
-      answer: "You'll receive a 429 Too Many Requests response with a Retry-After header. Your service won't be interrupted, just rate-limited. Consider upgrading to Pro or self-hosting for unlimited access.",
+      question: 'What happens if I exceed my free hosted tier limits?',
+      answer: "You'll receive a 429 Too Many Requests response with a Retry-After header. Your service won't be interrupted, just rate-limited. For unlimited access, self-host the server on your own infrastructure.",
     },
+    // PAID PLAN FAQ - Commented out for initial launch
+    /*
     {
       question: 'Do you offer discounts for government agencies?',
       answer: 'Yes! Contact us for special pricing for federal, state, and local government agencies.',
     },
+    */
   ];
 
   return (
