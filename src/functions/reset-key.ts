@@ -14,6 +14,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { randomBytes } from 'crypto';
+import { sendResetEmail } from '../services/email-service.js';
 
 // Lambda types
 interface LambdaEvent {
@@ -178,6 +179,18 @@ export const handler = async (
     }
 
     logger.info(`API key reset for: ${request.email}`);
+
+    // Send reset confirmation email
+    try {
+      await sendResetEmail({
+        email: request.email.toLowerCase(),
+        apiKey,
+      });
+      logger.info(`Reset email sent to: ${request.email}`);
+    } catch (emailError) {
+      logger.error('Failed to send reset email:', emailError);
+      // Continue even if email fails
+    }
 
     // Return new API key
     return {

@@ -16,6 +16,7 @@ export interface User {
   apiKey: string;
   tier: 'free' | 'pro' | 'enterprise';
   status: 'active' | 'blocked' | 'suspended';
+  isAdmin: boolean; // Admin flag for accessing /admin routes and API endpoints
   createdAt: string;
   updatedAt: string;
   requestCount: number;

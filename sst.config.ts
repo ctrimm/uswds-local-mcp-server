@@ -34,6 +34,8 @@ export default $config({
     // ===== Secrets =====
     // Create secrets for sensitive data (set via `npx sst secret set`)
     const apiKey = new sst.Secret('API_KEY');
+    const resendApiKey = new sst.Secret('RESEND_API_KEY'); // For sending emails
+    const cloudflareApiToken = new sst.Secret('CLOUDFLARE_API_TOKEN'); // For DNS management
 
     // ===== DynamoDB Tables =====
 
@@ -88,11 +90,13 @@ export default $config({
         },
       },
 
-      link: [usersTable],
+      link: [usersTable, resendApiKey],
 
       environment: {
         NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
         USERS_TABLE_NAME: usersTable.name,
+        EMAIL_FROM: 'USWDS MCP <noreply@mail.uswdsmcp.com>', // Update with actual domain
+        EMAIL_ENABLED: 'true', // Set to 'false' to disable email sending
       },
 
       logging: {
@@ -113,6 +117,37 @@ export default $config({
           allowOrigins: ['*'],
           allowMethods: ['POST', 'OPTIONS'],
           allowHeaders: ['Content-Type'],
+          maxAge: '86400',
+        },
+      },
+
+      link: [usersTable, resendApiKey],
+
+      environment: {
+        NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+        USERS_TABLE_NAME: usersTable.name,
+        EMAIL_FROM: 'USWDS MCP <noreply@mail.uswdsmcp.com>',
+        EMAIL_ENABLED: 'true',
+      },
+
+      logging: {
+        retention: $app.stage === 'production' ? '30 days' : '7 days',
+      },
+    });
+
+    // ===== Admin API Lambda Function =====
+    const adminFunction = new sst.aws.Function('AdminFunction', {
+      handler: 'src/functions/admin-api.handler',
+      runtime: 'nodejs20.x',
+      memory: '512 MB',
+      timeout: '30 seconds',
+
+      url: {
+        authorization: 'none', // Uses custom admin auth middleware
+        cors: {
+          allowOrigins: ['*'], // Restrict to admin domain in production
+          allowMethods: ['GET', 'POST', 'OPTIONS'],
+          allowHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
           maxAge: '86400',
         },
       },
@@ -204,7 +239,7 @@ export default $config({
     });
 
     // ===== Optional: CloudFront CDN + Custom Domain =====
-    // Uncomment to enable custom domain
+    // Uncomment and configure for production custom domain
     /*
     const cdn = new sst.aws.Router('McpRouter', {
       routes: {
@@ -212,11 +247,12 @@ export default $config({
       },
       domain: {
         name: $app.stage === 'production'
-          ? 'mcp.yourdomain.com'
-          : `${$app.stage}.mcp.yourdomain.com`,
-        // Choose DNS provider:
-        dns: sst.cloudflare.dns(), // For Cloudflare
-        // dns: sst.aws.dns(),       // For Route53
+          ? 'api.uswdsmcp.com'
+          : `${$app.stage}-api.uswdsmcp.com`,
+        // Using Cloudflare for DNS management
+        dns: sst.cloudflare.dns({
+          zone: process.env.CLOUDFLARE_ZONE_ID!,
+        }),
       },
     });
     */
@@ -236,6 +272,10 @@ export default $config({
       // Reset API
       resetUrl: resetFunction.url,
       resetFunctionName: resetFunction.name,
+
+      // Admin API
+      adminUrl: adminFunction.url,
+      adminFunctionName: adminFunction.name,
 
       // DynamoDB Tables
       usersTableName: usersTable.name,
