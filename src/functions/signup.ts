@@ -12,6 +12,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 import { randomBytes } from 'crypto';
+import { sendWelcomeEmail } from '../services/email-service.js';
 
 // Lambda types
 interface LambdaEvent {
@@ -95,6 +96,7 @@ async function createUser(email: string): Promise<{ apiKey: string; isNew: boole
     apiKey: apiKey,
     tier: 'free',
     status: 'active',
+    isAdmin: existing.Item?.isAdmin || false, // Preserve existing isAdmin status or default to false
     createdAt: existing.Item?.createdAt || now,
     updatedAt: now,
     requestCount: 0,
@@ -173,6 +175,19 @@ export const handler = async (
     const { apiKey, isNew } = await createUser(request.email);
 
     logger.info(`User ${isNew ? 'created' : 'updated'}: ${request.email}`);
+
+    // Send welcome email with API key
+    try {
+      await sendWelcomeEmail({
+        email: request.email.toLowerCase(),
+        apiKey,
+        isNew,
+      });
+      logger.info(`Welcome email sent to: ${request.email}`);
+    } catch (emailError) {
+      logger.error('Failed to send welcome email:', emailError);
+      // Continue even if email fails
+    }
 
     // Return success
     return {
