@@ -230,6 +230,7 @@ npm run build
 - [x] **DynamoDB Encryption** - Encryption at rest enabled by default
 - [x] **Lambda Logging** - No sensitive data logged
 - [x] **Email Security** - API key sent once, not stored in logs
+- [x] **Origin Header Validation** - Prevents DNS rebinding attacks
 - [ ] **CORS Origins** - ⚠️ Currently allows `*`, restrict to your domain
 - [ ] **CloudWatch Alarms** - Alert on suspicious activity
 

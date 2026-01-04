@@ -7,6 +7,7 @@
 
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { rateLimiter } from '../middleware/rate-limiter.js';
+import { validateOrigin } from '../middleware/origin-validator.js';
 import { updateUserStats, logUsage } from '../services/dynamodb-service.js';
 import { globalCache } from '../services/lambda-cache-service.js';
 import { authenticate } from './auth/authenticate.js';
@@ -42,6 +43,20 @@ export const handler = async (
         timestamp: new Date().toISOString(),
         cache: globalCache.getStats(),
         rateLimit: rateLimiter.getStats(),
+      }),
+    };
+  }
+
+  // Origin validation (prevents DNS rebinding attacks)
+  const originCheck = validateOrigin(event.headers);
+  if (!originCheck.valid) {
+    logger.warn(`Invalid origin rejected: ${event.headers['origin'] || event.headers['Origin']}`);
+    return {
+      statusCode: 403,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        error: 'Forbidden',
+        message: originCheck.error || 'Origin not allowed',
       }),
     };
   }
