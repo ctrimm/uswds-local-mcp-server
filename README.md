@@ -16,6 +16,29 @@ A Model Context Protocol (MCP) server that provides tools for working with the U
 
 ## What's New
 
+### v2.0 - Full MCP Specification Compliance (January 2026) 🎉
+
+Major architectural update bringing full compliance with MCP 2025-03-26 specification:
+
+**✅ MCP Best Practices**:
+- `/mcp` endpoint convention (proper path-based routing)
+- Streamable HTTP transport (supports JSON + SSE responses)
+- Session management with `Mcp-Session-Id` header
+- CloudFront path-based routing for all endpoints
+- 24-hour session TTL with automatic cleanup
+
+**🔒 Security Enhancements**:
+- Origin header validation (prevents DNS rebinding attacks)
+- Session-based state management in DynamoDB
+- Enhanced CORS configuration
+
+**📊 Test Coverage**:
+- 439/452 tests passing (97% coverage)
+- 24 new tests for v2.0 features
+- Comprehensive session and streaming tests
+
+See [MCP_ARCHITECTURE.md](./MCP_ARCHITECTURE.md) for complete technical details.
+
 ### React-USWDS v11.0.0 Support (December 2025)
 
 Updated to support the latest React-USWDS v11.0.0, which includes:

@@ -1,8 +1,14 @@
 /**
- * AWS Lambda Handler for USWDS MCP Server
+ * AWS Lambda Handler for USWDS MCP Server (v2.0)
  *
  * Main entry point for Lambda Function URL requests.
- * Handles authentication, rate limiting, and MCP request processing.
+ * Supports:
+ * - Streamable HTTP transport (JSON + SSE)
+ * - Session management (Mcp-Session-Id header)
+ * - /mcp endpoint convention
+ * - Authentication, rate limiting, origin validation
+ *
+ * Spec: https://modelcontextprotocol.io/specification/2025-03-26/basic/transports
  */
 
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -10,11 +16,24 @@ import { rateLimiter } from '../middleware/rate-limiter.js';
 import { validateOrigin } from '../middleware/origin-validator.js';
 import { updateUserStats, logUsage } from '../services/dynamodb-service.js';
 import { globalCache } from '../services/lambda-cache-service.js';
+import {
+  createSession,
+  getSession,
+  touchSession,
+  extractSessionId,
+  generateSessionId,
+} from '../services/session-service.js';
 import { authenticate } from './auth/authenticate.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 import { getMCPServer } from './server.js';
 import { tools } from './tools/definitions.js';
+import {
+  getResponseFormat,
+  ResponseStream,
+  getSSEHeaders,
+  getJSONHeaders,
+} from './streaming.js';
 import { LambdaEvent, LambdaContext, LambdaResponse, MCPRequest } from './types.js';
 
 /**
@@ -76,6 +95,42 @@ export const handler = async (
 
   const user = auth.user!;
   const apiKey = auth.apiKey!;
+
+  // Session Management (Mcp-Session-Id header)
+  let sessionId = extractSessionId(event.headers);
+  let session = null;
+
+  if (sessionId) {
+    // Existing session - validate and refresh
+    session = await getSession(sessionId);
+    if (!session) {
+      // Session expired or invalid
+      logger.info(`Session expired or invalid: ${sessionId}`);
+      sessionId = null;
+    } else if (session.apiKey !== apiKey) {
+      // Session belongs to different API key
+      logger.warn(`Session API key mismatch: ${sessionId}`);
+      return {
+        statusCode: 403,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          error: 'Forbidden',
+          message: 'Session belongs to different user',
+        }),
+      };
+    } else {
+      // Valid session - touch to update last access time
+      await touchSession(sessionId);
+      logger.info(`Session refreshed: ${sessionId}`);
+    }
+  }
+
+  if (!sessionId) {
+    // No session or expired - create new one
+    session = await createSession(apiKey, user.email);
+    sessionId = session.sessionId;
+    logger.info(`New session created: ${sessionId}`);
+  }
 
   // Rate limiting
   const rateLimit = rateLimiter.check(apiKey);
@@ -210,6 +265,7 @@ export const handler = async (
         'X-RateLimit-Limit': '1',
         'X-RateLimit-Remaining': String(rateLimit.remaining),
         'X-RateLimit-Reset': String(Math.ceil(rateLimit.resetIn / 1000)),
+        'Mcp-Session-Id': sessionId!, // Return session ID to client
       },
       body: JSON.stringify({
         jsonrpc: '2.0',

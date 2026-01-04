@@ -3,7 +3,7 @@ import { config } from '../stdio/config.js';
 
 describe('stdio config', () => {
   it('should have server version', () => {
-    expect(config.serverVersion).toBe('0.2.0');
+    expect(config.serverVersion).toBe('2.0.0');
   });
 
   it('should have useReactComponents boolean flag', () => {

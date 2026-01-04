@@ -33,6 +33,16 @@ export interface LambdaResponse {
   body: string;
 }
 
+/**
+ * Lambda Streaming Response Handler
+ * Used with awslambda.streamifyResponse() for SSE streaming
+ */
+export type StreamingResponseHandler = (
+  event: LambdaEvent,
+  responseStream: NodeJS.WritableStream,
+  context: LambdaContext
+) => Promise<void>;
+
 // ===== MCP Types =====
 
 export interface MCPRequest {

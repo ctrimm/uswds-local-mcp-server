@@ -73,6 +73,24 @@ export default $config({
       },
     });
 
+    // Sessions table: stores MCP session state (Mcp-Session-Id)
+    const sessionsTable = new sst.aws.Dynamo('SessionsTable', {
+      fields: {
+        sessionId: 'string',    // Partition key (Mcp-Session-Id)
+        apiKey: 'string',       // API key for the session
+      },
+      primaryIndex: { hashKey: 'sessionId' },
+      globalIndexes: {
+        apiKeyIndex: { hashKey: 'apiKey' }, // Lookup sessions by API key
+      },
+      ttl: 'expiresAt', // Auto-delete expired sessions (24 hours default)
+      transform: {
+        table: {
+          deletionProtection: $app.stage === 'production',
+        },
+      },
+    });
+
     // ===== Sign-up Lambda Function =====
     const signupFunction = new sst.aws.Function('SignupFunction', {
       handler: 'src/functions/signup.handler',
@@ -178,20 +196,20 @@ export default $config({
         // - "iam": AWS IAM authentication (for AWS-native clients)
         authorization: 'none', // Using API key middleware instead
 
-        // Enable response streaming for Streamable HTTP
-        streaming: false, // Set to true when implementing full StreamableHTTP transport
+        // Enable response streaming for Streamable HTTP transport
+        streaming: true, // Support both JSON and SSE responses
 
         // CORS configuration for browser clients
         cors: {
           allowOrigins: ['*'], // Restrict in production
           allowMethods: ['GET', 'POST', 'OPTIONS'],
-          allowHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'mcp-session-id'],
+          allowHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'Mcp-Session-Id'],
           maxAge: '86400', // 24 hours
         },
       },
 
       // Link secrets and tables
-      link: [apiKey, usersTable, usageTable],
+      link: [apiKey, usersTable, usageTable, sessionsTable],
 
       // Environment variables
       environment: {
@@ -200,6 +218,7 @@ export default $config({
         USE_REACT_COMPONENTS: 'true', // Use React-USWDS by default
         USERS_TABLE_NAME: usersTable.name,
         USAGE_TABLE_NAME: usageTable.name,
+        SESSIONS_TABLE_NAME: sessionsTable.name,
       },
 
       // Node.js build configuration
@@ -239,10 +258,14 @@ export default $config({
     });
 
     // ===== CloudFront CDN + Custom Domain =====
-    // Custom domain for production MCP server
+    // Custom domain with path-based routing
     const cdn = new sst.aws.Router('McpRouter', {
       routes: {
-        '/*': mcpServer.url,
+        '/mcp': mcpServer.url,        // MCP endpoint (v2.0 convention)
+        '/signup': signupFunction.url, // User signup
+        '/reset': resetFunction.url,   // API key reset
+        '/admin/*': adminFunction.url, // Admin panel
+        '/*': mcpServer.url,           // Backward compatibility (root → MCP)
       },
       domain: {
         name: $app.stage === 'production'
@@ -278,10 +301,17 @@ export default $config({
       // DynamoDB Tables
       usersTableName: usersTable.name,
       usageTableName: usageTable.name,
+      sessionsTableName: sessionsTable.name,
 
       // Custom Domain (CDN)
       cdnUrl: cdn.url,
       cdnDomain: cdn.domain,
+
+      // Endpoint URLs (v2.0)
+      mcpEndpoint: `${cdn.url}/mcp`,
+      signupEndpoint: `${cdn.url}/signup`,
+      resetEndpoint: `${cdn.url}/reset`,
+      adminEndpoint: `${cdn.url}/admin`,
     };
   },
 });
